@@ -4,8 +4,6 @@ import product.TV;
 import product.Washer;
 import warehouse.Warehouse;
 
-import java.util.Random;
-
 public class Main {
     public static void main(String[] args) {
         Warehouse warehouse = new Warehouse();
