@@ -2,7 +2,7 @@ package warehouse;
 
 import product.Product;
 
-public class Warehouse implements ProductMovement {
+public class Warehouse implements IProductMovement {
     private static final int MAX_VOLUME = 200;
     private int currentVolume = 0;
     private int totalWeight = 0;

@@ -2,6 +2,6 @@ package warehouse;
 
 import product.Product;
 
-public interface ProductMovement {
+public interface IProductMovement {
     void addProduct(Product product);
 }
