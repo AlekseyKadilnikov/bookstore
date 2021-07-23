@@ -1,3 +1,10 @@
+package productassembly;
+
+import buildpart.BuildBody;
+import buildpart.BuildChassis;
+import buildpart.BuildEngine;
+import product.IProduct;
+
 public class CarAssembly implements IAssemblyLine {
     @Override
     public IProduct assembleProduct(IProduct product) {

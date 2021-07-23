@@ -1,3 +1,7 @@
+package product;
+
+import productpart.IProductPart;
+
 public class Car implements IProduct{
 
     @Override

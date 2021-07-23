@@ -1,3 +1,8 @@
+package buildpart;
+
+import productpart.Engine;
+import productpart.IProductPart;
+
 public class BuildEngine implements ILineStep {
     @Override
     public IProductPart buildProductPart() {
