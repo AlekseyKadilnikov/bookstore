@@ -9,7 +9,7 @@ public class Main {
         Warehouse warehouse = new Warehouse();
 
         Product product1 = new Refrigerator("LG", 100, 45);
-        Product product2 = new Washer("Hotpoint", 100, 56);
+        Product product2 = new Washer("Hotpoint", 90, 56);
         Product product3 = new TV("Xiaomi", 10, 30);
 
         warehouse.addProduct(product1);
