@@ -1,22 +1,13 @@
 package model;
 
-public class User {
-    private int id;
+public class User extends BaseEntity {
     private String username;
-    private Order[] orders;
-    private Book[] books;
-    private Request[] requests;
+    private Order order;
+    private Request request;
 
     public User(String username) {
+        super();
         this.username = username;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -27,27 +18,19 @@ public class User {
         this.username = username;
     }
 
-    public Order[] getOrders() {
-        return orders;
+    public Order getOrder() {
+        return order;
     }
 
-    public void newOrder(Order order) {
-        /////////
+    public Request getRequest() {
+        return request;
     }
 
-    public Book[] getBooks() {
-        return books;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
-    public void addBook(Book book) {
-        /////////
-    }
-
-    public Request[] getRequests() {
-        return requests;
-    }
-
-    public void newRequest(Request[] requests) {
-        /////////
+    public void setRequest(Request request) {
+        this.request = request;
     }
 }

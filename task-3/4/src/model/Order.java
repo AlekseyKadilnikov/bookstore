@@ -1,33 +1,23 @@
 package model;
 
-import status.OrderStatus;
-
-public class Order {
-    private int id;
-    private Book[] books;
+public class Order extends BaseEntity {
+    private Book book;
     private User user;
     private OrderStatus status;
 
-    public Order(Book[] books, User user) {
-        this.books = books;
+    public Order(Book book, User user) {
+        super();
+        this.book = book;
         this.user = user;
         status = OrderStatus.New;
     }
 
-    public int getId() {
-        return id;
+    public Book getBook() {
+        return book;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Book[] getBooks() {
-        return books;
-    }
-
-    public void setBooks(Book[] books) {
-        this.books = books;
+    public void setBook(Book book) {
+        this.book = book;
     }
 
     public User getUser() {

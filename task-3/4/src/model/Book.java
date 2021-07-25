@@ -1,7 +1,6 @@
 package model;
 
-public class Book {
-    private int id;
+public class Book extends BaseEntity {
     private String name;
     private String author;
     private String publisher;
@@ -9,19 +8,12 @@ public class Book {
     private boolean available;
 
     public Book(String name, String author, String publisher, int price, boolean available) {
+        super();
         this.name = name;
         this.author = author;
         this.publisher = publisher;
         this.price = price;
         this.available = available;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

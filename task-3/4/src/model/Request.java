@@ -1,13 +1,12 @@
 package model;
 
-import status.OrderStatus;
-
-public class Request {
+public class Request extends BaseEntity {
     private Book book;
     private User user;
     private OrderStatus status;
 
     public Request(Book book, User user) {
+        super();
         this.book = book;
         this.user = user;
         status = OrderStatus.New;

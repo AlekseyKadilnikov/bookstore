@@ -1,4 +1,4 @@
-package status;
+package model;
 
 public enum  OrderStatus {
     New,

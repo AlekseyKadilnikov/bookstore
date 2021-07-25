@@ -1,40 +1,11 @@
 package service;
 
-import model.Book;
-import model.User;
+import repository.UserRepository;
 
-public class UserService implements ICustomerService {
-    private User user;
+public class UserService implements IUserService {
+    private UserRepository userRepository;
 
-    public UserService(User user) {
-        this.user = user;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public void createOrder(Book[] books) {
-
-    }
-
-    @Override
-    public void cancelOrder(int id) {
-
-    }
-
-    @Override
-    public void createRequest(Book book) {
-
-    }
-
-    @Override
-    public void cancelRequest(Book book) {
-
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }
