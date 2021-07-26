@@ -1,6 +1,7 @@
 package model;
 
 public class Book extends BaseEntity {
+    private static long ID_COUNT = 0;
     private String name;
     private String author;
     private String publisher;
@@ -8,12 +9,23 @@ public class Book extends BaseEntity {
     private boolean available;
 
     public Book(String name, String author, String publisher, int price, boolean available) {
-        super();
+        super(ID_COUNT++);
         this.name = name;
         this.author = author;
         this.publisher = publisher;
         this.price = price;
         this.available = available;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", price=" + price +
+                ", available=" + available +
+                '}';
     }
 
     public String getName() {
@@ -55,4 +67,5 @@ public class Book extends BaseEntity {
     public void setAvailable(boolean available) {
         this.available = available;
     }
+
 }

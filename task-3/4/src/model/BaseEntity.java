@@ -1,11 +1,10 @@
 package model;
 
 public class BaseEntity {
-    private static long ID_COUNT = 0;
     private long id;
 
-    public BaseEntity() {
-        id = ID_COUNT++;
+    public BaseEntity(long id) {
+        this.id = id;
     }
 
     public long getId() {

@@ -32,4 +32,8 @@ public class BookRepository implements IRepository<Book, Long> {
     public void delete(Book book) {
 
     }
+
+    public Book getByIndex(int index) {
+        return books[index];
+    }
 }

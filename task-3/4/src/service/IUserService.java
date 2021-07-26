@@ -1,7 +1,8 @@
 package service;
 
-import model.Book;
+import model.User;
 
 public interface IUserService {
-
+    void addUser(String username);
+    User getUser();
 }

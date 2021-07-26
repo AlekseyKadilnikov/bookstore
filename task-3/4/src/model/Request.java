@@ -1,15 +1,25 @@
 package model;
 
 public class Request extends BaseEntity {
+    private static long ID_COUNT = 0;
     private Book book;
     private User user;
-    private OrderStatus status;
+    private RequestStatus status;
 
     public Request(Book book, User user) {
-        super();
+        super(ID_COUNT++);
         this.book = book;
         this.user = user;
-        status = OrderStatus.New;
+        status = RequestStatus.Opened;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "book=" + book +
+                ", user=" + user +
+                ", status=" + status +
+                '}';
     }
 
     public Book getBook() {
@@ -28,11 +38,11 @@ public class Request extends BaseEntity {
         this.user = user;
     }
 
-    public OrderStatus getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(OrderStatus status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 }

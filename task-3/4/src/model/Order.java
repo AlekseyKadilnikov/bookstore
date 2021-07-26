@@ -1,15 +1,25 @@
 package model;
 
 public class Order extends BaseEntity {
+    private static long ID_COUNT = 0;
     private Book book;
     private User user;
     private OrderStatus status;
 
     public Order(Book book, User user) {
-        super();
+        super(ID_COUNT++);
         this.book = book;
         this.user = user;
         status = OrderStatus.New;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "book=" + book +
+                ", user=" + user +
+                ", status=" + status +
+                '}';
     }
 
     public Book getBook() {
