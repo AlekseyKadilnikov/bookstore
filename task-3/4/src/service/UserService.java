@@ -4,7 +4,7 @@ import model.User;
 import repository.UserRepository;
 
 public class UserService implements IUserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;

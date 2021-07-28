@@ -5,8 +5,8 @@ import repository.OrderRepository;
 import repository.RequestRepository;
 
 public class OrderService implements IOrderService {
-    private OrderRepository orderRepository;
-    private RequestRepository requestRepository;
+    private final OrderRepository orderRepository;
+    private final RequestRepository requestRepository;
 
     public OrderService(OrderRepository orderRepository, RequestRepository requestRepository) {
         this.orderRepository = orderRepository;
@@ -32,9 +32,9 @@ public class OrderService implements IOrderService {
     public void cancelOrder() {
         orderRepository.getOrder().setStatus(OrderStatus.Canceled);
         if(requestRepository.getRequest() != null)
-        if(requestRepository.getRequest().getBook() == orderRepository.getOrder().getBook()) {
-            requestRepository.getRequest().setStatus(RequestStatus.Closed);
-        }
+            if(requestRepository.getRequest().getBook() == orderRepository.getOrder().getBook()) {
+                requestRepository.getRequest().setStatus(RequestStatus.Closed);
+            }
         System.out.println("Order id = " + orderRepository.getOrder().getId() + " canceled");
     }
 

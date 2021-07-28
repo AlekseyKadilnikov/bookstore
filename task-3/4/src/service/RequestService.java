@@ -6,7 +6,7 @@ import model.User;
 import repository.RequestRepository;
 
 public class RequestService implements IRequestService {
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     public RequestService(RequestRepository requestRepository) {
         this.requestRepository = requestRepository;

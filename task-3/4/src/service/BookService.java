@@ -1,13 +1,12 @@
 package service;
 
-import model.Request;
 import model.RequestStatus;
 import repository.BookRepository;
 import repository.RequestRepository;
 
 public class BookService implements IBookService {
-    private BookRepository bookRepository;
-    private RequestRepository requestRepository;
+    private final BookRepository bookRepository;
+    private final RequestRepository requestRepository;
 
     public BookService(BookRepository bookRepository, RequestRepository requestRepository) {
         this.bookRepository = bookRepository;
