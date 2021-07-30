@@ -1,6 +1,6 @@
 package com.alexeykadilnikov.entity;
 
-import java.util.Comparator;
+import java.util.Date;
 
 public class Book extends BaseEntity {
     private static long ID_COUNT = 0;
@@ -10,6 +10,7 @@ public class Book extends BaseEntity {
     private int publicationYear;
     private int price;
     private boolean available;
+    private Date dateOfReceipt = new Date();
 
     public Book(String name, String author, String publisher, int publicationYear, int price, boolean available) {
         super(ID_COUNT++);
@@ -30,6 +31,14 @@ public class Book extends BaseEntity {
                 ", price=" + price +
                 ", available=" + available +
                 '}';
+    }
+
+    public Date getDateOfReceipt() {
+        return dateOfReceipt;
+    }
+
+    public void setDateOfReceipt(Date dateOfReceipt) {
+        this.dateOfReceipt = dateOfReceipt;
     }
 
     public String getName() {

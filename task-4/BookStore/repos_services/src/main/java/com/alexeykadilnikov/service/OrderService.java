@@ -27,7 +27,7 @@ public class OrderService implements IOrderService {
                 System.out.println("Request id = " + request.getId() + ", date = " + request.getDate() + " created");
             }
         }
-        Order order = new Order(books, user, date);
+        Order order = new Order(books, user);
         orderRepository.save(order);
         System.out.println("Order id = " + order.getId() + " created");
     }

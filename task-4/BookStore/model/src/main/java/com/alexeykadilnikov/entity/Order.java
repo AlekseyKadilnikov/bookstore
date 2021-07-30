@@ -14,7 +14,7 @@ public class Order extends BaseEntity {
     // temporarily
     private static int calendar_count = 0;
 
-    public Order(Book[] books, User user, Date executionDate) {
+    public Order(Book[] books, User user) {
         super(ID_COUNT++);
         this.books = books;
         this.user = user;
@@ -23,6 +23,7 @@ public class Order extends BaseEntity {
 
         // temporarily
         Calendar calendar = Calendar.getInstance();
+        executionDate = new Date();
         calendar.setTime(executionDate);
         calendar.add(Calendar.DAY_OF_WEEK, calendar_count++);
         this.executionDate = calendar.getTime();
