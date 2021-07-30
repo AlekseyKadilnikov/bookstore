@@ -1,6 +1,5 @@
 package com.alexeykadilnikov.entity;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,7 +18,7 @@ public class Order extends BaseEntity {
         super(ID_COUNT++);
         this.books = books;
         this.user = user;
-        status = OrderStatus.New;
+        status = OrderStatus.NEW;
         calculatePrice();
 
         // temporarily

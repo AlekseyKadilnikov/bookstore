@@ -36,50 +36,42 @@ public class BookService implements IBookService {
         return bookRepository.getByIndex(index);
     }
 
-    public Book[] sortByNameAscending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByNameAscending(Book[] books) {
         Arrays.sort(books, BookComparator.NameComparatorAscending);
         return books;
     }
 
-    public Book[] sortByNameDescending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByNameDescending(Book[] books) {
         Arrays.sort(books, BookComparator.NameComparatorDescending);
         return books;
     }
 
-    public Book[] sortByPriceAscending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByPriceAscending(Book[] books) {
         Arrays.sort(books, BookComparator.PriceComparatorAscending);
         return books;
     }
 
-    public Book[] sortByPriceDescending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByPriceDescending(Book[] books) {
         Arrays.sort(books, BookComparator.PriceComparatorDescending);
         return books;
     }
 
-    public Book[] sortByYearAscending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByYearAscending(Book[] books) {
         Arrays.sort(books, BookComparator.DateComparatorAscending);
         return books;
     }
 
-    public Book[] sortByYearDescending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByYearDescending(Book[] books) {
         Arrays.sort(books, BookComparator.DateComparatorDescending);
         return books;
     }
 
-    public Book[] sortByAvailableAscending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByAvailableAscending(Book[] books) {
         Arrays.sort(books, BookComparator.AvailableComparatorAscending);
         return books;
     }
 
-    public Book[] sortByAvailableDescending() {
-        Book[] books = bookRepository.findAll().clone();
+    public Book[] sortByAvailableDescending(Book[] books) {
         Arrays.sort(books, BookComparator.AvailableComparatorDescending);
         return books;
     }

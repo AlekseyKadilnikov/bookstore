@@ -6,15 +6,14 @@ public class Request extends BaseEntity {
     private static long ID_COUNT = 0;
     private Book book;
     private User user;
-    private final Date date;
-    private RequestStatus status;
+    private int amount = 0;
+    private final Date date = new Date();
+    private RequestStatus status = RequestStatus.Opened;
 
     public Request(Book book, User user) {
         super(ID_COUNT++);
         this.book = book;
         this.user = user;
-        status = RequestStatus.Opened;
-        date = new Date();
     }
 
     @Override
@@ -25,6 +24,14 @@ public class Request extends BaseEntity {
                 ", date=" + date +
                 ", status=" + status +
                 '}';
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void addAmount() {
+        amount++;
     }
 
     public Book getBook() {

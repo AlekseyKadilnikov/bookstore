@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.OrderStatus;
 import com.alexeykadilnikov.entity.User;
 
@@ -12,4 +13,5 @@ public interface IOrderService {
     void cancelOrder();
     void setStatus(int index, OrderStatus status);
     void completeOrder(int id);
+    Order[] getAll();
 }

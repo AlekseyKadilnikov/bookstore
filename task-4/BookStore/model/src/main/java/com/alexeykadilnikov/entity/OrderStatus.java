@@ -1,9 +1,9 @@
 package com.alexeykadilnikov.entity;
 
 public enum  OrderStatus {
-    New(0),
-    Completed(1),
-    Canceled(2)
+    NEW(0),
+    COMPLETED(1),
+    CANCELED(2)
     ;
 
     private final int statusCode;
