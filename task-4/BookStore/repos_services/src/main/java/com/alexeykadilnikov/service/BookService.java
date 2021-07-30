@@ -20,8 +20,9 @@ public class BookService implements IBookService {
     @Override
     public void setBookStatus(int index, boolean status) {
         if(!bookRepository.getByIndex(index).isAvailable() && status) {
-            requestRepository.getRequest().setStatus(RequestStatus.Closed);
-            System.out.println("Request id = " + requestRepository.getRequest().getId() + " closed");
+
+            requestRepository.getByIndex(0).setStatus(RequestStatus.Closed);
+            System.out.println("Request id = " + requestRepository.getByIndex(0).getId() + " closed");
         }
         bookRepository.getByIndex(index).setAvailable(status);
     }
@@ -29,6 +30,10 @@ public class BookService implements IBookService {
     @Override
     public String showBook(int index) {
         return bookRepository.getByIndex(index).toString();
+    }
+
+    public Book getByIndex(int index) {
+        return bookRepository.getByIndex(index);
     }
 
     public Book[] sortByNameAscending() {

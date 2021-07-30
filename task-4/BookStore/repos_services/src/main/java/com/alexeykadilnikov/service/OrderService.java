@@ -18,14 +18,15 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void createOrder(Book[] books, User user) {
+    public void createOrder(Book[] books, User user, Date date) {
         for (Book book : books) {
             if(!book.isAvailable()) {
-                requestRepository.save(new Request(book, user));
-                System.out.println("Request id = " + requestRepository.getRequest().getId() + " created");
+                Request request = new Request(book, user);
+                requestRepository.save(request);
+                System.out.println("Request id = " + request.getId() + ", date = " + request.getDate() + " created");
             }
         }
-        Order order = new Order(books, user);
+        Order order = new Order(books, user, date);
         orderRepository.save(order);
         System.out.println("Order id = " + order.getId() + " created");
     }
@@ -46,8 +47,8 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void setStatus(OrderStatus status) {
-//        orderRepository.getOrder().setStatus(status);
+    public void setStatus(int index, OrderStatus status) {
+        orderRepository.getByIndex(index).setStatus(status);
     }
 
     @Override
@@ -79,6 +80,30 @@ public class OrderService implements IOrderService {
     public Order[] sortByExecutionDateDescending() {
         Order[] orders = orderRepository.findAll().clone();
         Arrays.sort(orders, OrderComparator.DateComparatorDescending);
+        return orders;
+    }
+
+    public Order[] sortByPriceAscending() {
+        Order[] orders = orderRepository.findAll().clone();
+        Arrays.sort(orders, OrderComparator.PriceComparatorAscending);
+        return orders;
+    }
+
+    public Order[] sortByPriceDescending() {
+        Order[] orders = orderRepository.findAll().clone();
+        Arrays.sort(orders, OrderComparator.PriceComparatorDescending);
+        return orders;
+    }
+
+    public Order[] sortByStatusAscending() {
+        Order[] orders = orderRepository.findAll().clone();
+        Arrays.sort(orders, OrderComparator.StatusComparatorAscending);
+        return orders;
+    }
+
+    public Order[] sortByStatusDescending() {
+        Order[] orders = orderRepository.findAll().clone();
+        Arrays.sort(orders, OrderComparator.StatusComparatorDescending);
         return orders;
     }
 }

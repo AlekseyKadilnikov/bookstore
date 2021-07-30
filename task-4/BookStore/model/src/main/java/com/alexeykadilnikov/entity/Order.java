@@ -1,6 +1,8 @@
 package com.alexeykadilnikov.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Order extends BaseEntity {
@@ -10,13 +12,21 @@ public class Order extends BaseEntity {
     private int price = 0;
     private OrderStatus status;
     private Date executionDate;
+    // temporarily
+    private static int calendar_count = 0;
 
-    public Order(Book[] books, User user) {
+    public Order(Book[] books, User user, Date executionDate) {
         super(ID_COUNT++);
         this.books = books;
         this.user = user;
         status = OrderStatus.New;
         calculatePrice();
+
+        // temporarily
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(executionDate);
+        calendar.add(Calendar.DAY_OF_WEEK, calendar_count++);
+        this.executionDate = calendar.getTime();
     }
 
     @Override

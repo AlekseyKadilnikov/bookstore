@@ -18,17 +18,19 @@ public class RequestService implements IRequestService {
             System.out.println("Request couldn't be created: book is available");
             return;
         }
-        requestRepository.save(new Request(book, user));
-        System.out.println("Request id = " + requestRepository.getRequest().getId() + " created");
+        Request request = new Request(book, user);
+        requestRepository.save(request);
+        System.out.println("Request id = " + request.getId() + " created");
     }
 
     @Override
     public String showRequest() {
-        return requestRepository.getRequest().toString();
+        //return requestRepository.getRequest().toString();
+        return null;
     }
 
     @Override
     public void cancelRequest() {
-        System.out.println("Request id = " + requestRepository.getRequest().getId() + " closed");
+        // System.out.println("Request id = " + requestRepository.getRequest().getId() + " closed");
     }
 }

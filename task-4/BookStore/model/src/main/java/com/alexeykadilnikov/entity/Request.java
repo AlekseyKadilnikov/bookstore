@@ -1,9 +1,12 @@
 package com.alexeykadilnikov.entity;
 
+import java.util.Date;
+
 public class Request extends BaseEntity {
     private static long ID_COUNT = 0;
     private Book book;
     private User user;
+    private final Date date;
     private RequestStatus status;
 
     public Request(Book book, User user) {
@@ -11,6 +14,7 @@ public class Request extends BaseEntity {
         this.book = book;
         this.user = user;
         status = RequestStatus.Opened;
+        date = new Date();
     }
 
     @Override
@@ -18,6 +22,7 @@ public class Request extends BaseEntity {
         return "Request{" +
                 "book=" + book +
                 ", user=" + user +
+                ", date=" + date +
                 ", status=" + status +
                 '}';
     }
@@ -36,6 +41,10 @@ public class Request extends BaseEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getDate() {
+        return date;
     }
 
     public RequestStatus getStatus() {
