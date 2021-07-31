@@ -1,8 +1,11 @@
 package com.alexeykadilnikov.entity;
 
+import com.alexeykadilnikov.OrderStatus;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Order extends BaseEntity {
     private static long ID_COUNT = 0;
@@ -11,7 +14,7 @@ public class Order extends BaseEntity {
     private int price = 0;
     private OrderStatus status;
     private Date executionDate;
-    // temporarily
+    // временно
     private static int calendar_count = 0;
 
     public Order(Book[] books, User user) {
@@ -21,10 +24,8 @@ public class Order extends BaseEntity {
         status = OrderStatus.NEW;
         calculatePrice();
 
-        // temporarily
-        Calendar calendar = Calendar.getInstance();
-        executionDate = new Date();
-        calendar.setTime(executionDate);
+        // чтобы показать сортировку по дате наглядно добавляю calendar_count дней к настоящей дате
+        Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DAY_OF_WEEK, calendar_count++);
         this.executionDate = calendar.getTime();
     }

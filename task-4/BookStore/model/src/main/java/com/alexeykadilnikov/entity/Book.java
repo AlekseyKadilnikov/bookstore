@@ -11,6 +11,7 @@ public class Book extends BaseEntity {
     private int price;
     private boolean available;
     private Date dateOfReceipt = new Date();
+    private String description = "";
 
     public Book(String name, String author, String publisher, int publicationYear, int price, boolean available) {
         super(ID_COUNT++);
@@ -31,6 +32,14 @@ public class Book extends BaseEntity {
                 ", price=" + price +
                 ", available=" + available +
                 '}';
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getDateOfReceipt() {

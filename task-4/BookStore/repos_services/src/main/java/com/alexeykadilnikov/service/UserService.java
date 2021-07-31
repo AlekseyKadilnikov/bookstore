@@ -15,9 +15,8 @@ public class UserService implements IUserService {
         userRepository.save(new User(username));
     }
 
-    @Override
-    public User getUser() {
-        return userRepository.getUser();
+    public User getByIndex(int index) {
+        return userRepository.getByIndex(index);
     }
 
 

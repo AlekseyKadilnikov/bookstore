@@ -1,9 +1,8 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.comparator.BookComparator;
+import com.alexeykadilnikov.BookComparator;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
-import com.alexeykadilnikov.entity.RequestStatus;
+import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.RequestRepository;
 
@@ -24,7 +23,7 @@ public class BookService implements IBookService {
     public void setBookStatus(int index, boolean status) {
         if(!bookRepository.getByIndex(index).isAvailable() && status) {
 
-            requestRepository.getByIndex(0).setStatus(RequestStatus.Closed);
+            requestRepository.getByIndex(0).setStatus(RequestStatus.CLOSED);
             System.out.println("Request id = " + requestRepository.getByIndex(0).getId() + " closed");
         }
         bookRepository.getByIndex(index).setAvailable(status);
@@ -38,6 +37,10 @@ public class BookService implements IBookService {
     @Override
     public Book[] getAll() {
         return bookRepository.findAll();
+    }
+
+    public String getBookDescription(Book book) {
+        return book.getDescription();
     }
 
     public Book getByIndex(int index) {

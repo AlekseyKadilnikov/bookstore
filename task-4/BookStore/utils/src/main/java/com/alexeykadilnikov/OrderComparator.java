@@ -1,4 +1,4 @@
-package com.alexeykadilnikov.comparator;
+package com.alexeykadilnikov;
 
 import com.alexeykadilnikov.entity.Order;
 

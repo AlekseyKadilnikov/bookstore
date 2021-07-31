@@ -1,14 +1,16 @@
 package com.alexeykadilnikov.entity;
 
+import com.alexeykadilnikov.RequestStatus;
+
 import java.util.Date;
 
 public class Request extends BaseEntity {
     private static long ID_COUNT = 0;
     private Book book;
     private User user;
-    private int amount = 0;
+    private int amount = 1;
     private final Date date = new Date();
-    private RequestStatus status = RequestStatus.Opened;
+    private RequestStatus status = RequestStatus.OPENED;
 
     public Request(Book book, User user) {
         super(ID_COUNT++);

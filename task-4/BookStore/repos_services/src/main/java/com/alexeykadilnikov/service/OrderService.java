@@ -1,6 +1,8 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.comparator.OrderComparator;
+import com.alexeykadilnikov.OrderComparator;
+import com.alexeykadilnikov.OrderStatus;
+import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.OrderRepository;
 import com.alexeykadilnikov.repository.RequestRepository;
@@ -8,6 +10,7 @@ import com.alexeykadilnikov.repository.RequestRepository;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
@@ -19,12 +22,22 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void createOrder(Book[] books, User user, Date date) {
+    public void createOrder(Book[] books, User user) {
         for (Book book : books) {
+            boolean sameRequest = false;
             if(!book.isAvailable()) {
-                Request request = new Request(book, user);
-                requestRepository.save(request);
-                System.out.println("Request id = " + request.getId() + ", date = " + request.getDate() + " created");
+                for(Request request : requestRepository.findAll()) {
+                    if(request.getBook() == book && request.getUser() == user) {
+                        request.addAmount();
+                        sameRequest = true;
+                        System.out.println("Request id = " + request.getId() + ", amount added");
+                    }
+                }
+                if(!sameRequest) {
+                    Request request = new Request(book, user);
+                    requestRepository.save(request);
+                    System.out.println("Request id = " + request.getId() + ", date = " + request.getDate() + " created");
+                }
             }
         }
         Order order = new Order(books, user);
@@ -33,8 +46,8 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public String showOrder() {
-        return null;
+    public String showOrder(int index) {
+        return orderRepository.getByIndex(index).toString();
     }
 
     @Override
@@ -57,7 +70,7 @@ public class OrderService implements IOrderService {
         Request[] requests = requestRepository.findAll();
         Order order = orderRepository.getByIndex(id);
         for(Request request : requests) {
-            if(request.getStatus() == RequestStatus.Closed)
+            if(request.getStatus() == RequestStatus.CLOSED)
                 continue;
             for(Book book : order.getBooks()) {
                 if(request.getBook() == book && request.getUser() == order.getUser()) {
@@ -90,6 +103,30 @@ public class OrderService implements IOrderService {
             }
         }
         return orders;
+    }
+
+    public int getAmountOfCompletedOrdersForPeriod(Date dateAfter, Date dateBefore) {
+        int count = 0;
+        for(Order order : orderRepository.findAll()) {
+            if(order.getStatus() == OrderStatus.COMPLETED &&
+                    order.getExecutionDate().after(dateAfter) &&
+                    order.getExecutionDate().before(dateBefore)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getAmountOfMoneyForPeriod(Date dateAfter, Date dateBefore) {
+        int money = 0;
+        for(Order order : orderRepository.findAll()) {
+            if(order.getStatus() == OrderStatus.COMPLETED &&
+                    order.getExecutionDate().after(dateAfter) &&
+                    order.getExecutionDate().before(dateBefore)) {
+                money += order.getPrice();
+            }
+        }
+        return money;
     }
 
     public Order[] sortByExecutionDateAscending(Order[] orders) {

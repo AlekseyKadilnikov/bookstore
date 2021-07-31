@@ -1,4 +1,4 @@
-package com.alexeykadilnikov.entity;
+package com.alexeykadilnikov;
 
 public enum  OrderStatus {
     NEW(0),
