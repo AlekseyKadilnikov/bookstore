@@ -15,6 +15,8 @@ import com.alexeykadilnikov.service.UserService;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static com.alexeykadilnikov.utils.Utils.*;
+
 public class Test {
     public static void main(String[] args) {
         RequestRepository requestRepository = new RequestRepository();
@@ -151,36 +153,5 @@ public class Test {
 
         System.out.println("Посмотреть детали заказа:");
         System.out.println(orderService.showOrder(1));
-    }
-
-    private static void showBookArray(Book[] books) {
-        for (Book book : books) {
-            System.out.println("name = " + book.getName() +
-                    ", price = " + book.getPrice() +
-                    ", date = " + book.getPublicationYear() +
-                    ", available = " + book.isAvailable() +
-                    ", dateOfReceipt = " + book.getDateOfReceipt());
-        }
-        System.out.println();
-    }
-
-    private static void showOrderArray(Order[] orders) {
-        for (Order order : orders) {
-            System.out.println("id = " + order.getId() +
-                    ", price = " + order.getPrice() +
-                    ", date = " + order.getExecutionDate().getTime() +
-                    ", status = " + order.getStatus());
-        }
-        System.out.println();
-    }
-
-    private static void showRequestArray(Request[] requests) {
-        for (Request request : requests) {
-            System.out.println("id = " + request.getId() +
-                    ", book = " + request.getBook() +
-                    ", user = " + request.getUser() +
-                    ", amount = " + request.getAmount());
-        }
-        System.out.println();
     }
 }
