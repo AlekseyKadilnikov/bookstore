@@ -18,6 +18,4 @@ public class UserService implements IUserService {
     public User getByIndex(int index) {
         return userRepository.getByIndex(index);
     }
-
-
 }
