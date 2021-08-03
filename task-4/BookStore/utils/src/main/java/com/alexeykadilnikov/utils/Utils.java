@@ -4,13 +4,15 @@ import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 
+import java.util.List;
+
 public class Utils {
     public static void showBookArray(Book[] books) {
         for (Book book : books) {
             System.out.println("name = " + book.getName() +
                     ", price = " + book.getPrice() +
                     ", date = " + book.getPublicationYear() +
-                    ", available = " + book.isAvailable() +
+                    ", count = " + book.getCount() +
                     ", dateOfReceipt = " + book.getDateOfReceipt());
         }
         System.out.println();
@@ -20,18 +22,16 @@ public class Utils {
         for (Order order : orders) {
             System.out.println("id = " + order.getId() +
                     ", price = " + order.getPrice() +
-                    ", date = " + order.getExecutionDate() +
+                    ", executionDate = " + order.getExecutionDate() +
                     ", status = " + order.getStatus());
         }
         System.out.println();
     }
 
-    public static void showRequestArray(Request[] requests) {
+    public static void showRequestArray(List<Request> requests) {
         for (Request request : requests) {
-            System.out.println("id = " + request.getId() +
-                    ", book = " + request.getBook() +
-                    ", user = " + request.getUser() +
-                    ", amount = " + request.getAmount());
+            System.out.println("name = " + request.getName() +
+                    ", count = " + request.getCount());
         }
         System.out.println();
     }

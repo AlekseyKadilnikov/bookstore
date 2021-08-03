@@ -2,77 +2,76 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.RequestComparator;
+import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.repository.RequestRepository;
+import com.alexeykadilnikov.repository.BookRepository;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class RequestService implements IRequestService {
-    private final RequestRepository requestRepository;
+    private final BookRepository bookRepository;
 
-    public RequestService(RequestRepository requestRepository) {
-        this.requestRepository = requestRepository;
+    public RequestService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
-    @Override
-    public void createRequest(Book book, User user) {
-        if(book.isAvailable()) {
-            System.out.println("Request couldn't be created: book is available");
-            return;
-        }
-        for(Request request : requestRepository.findAll()) {
-            if(request.getBook() == book && request.getUser() == user) {
-                request.addAmount();
-                System.out.println("Request id = " + request.getId() + ", amount added");
-                return;
+    public void createRequest(String name) {
+        String[] words = name.split(" ");
+        Book[] books = bookRepository.findAll();
+        Set<Book> booksByAuthor = new HashSet<>();
+        Set<Book> booksByName = new HashSet<>();
+        for(String word : words) {
+            for(Book book : books) {
+                if(book.getName().toLowerCase().contains(word.toLowerCase())) {
+                    booksByName.add(book);
+                }
+                else if(book.getAuthor().toLowerCase().contains(word.toLowerCase())) {
+                    booksByAuthor.add(book);
+                }
             }
         }
-        Request request = new Request(book, user);
-        requestRepository.save(request);
-        System.out.println("Request id = " + request.getId() + " created");
+
+        if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
+            for(Book book : booksByName) {
+                book.addRequest(new Request(name, RequestStatus.COMMON));
+            }
+        }
+        else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
+            for(Book book : booksByAuthor) {
+                book.addRequest(new Request(name, RequestStatus.COMMON));
+            }
+        }
+        else {
+            booksByAuthor.retainAll(booksByName);
+            for(Book book : booksByAuthor) {
+                book.addRequest(new Request(name, RequestStatus.COMMON));
+            }
+        }
     }
 
-    @Override
-    public String showRequest() {
-        //return requestRepository.getRequest().toString();
-        return null;
-    }
-
-    @Override
-    public void cancelRequest() {
-        // System.out.println("Request id = " + requestRepository.getRequest().getId() + " closed");
-    }
-
-    @Override
-    public Request[] getAll() {
-        return requestRepository.findAll();
-    }
-
-    public Request[] sortByAmountAscending(Book book, Request[] requests) {
-        requests = getRequestsForOneBook(book, requests);
-        Arrays.sort(requests, RequestComparator.AmountComparatorAscending);
+    public List<Request> sortByAmountAscending(Book book) {
+        List<Request> requests = book.getCommonRequests();
+        requests.sort(RequestComparator.AmountComparatorAscending);
         return requests;
     }
 
-    public Request[] sortByAmountDescending(Book book, Request[] requests) {
-        requests = getRequestsForOneBook(book, requests);
-        Arrays.sort(requests, RequestComparator.AmountComparatorDescending);
+    public List<Request> sortByAmountDescending(Book book) {
+        List<Request> requests = book.getCommonRequests();
+        requests.sort(RequestComparator.AmountComparatorDescending);
         return requests;
     }
 
-    private Request[] getRequestsForOneBook(Book book, Request[] requests) {
-        Request[] requestsWithOneBook = new Request[0];
-        for (Request request : requests) {
-            if(request.getBook() == book) {
-                Request[] newRequests = new Request[requestsWithOneBook.length + 1];
-                System.arraycopy(requestsWithOneBook, 0, newRequests, 0, requestsWithOneBook.length);
-                newRequests[requestsWithOneBook.length] = request;
-                requestsWithOneBook = newRequests;
-            }
-        }
-        requests = requestsWithOneBook;
+    public List<Request> sortByNameAscending(Book book) {
+        List<Request> requests = book.getCommonRequests();
+        requests.sort(RequestComparator.NameComparatorAscending);
+        return requests;
+    }
+
+    public List<Request> sortByNameDescending(Book book) {
+        List<Request> requests = book.getCommonRequests();
+        requests.sort(RequestComparator.NameComparatorDescending);
         return requests;
     }
 }

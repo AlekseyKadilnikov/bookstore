@@ -2,7 +2,7 @@ package com.alexeykadilnikov;
 
 public enum  OrderStatus {
     NEW(0),
-    COMPLETED(1),
+    SUCCESS(1),
     CANCELED(2)
     ;
 

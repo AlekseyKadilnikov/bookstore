@@ -5,8 +5,8 @@ import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
 
 public interface IRequestService {
-    void createRequest(Book book, User user);
-    String showRequest();
-    void cancelRequest();
-    Request[] getAll();
+//    void createRequest(Book book, User user);
+//    String showRequest();
+//    void cancelRequest();
+//    Request[] getAll();
 }

@@ -1,13 +1,13 @@
 package com.alexeykadilnikov.entity;
 
 public class User extends BaseEntity {
-    private static long ID_COUNT = 0;
+    private static long idCount = 0;
     private String username;
     private Order order;
     private Request request;
 
     public User(String username) {
-        super(ID_COUNT++);
+        super(idCount++);
         this.username = username;
     }
 

@@ -3,30 +3,37 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.BookComparator;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.BookRepository;
-import com.alexeykadilnikov.repository.RequestRepository;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class BookService implements IBookService {
     private final BookRepository bookRepository;
-    private final RequestRepository requestRepository;
 
-    public BookService(BookRepository bookRepository, RequestRepository requestRepository) {
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.requestRepository = requestRepository;
     }
 
     @Override
-    public void setBookStatus(int index, boolean status) {
-        if(!bookRepository.getByIndex(index).isAvailable() && status) {
-
-            requestRepository.getByIndex(0).setStatus(RequestStatus.CLOSED);
-            System.out.println("Request id = " + requestRepository.getByIndex(0).getId() + " closed");
+    public void addBook(int index, int count) {
+        Book book = bookRepository.getByIndex(index);
+        book.setCount(book.getCount() + count);
+        List<Request> requests = book.getOrderRequests();
+        for(Request request : requests) {
+            if(request.getStatus() == RequestStatus.NEW) {;
+                book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS));
+                if(request.getCount() > 0) {
+                    request.setCount(request.getCount() - 1);
+                }
+                else {
+                    requests.remove(request);
+                }
+            }
         }
-        bookRepository.getByIndex(index).setAvailable(status);
     }
 
     @Override

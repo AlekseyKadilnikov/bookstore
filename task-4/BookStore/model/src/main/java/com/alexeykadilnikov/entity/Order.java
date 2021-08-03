@@ -8,26 +8,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class Order extends BaseEntity {
-    private static long ID_COUNT = 0;
+    private static long idCount = 0;
     private Book[] books;
     private User user;
     private int price = 0;
     private OrderStatus status;
     private Date executionDate;
-    // временно
-    private static int calendar_count = 0;
+    private final Date initDate = new Date();
 
     public Order(Book[] books, User user) {
-        super(ID_COUNT++);
+        super(idCount++);
         this.books = books;
         this.user = user;
         status = OrderStatus.NEW;
         calculatePrice();
-
-        // чтобы показать сортировку по дате наглядно добавляю calendar_count дней к настоящей дате
-        Calendar calendar = new GregorianCalendar();
-        calendar.add(Calendar.DAY_OF_WEEK, calendar_count++);
-        this.executionDate = calendar.getTime();
     }
 
     @Override
@@ -37,6 +31,10 @@ public class Order extends BaseEntity {
                 ", user=" + user +
                 ", status=" + status +
                 '}';
+    }
+
+    public Date getInitDate() {
+        return initDate;
     }
 
     public Book[] getBooks() {

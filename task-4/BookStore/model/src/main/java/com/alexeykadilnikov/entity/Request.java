@@ -2,58 +2,28 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
 
-import java.util.Date;
-
 public class Request extends BaseEntity {
-    private static long ID_COUNT = 0;
-    private Book book;
-    private User user;
-    private int amount = 1;
-    private final Date date = new Date();
-    private RequestStatus status = RequestStatus.OPENED;
+    private static long idCount = 0;
+    private final String name;
+    private int count = 1;
+    private RequestStatus status;
 
-    public Request(Book book, User user) {
-        super(ID_COUNT++);
-        this.book = book;
-        this.user = user;
+    public Request(String name, RequestStatus status) {
+        super(idCount++);
+        this.name = name;
+        this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "Request{" +
-                "book=" + book +
-                ", user=" + user +
-                ", date=" + date +
-                ", status=" + status +
-                '}';
+    public String getName() {
+        return name;
     }
 
-    public int getAmount() {
-        return amount;
+    public int getCount() {
+        return count;
     }
 
-    public void addAmount() {
-        amount++;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getDate() {
-        return date;
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public RequestStatus getStatus() {

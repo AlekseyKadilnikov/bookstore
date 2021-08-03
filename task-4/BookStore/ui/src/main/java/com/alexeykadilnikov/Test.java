@@ -5,7 +5,6 @@ import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
-import com.alexeykadilnikov.repository.RequestRepository;
 import com.alexeykadilnikov.repository.UserRepository;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
@@ -14,22 +13,22 @@ import com.alexeykadilnikov.service.UserService;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import static com.alexeykadilnikov.utils.Utils.*;
 
 public class Test {
     public static void main(String[] args) {
-        RequestRepository requestRepository = new RequestRepository();
-        RequestService requestService = new RequestService(requestRepository);
         BookRepository bookRepository = new BookRepository();
-        BookService bookService = new BookService(bookRepository, requestRepository);
+        RequestService requestService = new RequestService(bookRepository);
+        BookService bookService = new BookService(bookRepository);
 
         UserRepository userRepository = new UserRepository();
         UserService userService = new UserService(userRepository);
         userService.addUser("Alex");
 
         OrderRepository orderRepository = new OrderRepository();
-        OrderService orderService = new OrderService(orderRepository, requestRepository);
+        OrderService orderService = new OrderService(orderRepository, bookRepository);
 
         System.out.println("------------------------------СОРТИРОВКА КНИГ-----------------------------------\n");
 
@@ -76,16 +75,12 @@ public class Test {
         orderService.createOrder(new Book[] {book1, book1}, userService.getByIndex(0));
         System.out.println();
 
-        System.out.println("Сортировка заказов по дате исполнения по убыванию:\n");
-        Order[] orders = orderService.sortByExecutionDateDescending(orderService.getAll().clone());
-        showOrderArray(orders);
-
         System.out.println("Сортировка заказов по цене по убыванию:\n");
-        orders = orderService.sortByPriceDescending(orderService.getAll().clone());
+        Order[] orders = orderService.sortByPriceDescending(orderService.getAll().clone());
         showOrderArray(orders);
 
-        orderService.setStatus(0, OrderStatus.COMPLETED);
-        orderService.setStatus(1, OrderStatus.CANCELED);
+        orderService.completeOrder(0);
+        orderService.cancelOrder(1);
 
         System.out.println("Сортировка заказов по статусу по возрастанию:\n");
         orders = orderService.sortByStatusAscending(orderService.getAll().clone());
@@ -100,17 +95,26 @@ public class Test {
 
         System.out.println();
 
-        orderService.setStatus(2, OrderStatus.COMPLETED);
-        orderService.setStatus(3, OrderStatus.COMPLETED);
-        orderService.setStatus(4, OrderStatus.COMPLETED);
-        orderService.setStatus(5, OrderStatus.COMPLETED);
+        orderService.completeOrder(2);
+        orderService.completeOrder(3);
+        orderService.completeOrder(4);
+        orderService.completeOrder(5);
+
+        System.out.println();
+
+        System.out.println("Сортировка заказов по дате исполнения по убыванию:\n");
+
+        orders = orderService.sortByExecutionDateDescending(orderService.getAll().clone());
+        showOrderArray(orders);
+
+        System.out.println();
 
         System.out.println("Всего заказов:\n");
         showOrderArray(orderService.getAll());
         Calendar calendarAfter = new GregorianCalendar(2021, Calendar.AUGUST , 1);
         Calendar calendarBefore = new GregorianCalendar(2021, Calendar.AUGUST , 5);
 
-        System.out.println("Выполненных заказов от 1.08.2021 до 04.08.2021:\n");
+        System.out.println("Выполненных заказов от 1.08.2021 до 05.08.2021:\n");
         orders = orderService.getOrderListForPeriod(calendarAfter.getTime(), calendarBefore.getTime());
         showOrderArray(orders);
         System.out.println("Сортировка по дате по убыванию:\n");
@@ -121,29 +125,12 @@ public class Test {
         showOrderArray(orders);
 
         int sum = orderService.getAmountOfMoneyForPeriod(calendarAfter.getTime(), calendarBefore.getTime());
-        System.out.println("Сумма заработанных средств от 1.08.2021 до 04.08.2021 = " + sum + " руб.");
+        System.out.println("Сумма заработанных средств от 1.08.2021 до 05.08.2021 = " + sum + " руб.");
 
         int count = orderService.getAmountOfCompletedOrdersForPeriod(calendarAfter.getTime(), calendarBefore.getTime());
         System.out.println("Выполненных заказов от 1.08.2021 до 04.08.2021 = " + count + " шт.");
 
         System.out.println();
-
-        System.out.println("---------------------------СОРТИРОВКА ЗАПРОСОВ------------------------------\n");
-        book1.setAvailable(false);
-        userService.addUser("Bob");
-        userService.addUser("Arnold");
-        requestService.createRequest(book1, userService.getByIndex(0));
-        requestService.createRequest(book1, userService.getByIndex(0));
-        requestService.createRequest(book1, userService.getByIndex(0));
-        requestService.createRequest(book1, userService.getByIndex(1));
-        requestService.createRequest(book1, userService.getByIndex(2));
-        requestService.createRequest(book1, userService.getByIndex(2));
-
-        System.out.println();
-
-        System.out.println("Сортировка запросов на книгу по количеству запросов по убыванию:\n");
-        Request[] requests = requestService.sortByAmountDescending(book1, requestService.getAll().clone());
-        showRequestArray(requests);
 
         book1.setDescription("Описание book1");
         System.out.println("Посмотреть описание книги:");
@@ -153,5 +140,27 @@ public class Test {
 
         System.out.println("Посмотреть детали заказа:");
         System.out.println(orderService.showOrder(1));
+
+        System.out.println();
+
+        System.out.println("---------------------------СОРТИРОВКА ЗАПРОСОВ------------------------------\n");
+
+        requestService.createRequest("читать Бесы достоевский");
+        requestService.createRequest("читать Бесы достоевский");
+        requestService.createRequest("Бесы Федор");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("федор достоевский");
+
+        System.out.println("Сортировка запросов на книгу по количеству запросов:\n");
+
+        List<Request> requests = requestService.sortByAmountDescending(book2);
+        showRequestArray(requests);
+
+        System.out.println("Сортировка запросов на книгу по алфавиту:\n");
+
+        requests = requestService.sortByNameAscending(book2);
+        showRequestArray(requests);
     }
 }

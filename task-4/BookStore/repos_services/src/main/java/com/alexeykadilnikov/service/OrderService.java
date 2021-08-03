@@ -4,40 +4,31 @@ import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.*;
+import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
-import com.alexeykadilnikov.repository.RequestRepository;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
-    private final RequestRepository requestRepository;
+    private final BookRepository bookRepository;
 
-    public OrderService(OrderRepository orderRepository, RequestRepository requestRepository) {
+    public OrderService(OrderRepository orderRepository, BookRepository bookRepository) {
         this.orderRepository = orderRepository;
-        this.requestRepository = requestRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
     public void createOrder(Book[] books, User user) {
         for (Book book : books) {
-            boolean sameRequest = false;
-            if(!book.isAvailable()) {
-                for(Request request : requestRepository.findAll()) {
-                    if(request.getBook() == book && request.getUser() == user) {
-                        request.addAmount();
-                        sameRequest = true;
-                        System.out.println("Request id = " + request.getId() + ", amount added");
-                    }
-                }
-                if(!sameRequest) {
-                    Request request = new Request(book, user);
-                    requestRepository.save(request);
-                    System.out.println("Request id = " + request.getId() + ", date = " + request.getDate() + " created");
-                }
+            if(book.getCount() == 0) {
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW));
+                System.out.println("Common request for " + book.getAuthor() + " - " + book.getName() + " created");
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.COMMON));
+                System.out.println("Order request for " + book.getAuthor() + " - " + book.getName() + " created");
+            }
+            else {
+                book.setCount(book.getCount() - 1);
             }
         }
         Order order = new Order(books, user);
@@ -51,13 +42,25 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void cancelOrder() {
-//        orderRepository.getOrder().setStatus(OrderStatus.Canceled);
-//        if(requestRepository.getRequest() != null)
-//            if(requestRepository.getRequest().getBook() == orderRepository.getOrder().getBook()) {
-//                requestRepository.getRequest().setStatus(RequestStatus.Closed);
-//            }
-//        System.out.println("Order id = " + orderRepository.getOrder().getId() + " canceled");
+    public void cancelOrder(int id) {
+        Order order = orderRepository.getByIndex(id);
+        for(Book book : order.getBooks()) {
+            book.setCount(book.getCount() + 1);
+            List<Request> orderRequests = book.getOrderRequests();
+            for(Request request : orderRequests) {
+                if(request.getStatus() == RequestStatus.NEW) {
+                    book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS));
+                    if(request.getCount() > 0) {
+                        request.setCount(request.getCount() - 1);
+                    }
+                    else {
+                        orderRequests.remove(request);
+                    }
+                }
+            }
+        }
+        order.setStatus(OrderStatus.CANCELED);
+        System.out.println("Order id = " + order.getId() + " canceled\n");
     }
 
     @Override
@@ -67,21 +70,22 @@ public class OrderService implements IOrderService {
 
     @Override
     public void completeOrder(int id) {
-        Request[] requests = requestRepository.findAll();
         Order order = orderRepository.getByIndex(id);
-        for(Request request : requests) {
-            if(request.getStatus() == RequestStatus.CLOSED)
-                continue;
-            for(Book book : order.getBooks()) {
-                if(request.getBook() == book && request.getUser() == order.getUser()) {
-                    System.out.println("Order id = " + order.getId() + " couldn't be completed: request id = " +
-                            request.getId() + " not closed");
+        for(Book book : order.getBooks()) {
+            for(Request request : book.getOrderRequests()) {
+                if(request.getStatus() == RequestStatus.NEW) {
+                    System.out.println("Order id = " + order.getId() + " couldn't be completed: request for " +
+                            book.getAuthor() + " - " + book.getName() + " not closed");
                     return;
                 }
             }
         }
-        order.setStatus(OrderStatus.COMPLETED);
-        order.setExecutionDate(new Date());
+        order.setStatus(OrderStatus.SUCCESS);
+        Calendar calendar = new GregorianCalendar();
+        Random random = new Random();
+        calendar.add(Calendar.DAY_OF_WEEK, random.nextInt(4));
+        Date date = calendar.getTime();
+        order.setExecutionDate(date);
         System.out.println("Order id = " + order.getId() + " completed");
     }
 
@@ -93,7 +97,7 @@ public class OrderService implements IOrderService {
     public Order[] getOrderListForPeriod(Date dateAfter, Date dateBefore) {
         Order[] orders = new Order[0];
         for(Order order : orderRepository.findAll()){
-                if(order.getStatus() == OrderStatus.COMPLETED &&
+                if(order.getStatus() == OrderStatus.SUCCESS &&
                         order.getExecutionDate().after(dateAfter) &&
                         order.getExecutionDate().before(dateBefore)) {
                     Order[] newOrder = new Order[orders.length + 1];
@@ -108,7 +112,7 @@ public class OrderService implements IOrderService {
     public int getAmountOfCompletedOrdersForPeriod(Date dateAfter, Date dateBefore) {
         int count = 0;
         for(Order order : orderRepository.findAll()) {
-            if(order.getStatus() == OrderStatus.COMPLETED &&
+            if(order.getStatus() == OrderStatus.SUCCESS &&
                     order.getExecutionDate().after(dateAfter) &&
                     order.getExecutionDate().before(dateBefore)) {
                 count++;
@@ -120,7 +124,7 @@ public class OrderService implements IOrderService {
     public int getAmountOfMoneyForPeriod(Date dateAfter, Date dateBefore) {
         int money = 0;
         for(Order order : orderRepository.findAll()) {
-            if(order.getStatus() == OrderStatus.COMPLETED &&
+            if(order.getStatus() == OrderStatus.SUCCESS &&
                     order.getExecutionDate().after(dateAfter) &&
                     order.getExecutionDate().before(dateBefore)) {
                 money += order.getPrice();
@@ -130,13 +134,33 @@ public class OrderService implements IOrderService {
     }
 
     public Order[] sortByExecutionDateAscending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.DateComparatorAscending);
-        return orders;
+        List<Order> successOrders = new ArrayList<>();
+        for(Order order : orders) {
+            if(order.getStatus() == OrderStatus.SUCCESS) {
+                successOrders.add(order);
+            }
+        }
+        successOrders.sort(OrderComparator.DateComparatorAscending);
+        Order[] successOrdersArr = new Order[successOrders.size()];
+        for(int i = 0; i < successOrders.size(); i++) {
+            successOrdersArr[i] = successOrders.get(i);
+        }
+        return successOrdersArr;
     }
 
     public Order[] sortByExecutionDateDescending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.DateComparatorDescending);
-        return orders;
+        List<Order> successOrders = new ArrayList<>();
+        for(Order order : orders) {
+            if(order.getStatus() == OrderStatus.SUCCESS) {
+                successOrders.add(order);
+            }
+        }
+        successOrders.sort(OrderComparator.DateComparatorDescending);
+        Order[] successOrdersArr = new Order[successOrders.size()];
+        for(int i = 0; i < successOrders.size(); i++) {
+            successOrdersArr[i] = successOrders.get(i);
+        }
+        return successOrdersArr;
     }
 
     public Order[] sortByPriceAscending(Order[] orders) {
