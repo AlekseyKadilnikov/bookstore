@@ -1,12 +1,13 @@
 package com.alexeykadilnikov.view.menu;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Menu {
+public class ConsoleMenu {
     private String name;
-    private List<MenuItem> menuItems;
+    private List<MenuItem> menuItems = new ArrayList<>();
 
-    public Menu(String name) {
+    public ConsoleMenu(String name) {
         this.name = name;
     }
 

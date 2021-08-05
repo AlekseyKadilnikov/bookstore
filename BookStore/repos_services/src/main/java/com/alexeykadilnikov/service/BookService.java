@@ -6,10 +6,7 @@ import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.BookRepository;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 public class BookService implements IBookService {
     private static BookService instance;
@@ -78,53 +75,8 @@ public class BookService implements IBookService {
         return books;
     }
 
-    public Book[] sortByNameAscending(Book[] books) {
-        Arrays.sort(books, BookComparator.NameComparatorAscending);
-        return books;
-    }
-
-    public Book[] sortByNameDescending(Book[] books) {
-        Arrays.sort(books, BookComparator.NameComparatorDescending);
-        return books;
-    }
-
-    public Book[] sortByPriceAscending(Book[] books) {
-        Arrays.sort(books, BookComparator.PriceComparatorAscending);
-        return books;
-    }
-
-    public Book[] sortByPriceDescending(Book[] books) {
-        Arrays.sort(books, BookComparator.PriceComparatorDescending);
-        return books;
-    }
-
-    public Book[] sortByYearAscending(Book[] books) {
-        Arrays.sort(books, BookComparator.DateComparatorAscending);
-        return books;
-    }
-
-    public Book[] sortByYearDescending(Book[] books) {
-        Arrays.sort(books, BookComparator.DateComparatorDescending);
-        return books;
-    }
-
-    public Book[] sortByAvailableAscending(Book[] books) {
-        Arrays.sort(books, BookComparator.AvailableComparatorAscending);
-        return books;
-    }
-
-    public Book[] sortByAvailableDescending(Book[] books) {
-        Arrays.sort(books, BookComparator.AvailableComparatorDescending);
-        return books;
-    }
-
-    public Book[] sortByDateOfReceiptAscending(Book[] books) {
-        Arrays.sort(books, BookComparator.ReceiptComparatorAscending);
-        return books;
-    }
-
-    public Book[] sortByDateOfReceiptDescending(Book[] books) {
-        Arrays.sort(books, BookComparator.ReceiptComparatorDescending);
+    public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
+        books.sort(comparator);
         return books;
     }
 }

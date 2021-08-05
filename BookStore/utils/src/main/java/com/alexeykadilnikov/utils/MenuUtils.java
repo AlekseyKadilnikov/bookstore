@@ -1,18 +1,18 @@
 package com.alexeykadilnikov.utils;
 
-import com.alexeykadilnikov.view.menu.Menu;
+import com.alexeykadilnikov.view.menu.ConsoleMenu;
 
 public class MenuUtils {
-    public static Menu mainMenu = new Menu("MAIN MENU");
-    public static Menu customerMenu = new Menu("CUSTOMER MENU");
-    public static Menu adminMenu = new Menu("ADMIN MENU");
-    public static Menu customerOrderMenu = new Menu("CUSTOMER ORDER MENU");
-    public static Menu adminOrderMenu = new Menu("ADMIN ORDER MENU");
-    public static Menu baseCatalogMenu = new Menu("BASE CATALOG MENU");
-    public static Menu customerCatalogMenu = new Menu("CUSTOMER CATALOG MENU");
-    public static Menu adminCatalogMenu = new Menu("ADMIN CATALOG MENU");
-    public static Menu editBook = new Menu("EDIT BOOK");
-    public static Menu addBook = new Menu("ADD BOOK");
+    public static ConsoleMenu rootMenu = new ConsoleMenu("ROOT MENU");
+    public static ConsoleMenu customerMenu = new ConsoleMenu("CUSTOMER MENU");
+    public static ConsoleMenu adminMenu = new ConsoleMenu("ADMIN MENU");
+    public static ConsoleMenu customerOrderMenu = new ConsoleMenu("CUSTOMER ORDER MENU");
+    public static ConsoleMenu adminOrderMenu = new ConsoleMenu("ADMIN ORDER MENU");
+    public static ConsoleMenu baseCatalogMenu = new ConsoleMenu("BASE CATALOG MENU");
+    public static ConsoleMenu customerCatalogMenu = new ConsoleMenu("CUSTOMER CATALOG MENU");
+    public static ConsoleMenu adminCatalogMenu = new ConsoleMenu("ADMIN CATALOG MENU");
+    public static ConsoleMenu editBook = new ConsoleMenu("EDIT BOOK");
+    public static ConsoleMenu addBook = new ConsoleMenu("ADD BOOK");
 
     private MenuUtils() {
     }

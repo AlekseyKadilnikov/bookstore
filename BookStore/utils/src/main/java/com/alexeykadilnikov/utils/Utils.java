@@ -5,9 +5,14 @@ import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 
 import java.util.List;
+import java.util.Set;
 
 public class Utils {
-    public static void showBookArray(Book[] books) {
+    public static void showBookArray(List<Book> books) {
+        if(books.isEmpty()) {
+            System.out.println("Books not found");
+            return;
+        }
         for (Book book : books) {
             System.out.println("name = " + book.getName() +
                     ", price = " + book.getPrice() +
@@ -15,7 +20,6 @@ public class Utils {
                     ", count = " + book.getCount() +
                     ", dateOfReceipt = " + book.getDateOfReceipt());
         }
-        System.out.println();
     }
 
     public static void showOrderArray(Order[] orders) {
@@ -25,7 +29,6 @@ public class Utils {
                     ", executionDate = " + order.getExecutionDate() +
                     ", status = " + order.getStatus());
         }
-        System.out.println();
     }
 
     public static void showRequestArray(List<Request> requests) {
@@ -33,6 +36,5 @@ public class Utils {
             System.out.println("name = " + request.getName() +
                     ", count = " + request.getCount());
         }
-        System.out.println();
     }
 }

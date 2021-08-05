@@ -10,6 +10,7 @@ import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.RequestService;
 import com.alexeykadilnikov.service.UserService;
+import com.alexeykadilnikov.view.menu.MenuController;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -19,6 +20,8 @@ import static com.alexeykadilnikov.utils.Utils.*;
 
 public class Test {
     public static void main(String[] args) {
+        MenuController menuController = MenuController.getInstance();
+        menuController.run();
 //        BookRepository bookRepository = new BookRepository();
 //        RequestService requestService = new RequestService(bookRepository);
 //        BookService bookService = new BookService(bookRepository);
