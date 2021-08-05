@@ -2,21 +2,18 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.OrderStatus;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 public class Order extends BaseEntity {
     private static long idCount = 0;
-    private Book[] books;
+    private List<Book> books;
     private User user;
     private int price = 0;
     private OrderStatus status;
     private Date executionDate;
     private final Date initDate = new Date();
 
-    public Order(Book[] books, User user) {
+    public Order(List<Book> books, User user) {
         super(idCount++);
         this.books = books;
         this.user = user;
@@ -27,7 +24,7 @@ public class Order extends BaseEntity {
     @Override
     public String toString() {
         return "Order{" +
-                "books=" + Arrays.toString(books) +
+                "books=" + books.toString() +
                 ", user=" + user +
                 ", status=" + status +
                 '}';
@@ -37,15 +34,12 @@ public class Order extends BaseEntity {
         return initDate;
     }
 
-    public Book[] getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
     public void setBook(Book book) {
-        Book[] newBooks = new Book[books.length + 1];
-        newBooks[books.length] = book;
-        books = newBooks;
-
+        books.add(book);
         price += book.getPrice();
     }
 

@@ -10,16 +10,16 @@ import com.alexeykadilnikov.repository.OrderRepository;
 import java.util.*;
 
 public class OrderService implements IOrderService {
-    private final OrderRepository orderRepository;
-    private final BookRepository bookRepository;
+    private static OrderService instance;
 
-    public OrderService(OrderRepository orderRepository, BookRepository bookRepository) {
+    private final OrderRepository orderRepository;
+
+    private OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.bookRepository = bookRepository;
     }
 
     @Override
-    public void createOrder(Book[] books, User user) {
+    public void createOrder(List<Book> books, User user) {
         for (Book book : books) {
             if(book.getCount() == 0) {
                 book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW));
@@ -90,8 +90,15 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Order[] getAll() {
+    public List<Order> getAll() {
         return orderRepository.findAll();
+    }
+
+    public static OrderService getInstance() {
+        if(instance == null) {
+            instance = new OrderService(OrderRepository.getInstance());
+        }
+        return instance;
     }
 
     public Order[] getOrderListForPeriod(Date dateAfter, Date dateBefore) {

@@ -2,28 +2,33 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.entity.Order;
 
-public class OrderRepository implements IRepository<Order, Long> {
-    private Order[] orders = new Order[0];
+import java.util.ArrayList;
+import java.util.List;
 
-    public OrderRepository() {
+public class OrderRepository implements IRepository<Order, Long> {
+    private static OrderRepository instance;
+
+    private List<Order> orders = new ArrayList<>();
+
+    private OrderRepository() {
     }
 
     @Override
-    public Order[] findAll() {
+    public List<Order> findAll() {
         return orders;
     }
 
     @Override
     public Order getById(Long id) {
-        return null;
+        return orders.stream()
+                .filter(order -> order.getId() == id)
+                .findAny()
+                .orElse(null);
     }
 
     @Override
     public void save(Order order) {
-        Order[] newOrder = new Order[orders.length + 1];
-        System.arraycopy(orders, 0, newOrder, 0, orders.length);
-        newOrder[orders.length] = order;
-        orders = newOrder;
+        orders.add(order);
     }
 
     @Override
@@ -32,6 +37,13 @@ public class OrderRepository implements IRepository<Order, Long> {
     }
 
     public Order getByIndex(int index) {
-        return orders[index];
+        return orders.get(index);
+    }
+
+    public static OrderRepository getInstance() {
+        if(instance == null) {
+            instance = new OrderRepository();
+        }
+        return instance;
     }
 }

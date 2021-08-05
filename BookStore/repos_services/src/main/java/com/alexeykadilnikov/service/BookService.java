@@ -12,9 +12,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class BookService implements IBookService {
+    private static BookService instance;
+
     private final BookRepository bookRepository;
 
-    public BookService(BookRepository bookRepository) {
+    private BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
@@ -44,6 +46,13 @@ public class BookService implements IBookService {
     @Override
     public List<Book> getAll() {
         return bookRepository.findAll();
+    }
+
+    public static BookService getInstance() {
+        if(instance == null) {
+            instance = new BookService(BookRepository.getInstance());
+        }
+        return instance;
     }
 
     public String getBookDescription(Book book) {

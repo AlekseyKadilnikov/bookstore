@@ -7,19 +7,22 @@ import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.BookRepository;
+import com.alexeykadilnikov.repository.OrderRepository;
 
 import java.util.*;
 
 public class RequestService implements IRequestService {
+    private static RequestService instance;
+
     private final BookRepository bookRepository;
 
-    public RequestService(BookRepository bookRepository) {
+    private RequestService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
     public void createRequest(String name) {
         String[] words = name.split(" ");
-        Book[] books = bookRepository.findAll();
+        List<Book> books = bookRepository.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
         Set<Book> booksByName = new HashSet<>();
         for(String word : words) {
@@ -49,6 +52,13 @@ public class RequestService implements IRequestService {
                 book.addRequest(new Request(name, RequestStatus.COMMON));
             }
         }
+    }
+
+    public static RequestService getInstance() {
+        if(instance == null) {
+            instance = new RequestService(BookRepository.getInstance());
+        }
+        return instance;
     }
 
     public List<Request> sortByAmountAscending(Book book) {

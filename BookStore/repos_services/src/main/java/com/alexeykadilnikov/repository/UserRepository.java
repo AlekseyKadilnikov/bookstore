@@ -2,36 +2,48 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.entity.User;
 
-public class UserRepository implements IRepository<User, Long>{
-    private User[] users = new User[0];
+import java.util.ArrayList;
+import java.util.List;
 
-    public UserRepository() {
+public class UserRepository implements IRepository<User, Long>{
+    private static UserRepository instance;
+
+    private List<User> users = new ArrayList<>();
+
+    private UserRepository() {
     }
 
     @Override
-    public User[] findAll() {
+    public List<User> findAll() {
         return users;
     }
 
     @Override
     public User getById(Long id) {
-        return null;
+        return users.stream()
+                .filter(user -> user.getId() == id)
+                .findAny()
+                .orElse(null);
     }
 
     @Override
     public void save(User newUser) {
-        User[] newUsers = new User[users.length + 1];
-        System.arraycopy(users, 0, newUsers, 0, users.length);
-        newUsers[users.length] = newUser;
-        users = newUsers;
+        users.add(newUser);
     }
 
     @Override
     public void delete(User user) {
-
+        users.remove(user);
     }
 
     public User getByIndex(int index) {
-        return users[index];
+        return users.get(index);
+    }
+
+    public static UserRepository getInstance() {
+        if(instance == null) {
+            instance = new UserRepository();
+        }
+        return instance;
     }
 }

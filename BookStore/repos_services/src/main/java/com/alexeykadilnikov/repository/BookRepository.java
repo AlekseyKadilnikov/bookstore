@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class BookRepository implements IRepository<Book, Long> {
+    private static BookRepository instance;
+
     private final List<Book> books = Arrays.asList(
             new Book("Идиот", "Федор Достоевский", "Наука", 1990, 350, 10),
             new Book("Бесы", "Федор Достоевский", "Наука", 1988, 370, 20),
@@ -18,6 +20,9 @@ public class BookRepository implements IRepository<Book, Long> {
             new Book("Сияние", "Стивен Кинг", "Питер", 2018, 500,11),
             new Book("1984", "Джордж Оруэлл", "Питер", 2010, 550, 10)
     );
+
+    private BookRepository() {
+    }
 
     @Override
     public List<Book> findAll() {
@@ -44,5 +49,12 @@ public class BookRepository implements IRepository<Book, Long> {
 
     public Book getByIndex(int index) {
         return books.get(index);
+    }
+
+    public static BookRepository getInstance() {
+        if(instance == null) {
+            instance = new BookRepository();
+        }
+        return instance;
     }
 }
