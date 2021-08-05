@@ -18,7 +18,43 @@ public class Builder {
         BaseCatalogBuilder baseCatalogBuilder = new BaseCatalogBuilder();
         baseCatalogBuilder.createSearchItem();
         baseCatalogBuilder.createSortByNameItem();
+        baseCatalogBuilder.createSortByPriceItem();
         baseCatalogBuilder.createGoBackItem();
+
+        CustomerMenuBuilder customerMenuBuilder = new CustomerMenuBuilder();
+        customerMenuBuilder.createCatalogItem();
+        customerMenuBuilder.createOrderItem();
+        customerMenuBuilder.createGoBackItem();
+
+        AdminMenuBuilder adminMenuBuilder = new AdminMenuBuilder();
+        adminMenuBuilder.createCatalogItem();
+        adminMenuBuilder.createOrderItem();
+        adminMenuBuilder.createUserItem();
+        adminMenuBuilder.createRequestItem();
+        adminMenuBuilder.createGoBackItem();
+
+        CustomerOrderMenuBuilder customerOrderMenuBuilder = new CustomerOrderMenuBuilder();
+        customerOrderMenuBuilder.createGetOrdersItem();
+        customerOrderMenuBuilder.createCancelOrderItem();
+        customerOrderMenuBuilder.createGoBackItem();
+
+        AdminOrderMenuBuilder adminOrderMenuBuilder = new AdminOrderMenuBuilder();
+        adminOrderMenuBuilder.createGetOrdersItem();
+        adminOrderMenuBuilder.createCancelOrderItem();
+        adminOrderMenuBuilder.createGetCompletedOrdersItem();
+        adminOrderMenuBuilder.createGetOrderDetailItem();
+        adminOrderMenuBuilder.createGetEarnedMoneyItem();
+        adminOrderMenuBuilder.createSortByExecutionDateItem();
+        adminOrderMenuBuilder.createSortByPriceItem();
+        adminOrderMenuBuilder.createSortByStatusItem();
+        adminOrderMenuBuilder.createGoBackItem();
+
+        CustomerCatalogBuilder customerCatalogBuilder = new CustomerCatalogBuilder();
+        customerCatalogBuilder.createSearchItem();
+        customerCatalogBuilder.createNewOrderItem();
+        customerCatalogBuilder.createSortByNameItem();
+        customerCatalogBuilder.createSortByPriceItem();
+        customerCatalogBuilder.createGoBackItem();
     }
 
     public ConsoleMenu getRootMenu() {

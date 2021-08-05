@@ -28,13 +28,12 @@ public class Navigator {
 
     public void navigate(int index) {
         MenuItem item = currentMenu.getMenuItems().get(index);
+        if(item.getAction() != null) {
+            item.doAction();
+        }
         if(item.getNextMenu() != null) {
             currentMenu = item.getNextMenu();
         }
-        else {
-            item.doAction();
-        }
-
     }
 
     private void printHeader() {

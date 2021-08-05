@@ -3,12 +3,18 @@ package com.alexeykadilnikov.repository;
 import com.alexeykadilnikov.entity.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserRepository implements IRepository<User, Long>{
     private static UserRepository instance;
 
     private List<User> users = new ArrayList<>();
+
+    {
+        users.add(new User("admin"));
+        users.add(new User("testUser"));
+    }
 
     private UserRepository() {
     }

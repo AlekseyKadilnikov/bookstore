@@ -11,6 +11,8 @@ public class MenuUtils {
     public static ConsoleMenu baseCatalogMenu = new ConsoleMenu("BASE CATALOG MENU");
     public static ConsoleMenu customerCatalogMenu = new ConsoleMenu("CUSTOMER CATALOG MENU");
     public static ConsoleMenu adminCatalogMenu = new ConsoleMenu("ADMIN CATALOG MENU");
+    public static ConsoleMenu adminUserMenu = new ConsoleMenu("USER MENU");
+    public static ConsoleMenu adminRequestMenu = new ConsoleMenu("REQUEST MENU");
     public static ConsoleMenu editBook = new ConsoleMenu("EDIT BOOK");
     public static ConsoleMenu addBook = new ConsoleMenu("ADD BOOK");
 

@@ -4,6 +4,5 @@ public interface CatalogBuilder extends BaseBuilder {
     void createSearchItem();
     void createSortByNameItem();
     void createSortByPriceItem();
-    void createSortByGenreItem();
     void createShowDescriptionItem();
 }

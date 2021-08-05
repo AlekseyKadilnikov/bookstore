@@ -5,7 +5,6 @@ import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 
 import java.util.List;
-import java.util.Set;
 
 public class Utils {
     public static void showBookArray(List<Book> books) {
@@ -14,11 +13,12 @@ public class Utils {
             return;
         }
         for (Book book : books) {
-            System.out.println("name = " + book.getName() +
-                    ", price = " + book.getPrice() +
-                    ", date = " + book.getPublicationYear() +
-                    ", count = " + book.getCount() +
-                    ", dateOfReceipt = " + book.getDateOfReceipt());
+            System.out.println(book.toString());
+//            System.out.println("name = " + book.getName() +
+//                    ", price = " + book.getPrice() +
+//                    ", date = " + book.getPublicationYear() +
+//                    ", count = " + book.getCount() +
+//                    ", dateOfReceipt = " + book.getDateOfReceipt());
         }
     }
 

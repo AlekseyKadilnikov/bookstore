@@ -1,6 +1,11 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.entity.Order;
+import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.UserService;
+
+import java.util.List;
 
 public class UserController {
     private static UserController instance;
@@ -13,18 +18,19 @@ public class UserController {
 
     public int create(String username) {
         if(userService.addUser(username) > 0) {
-            System.out.println("Error: user with the same name already exists. Please try again");
             return 1;
         }
         return 0;
     }
 
-    public int getOne(String username) {
-        if(userService.getByName(username) == null) {
-            System.out.println("User with this name does not exist. Please try again");
-            return 1;
+    public User getOne(String username) {
+        return userService.getByName(username);
+    }
+
+    public void getOrders(User user) {
+        for(Order order : user.getOrders()) {
+            System.out.println(order.toString());
         }
-        return 0;
     }
 
     public static UserController getInstance() {

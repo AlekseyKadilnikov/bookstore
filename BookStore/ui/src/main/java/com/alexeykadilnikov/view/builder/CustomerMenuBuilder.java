@@ -7,17 +7,19 @@ import com.alexeykadilnikov.view.menu.MenuItem;
 public class CustomerMenuBuilder implements UserMenuBuilder {
     @Override
     public void createOrderItem() {
-        MenuItem item = new MenuItem("Orders", MenuUtils.customerOrderMenu, ActionEnum.CREATE_USER);
+        MenuItem item = new MenuItem("Orders", MenuUtils.customerOrderMenu, null);
         MenuUtils.customerMenu.addItem(item);
     }
 
     @Override
     public void createCatalogItem() {
-
+        MenuItem item = new MenuItem("Catalog", MenuUtils.customerCatalogMenu, null);
+        MenuUtils.customerMenu.addItem(item);
     }
 
     @Override
     public void createGoBackItem() {
-
+        MenuItem item = new MenuItem("Back", MenuUtils.rootMenu, null);
+        MenuUtils.customerMenu.addItem(item);
     }
 }

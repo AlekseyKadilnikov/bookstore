@@ -24,8 +24,9 @@ public class Order extends BaseEntity {
     @Override
     public String toString() {
         return "Order{" +
-                "books=" + books.toString() +
-                ", user=" + user +
+                "id = " + getId() +
+                ", books=" + books.toString() +
+                ", username=" + user.getUsername() +
                 ", status=" + status +
                 '}';
     }

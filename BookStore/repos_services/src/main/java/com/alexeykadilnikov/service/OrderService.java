@@ -33,6 +33,7 @@ public class OrderService implements IOrderService {
         }
         Order order = new Order(books, user);
         orderRepository.save(order);
+        user.addOrder(order);
         System.out.println("Order id = " + order.getId() + " created");
     }
 

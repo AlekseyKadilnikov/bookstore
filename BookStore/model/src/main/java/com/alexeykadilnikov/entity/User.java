@@ -1,10 +1,12 @@
 package com.alexeykadilnikov.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User extends BaseEntity {
     private static long idCount = 0;
     private String username;
-    private Order order;
-    private Request request;
+    private List<Order> orders = new ArrayList<>();
 
     public User(String username) {
         super(idCount++);
@@ -14,9 +16,9 @@ public class User extends BaseEntity {
     @Override
     public String toString() {
         return "User{" +
-                "username='" + username + '\'' +
-                ", order=" + order +
-                ", request=" + request +
+                "id = " + getId() +
+                ", username='" + username + '\'' +
+                ", orders=" + orders.toString() +
                 '}';
     }
 
@@ -28,19 +30,11 @@ public class User extends BaseEntity {
         this.username = username;
     }
 
-    public Order getOrder() {
-        return order;
+    public List<Order> getOrders() {
+        return orders;
     }
 
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
+    public void addOrder(Order order) {
+        orders.add(order);
     }
 }
