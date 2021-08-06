@@ -1,17 +1,25 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.OrderComparator;
+import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.utils.UserUtils;
+import com.alexeykadilnikov.utils.Utils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class OrderController {
     private static OrderController instance;
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
     private OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -40,5 +48,48 @@ public class OrderController {
 
     public void cancel(int id) {
         orderService.cancelOrder(id);
+    }
+
+    public List<Order> getAll() {
+        return orderService.getAll();
+    }
+
+    public void showAll() {
+        List<Order> orders = orderService.getAll();
+        for(Order order : orders) {
+            System.out.println(order.toString());
+        }
+    }
+
+    public void sort(List<Order> sortedOrders, Comparator<Order> comparator) {
+        sortedOrders = orderService.sort(sortedOrders, comparator);
+        System.out.println(sortedOrders.toString());
+    }
+
+    public List<Order> sortByStatus(OrderStatus status) {
+        List<Order> sortedOrders = new ArrayList<>();
+        for(Order order : orderService.getAll()) {
+            if(order.getStatus() == status) {
+                sortedOrders.add(order);
+            }
+        }
+
+        return sortedOrders;
+    }
+
+    public void getCompletedOrdersForPeriod(Comparator<Order> comparator, String dateAfterS, String dateBeforeS) {
+        LocalDate dateAfter = LocalDate.parse(dateAfterS);
+        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+
+        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
+        List<Order> ordersBetweenDates = new ArrayList<>();
+
+        for(Order order : orders) {
+            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
+                ordersBetweenDates.add(order);
+            }
+        }
+
+        sort(ordersBetweenDates, comparator);
     }
 }

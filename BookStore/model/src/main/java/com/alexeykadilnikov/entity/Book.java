@@ -38,8 +38,7 @@ public class Book extends BaseEntity {
                 ", author='" + author + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", price=" + price +
-                ", count=" + count +
-                '}';
+                ", count=" + count + "}\n";
     }
 
     public List<Request> getCommonRequests() {

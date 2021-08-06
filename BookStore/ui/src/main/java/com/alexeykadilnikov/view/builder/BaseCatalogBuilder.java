@@ -13,13 +13,13 @@ public class BaseCatalogBuilder implements CatalogBuilder {
 
     @Override
     public void createSortByNameItem() {
-        MenuItem item = new MenuItem("Sort by name", null, ActionEnum.SORT_BY_NAME);
+        MenuItem item = new MenuItem("Sort by name", null, ActionEnum.SORT_BOOKS_BY_NAME);
         MenuUtils.baseCatalogMenu.addItem(item);
     }
 
     @Override
     public void createSortByPriceItem() {
-        MenuItem item = new MenuItem("Sort by price", null, ActionEnum.SORT_BY_PRICE);
+        MenuItem item = new MenuItem("Sort by price", null, ActionEnum.SORT_BOOKS_BY_PRICE);
         MenuUtils.baseCatalogMenu.addItem(item);
     }
 

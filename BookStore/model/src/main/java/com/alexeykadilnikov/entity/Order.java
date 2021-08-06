@@ -2,6 +2,7 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.OrderStatus;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class Order extends BaseEntity {
@@ -10,7 +11,7 @@ public class Order extends BaseEntity {
     private User user;
     private int price = 0;
     private OrderStatus status;
-    private Date executionDate;
+    private LocalDate executionDate;
     private final Date initDate = new Date();
 
     public Order(List<Book> books, User user) {
@@ -25,10 +26,11 @@ public class Order extends BaseEntity {
     public String toString() {
         return "Order{" +
                 "id = " + getId() +
-                ", books=" + books.toString() +
+                ", books=\n" + books.toString() +
                 ", username=" + user.getUsername() +
                 ", status=" + status +
-                '}';
+                ", executionDate=" + executionDate +
+                "}\n";
     }
 
     public Date getInitDate() {
@@ -64,13 +66,13 @@ public class Order extends BaseEntity {
         return price;
     }
 
-    public Date getExecutionDate() {
+    public LocalDate getExecutionDate() {
         if(executionDate == null)
             return null;
         return executionDate;
     }
 
-    public void setExecutionDate(Date executionDate) {
+    public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
     }
 

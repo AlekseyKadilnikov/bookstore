@@ -7,6 +7,8 @@ import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class OrderService implements IOrderService {
@@ -82,10 +84,9 @@ public class OrderService implements IOrderService {
             }
         }
         order.setStatus(OrderStatus.SUCCESS);
-        Calendar calendar = new GregorianCalendar();
         Random random = new Random();
-        calendar.add(Calendar.DAY_OF_WEEK, random.nextInt(4));
-        Date date = calendar.getTime();
+        LocalDate date = LocalDate.now();
+        date = date.plusDays(random.nextInt(4));
         order.setExecutionDate(date);
         System.out.println("Order id = " + order.getId() + " completed");
     }
@@ -102,92 +103,8 @@ public class OrderService implements IOrderService {
         return instance;
     }
 
-    public Order[] getOrderListForPeriod(Date dateAfter, Date dateBefore) {
-        Order[] orders = new Order[0];
-        for(Order order : orderRepository.findAll()){
-                if(order.getStatus() == OrderStatus.SUCCESS &&
-                        order.getExecutionDate().after(dateAfter) &&
-                        order.getExecutionDate().before(dateBefore)) {
-                    Order[] newOrder = new Order[orders.length + 1];
-                    System.arraycopy(orders, 0, newOrder, 0, orders.length);
-                    newOrder[orders.length] = order;
-                    orders = newOrder;
-            }
-        }
-        return orders;
-    }
-
-    public int getAmountOfCompletedOrdersForPeriod(Date dateAfter, Date dateBefore) {
-        int count = 0;
-        for(Order order : orderRepository.findAll()) {
-            if(order.getStatus() == OrderStatus.SUCCESS &&
-                    order.getExecutionDate().after(dateAfter) &&
-                    order.getExecutionDate().before(dateBefore)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public int getAmountOfMoneyForPeriod(Date dateAfter, Date dateBefore) {
-        int money = 0;
-        for(Order order : orderRepository.findAll()) {
-            if(order.getStatus() == OrderStatus.SUCCESS &&
-                    order.getExecutionDate().after(dateAfter) &&
-                    order.getExecutionDate().before(dateBefore)) {
-                money += order.getPrice();
-            }
-        }
-        return money;
-    }
-
-    public Order[] sortByExecutionDateAscending(Order[] orders) {
-        List<Order> successOrders = new ArrayList<>();
-        for(Order order : orders) {
-            if(order.getStatus() == OrderStatus.SUCCESS) {
-                successOrders.add(order);
-            }
-        }
-        successOrders.sort(OrderComparator.DateComparatorAscending);
-        Order[] successOrdersArr = new Order[successOrders.size()];
-        for(int i = 0; i < successOrders.size(); i++) {
-            successOrdersArr[i] = successOrders.get(i);
-        }
-        return successOrdersArr;
-    }
-
-    public Order[] sortByExecutionDateDescending(Order[] orders) {
-        List<Order> successOrders = new ArrayList<>();
-        for(Order order : orders) {
-            if(order.getStatus() == OrderStatus.SUCCESS) {
-                successOrders.add(order);
-            }
-        }
-        successOrders.sort(OrderComparator.DateComparatorDescending);
-        Order[] successOrdersArr = new Order[successOrders.size()];
-        for(int i = 0; i < successOrders.size(); i++) {
-            successOrdersArr[i] = successOrders.get(i);
-        }
-        return successOrdersArr;
-    }
-
-    public Order[] sortByPriceAscending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.PriceComparatorAscending);
-        return orders;
-    }
-
-    public Order[] sortByPriceDescending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.PriceComparatorDescending);
-        return orders;
-    }
-
-    public Order[] sortByStatusAscending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.StatusComparatorAscending);
-        return orders;
-    }
-
-    public Order[] sortByStatusDescending(Order[] orders) {
-        Arrays.sort(orders, OrderComparator.StatusComparatorDescending);
+    public List<Order> sort(List<Order> orders, Comparator<Order> comparator) {
+        orders.sort(comparator);
         return orders;
     }
 }

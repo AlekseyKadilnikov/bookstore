@@ -26,6 +26,6 @@ public class BookController {
     public void sort(Comparator<Book> comparator) {
         List<Book> sortedBooks = bookService.getAll();
         sortedBooks = bookService.sort(sortedBooks, comparator);
-        Utils.showBookArray(sortedBooks);
+        System.out.println(sortedBooks.toString());
     }
 }

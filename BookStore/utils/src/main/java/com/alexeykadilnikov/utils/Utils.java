@@ -22,12 +22,17 @@ public class Utils {
         }
     }
 
-    public static void showOrderArray(Order[] orders) {
+    public static void showOrderArray(List<Order> orders) {
+        if(orders.isEmpty()) {
+            System.out.println("Orders not found");
+            return;
+        }
         for (Order order : orders) {
-            System.out.println("id = " + order.getId() +
-                    ", price = " + order.getPrice() +
-                    ", executionDate = " + order.getExecutionDate() +
-                    ", status = " + order.getStatus());
+            System.out.println(order.toString());
+//            System.out.println("id = " + order.getId() +
+//                    ", price = " + order.getPrice() +
+//                    ", executionDate = " + order.getExecutionDate() +
+//                    ", status = " + order.getStatus());
         }
     }
 
