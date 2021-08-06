@@ -17,6 +17,7 @@ public class Builder {
 
         BaseCatalogBuilder baseCatalogBuilder = new BaseCatalogBuilder();
         baseCatalogBuilder.createSearchItem();
+        baseCatalogBuilder.createShowDescriptionItem();
         baseCatalogBuilder.createSortByNameItem();
         baseCatalogBuilder.createSortByPriceItem();
         baseCatalogBuilder.createGoBackItem();
@@ -29,7 +30,6 @@ public class Builder {
         AdminMenuBuilder adminMenuBuilder = new AdminMenuBuilder();
         adminMenuBuilder.createCatalogItem();
         adminMenuBuilder.createOrderItem();
-        adminMenuBuilder.createUserItem();
         adminMenuBuilder.createRequestItem();
         adminMenuBuilder.createGoBackItem();
 
@@ -41,7 +41,7 @@ public class Builder {
         AdminOrderMenuBuilder adminOrderMenuBuilder = new AdminOrderMenuBuilder();
         adminOrderMenuBuilder.createGetOrdersItem();
         adminOrderMenuBuilder.createCancelOrderItem();
-        adminOrderMenuBuilder.createGetCompletedOrdersItem();
+        adminOrderMenuBuilder.createCompletedOrdersCountItem();
         adminOrderMenuBuilder.createGetOrderDetailItem();
         adminOrderMenuBuilder.createGetEarnedMoneyItem();
         adminOrderMenuBuilder.createSortByExecutionDateItem();
@@ -51,10 +51,19 @@ public class Builder {
 
         CustomerCatalogBuilder customerCatalogBuilder = new CustomerCatalogBuilder();
         customerCatalogBuilder.createSearchItem();
+        customerCatalogBuilder.createShowDescriptionItem();
         customerCatalogBuilder.createNewOrderItem();
         customerCatalogBuilder.createSortByNameItem();
         customerCatalogBuilder.createSortByPriceItem();
         customerCatalogBuilder.createGoBackItem();
+
+        AdminCatalogBuilder adminCatalogBuilder = new AdminCatalogBuilder();
+        adminCatalogBuilder.createSearchItem();
+        adminCatalogBuilder.createShowDescriptionItem();
+        adminCatalogBuilder.createSortByNameItem();
+        adminCatalogBuilder.createSortByPriceItem();
+        adminCatalogBuilder.createStaleBooksItem();
+        adminCatalogBuilder.createGoBackItem();
     }
 
     public ConsoleMenu getRootMenu() {

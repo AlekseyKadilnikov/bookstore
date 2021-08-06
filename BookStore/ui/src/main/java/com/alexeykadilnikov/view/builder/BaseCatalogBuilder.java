@@ -25,7 +25,8 @@ public class BaseCatalogBuilder implements CatalogBuilder {
 
     @Override
     public void createShowDescriptionItem() {
-
+        MenuItem item = new MenuItem("Get book description", null, ActionEnum.SHOW_BOOK_DESCRIPTION);
+        MenuUtils.baseCatalogMenu.addItem(item);
     }
 
     @Override

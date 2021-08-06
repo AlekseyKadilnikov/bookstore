@@ -34,19 +34,22 @@ public class AdminOrderMenuBuilder implements OrderMenuBuilder {
     }
 
     public void createSortByExecutionDateItem() {
-        MenuItem item = new MenuItem("Sort by execution date", null, ActionEnum.SORT_ORDERS_BY_EXEC_DATE);
+        MenuItem item = new MenuItem("Sort by execution date for period", null, ActionEnum.SORT_ORDERS_BY_EXEC_DATE);
         MenuUtils.adminOrderMenu.addItem(item);
     }
 
     public void createGetEarnedMoneyItem() {
-
+        MenuItem item = new MenuItem("Get earned money for period", null, ActionEnum.EARNED_MONEY);
+        MenuUtils.adminOrderMenu.addItem(item);
     }
 
-    public void createGetCompletedOrdersItem() {
-
+    public void createCompletedOrdersCountItem() {
+        MenuItem item = new MenuItem("Get count of completed orders for period", null, ActionEnum.COMPL_ORDERS_COUNT);
+        MenuUtils.adminOrderMenu.addItem(item);
     }
 
     public void createGetOrderDetailItem() {
-
+        MenuItem item = new MenuItem("Get order detail", null, ActionEnum.GET_ORDER_DETAIL);
+        MenuUtils.adminOrderMenu.addItem(item);
     }
 }

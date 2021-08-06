@@ -2,6 +2,7 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,7 @@ public class Book extends BaseEntity {
     private int publicationYear;
     private int price;
     private int count;
-    private Date dateOfReceipt = new Date();
+    private LocalDate dateOfReceipt = LocalDate.now();;
     private String description = "";
     private List<Request> commonRequests = new ArrayList<>();
     private List<Request> orderRequests = new ArrayList<>();
@@ -38,7 +39,9 @@ public class Book extends BaseEntity {
                 ", author='" + author + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", price=" + price +
-                ", count=" + count + "}\n";
+                ", count=" + count +
+                ", dateOfReceipt=" + dateOfReceipt +
+                "}\n";
     }
 
     public List<Request> getCommonRequests() {
@@ -78,11 +81,11 @@ public class Book extends BaseEntity {
         this.description = description;
     }
 
-    public Date getDateOfReceipt() {
+    public LocalDate getDateOfReceipt() {
         return dateOfReceipt;
     }
 
-    public void setDateOfReceipt(Date dateOfReceipt) {
+    public void setDateOfReceipt(LocalDate dateOfReceipt) {
         this.dateOfReceipt = dateOfReceipt;
     }
 

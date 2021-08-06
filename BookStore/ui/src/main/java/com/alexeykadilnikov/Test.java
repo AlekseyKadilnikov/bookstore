@@ -13,12 +13,11 @@ import com.alexeykadilnikov.service.RequestService;
 import com.alexeykadilnikov.service.UserService;
 import com.alexeykadilnikov.view.menu.MenuController;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import static com.alexeykadilnikov.utils.Utils.*;
 
 public class Test {
     public static void main(String[] args) {
@@ -39,8 +38,26 @@ public class Test {
         orderService.completeOrder(2);
         orderService.completeOrder(3);
 
-        OrderController oc = OrderController.getInstance();
-        oc.getCompletedOrdersForPeriod(OrderComparator.DateComparatorDescending, "2021-08-05", "2021-08-11");
+        RequestService requestService = RequestService.getInstance();
+        requestService.createRequest("читать Бесы достоевский");
+        requestService.createRequest("читать Бесы достоевский");
+        requestService.createRequest("Бесы Федор");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("достоевский Бесы");
+        requestService.createRequest("федор достоевский");
+
+        bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
+        bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
+        bookRepository.getByIndex(2).setDateOfReceipt(LocalDate.now().minusMonths(13));
+
+        bookRepository.getByIndex(0).setDescription("Description1");
+        bookRepository.getByIndex(1).setDescription("Description2");
+        bookRepository.getByIndex(2).setDescription("Description3");
+        bookRepository.getByIndex(3).setDescription("Description4");
+        bookRepository.getByIndex(4).setDescription("Description5");
+        bookRepository.getByIndex(5).setDescription("Description6");
+        bookRepository.getByIndex(6).setDescription("Description7");
 
         MenuController menuController = MenuController.getInstance();
         menuController.run();

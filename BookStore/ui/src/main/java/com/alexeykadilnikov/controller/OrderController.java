@@ -1,17 +1,13 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.utils.UserUtils;
-import com.alexeykadilnikov.utils.Utils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -54,6 +50,10 @@ public class OrderController {
         return orderService.getAll();
     }
 
+    public void showOne(int id) {
+        System.out.println(orderService.showOrder(id));
+    }
+
     public void showAll() {
         List<Order> orders = orderService.getAll();
         for(Order order : orders) {
@@ -91,5 +91,31 @@ public class OrderController {
         }
 
         sort(ordersBetweenDates, comparator);
+    }
+
+    public void showEarnedMoneyForPeriod(String dateAfterS, String dateBeforeS) {
+        int sum = 0;
+        LocalDate dateAfter = LocalDate.parse(dateAfterS);
+        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
+        for(Order order : orders) {
+            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
+                sum += order.getTotalPrice();
+            }
+        }
+        System.out.println("Sum = " + sum);
+    }
+
+    public void showCompletedOrdersCountForPeriod(String dateAfterS, String dateBeforeS) {
+        int count = 0;
+        LocalDate dateAfter = LocalDate.parse(dateAfterS);
+        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
+        for(Order order : orders) {
+            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
+                count++;
+            }
+        }
+        System.out.println("Count = " + count);
     }
 }

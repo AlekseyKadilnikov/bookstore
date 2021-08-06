@@ -9,7 +9,7 @@ public class Order extends BaseEntity {
     private static long idCount = 0;
     private List<Book> books;
     private User user;
-    private int price = 0;
+    private int totalPrice = 0;
     private OrderStatus status;
     private LocalDate executionDate;
     private final Date initDate = new Date();
@@ -19,7 +19,6 @@ public class Order extends BaseEntity {
         this.books = books;
         this.user = user;
         status = OrderStatus.NEW;
-        calculatePrice();
     }
 
     @Override
@@ -30,6 +29,7 @@ public class Order extends BaseEntity {
                 ", username=" + user.getUsername() +
                 ", status=" + status +
                 ", executionDate=" + executionDate +
+                ", total price=" + totalPrice +
                 "}\n";
     }
 
@@ -43,7 +43,7 @@ public class Order extends BaseEntity {
 
     public void setBook(Book book) {
         books.add(book);
-        price += book.getPrice();
+        totalPrice += book.getPrice();
     }
 
     public User getUser() {
@@ -62,8 +62,12 @@ public class Order extends BaseEntity {
         this.status = status;
     }
 
-    public int getPrice() {
-        return price;
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public LocalDate getExecutionDate() {
@@ -74,11 +78,5 @@ public class Order extends BaseEntity {
 
     public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
-    }
-
-    private void calculatePrice() {
-        for(Book book : books) {
-            price += book.getPrice();
-        }
     }
 }

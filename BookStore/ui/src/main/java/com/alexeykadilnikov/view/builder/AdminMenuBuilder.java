@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.view.builder;
 
 import com.alexeykadilnikov.utils.MenuUtils;
+import com.alexeykadilnikov.view.action.ActionEnum;
 import com.alexeykadilnikov.view.menu.MenuItem;
 
 public class AdminMenuBuilder implements UserMenuBuilder {
@@ -22,13 +23,8 @@ public class AdminMenuBuilder implements UserMenuBuilder {
         MenuUtils.adminMenu.addItem(item);
     }
 
-    public void createUserItem() {
-        MenuItem item = new MenuItem("Users", MenuUtils.adminUserMenu, null);
-        MenuUtils.adminMenu.addItem(item);
-    }
-
     public void createRequestItem() {
-        MenuItem item = new MenuItem("Requests", MenuUtils.adminRequestMenu, null);
+        MenuItem item = new MenuItem("Show requests for book", null, ActionEnum.SHOW_REQUESTS_FOR_BOOK);
         MenuUtils.adminMenu.addItem(item);
     }
 }

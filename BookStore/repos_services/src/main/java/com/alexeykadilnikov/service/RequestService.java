@@ -64,27 +64,9 @@ public class RequestService implements IRequestService {
         return instance;
     }
 
-    public List<Request> sortByAmountAscending(Book book) {
+    public List<Request> sort(Book book, Comparator<Request> comparator) {
         List<Request> requests = book.getCommonRequests();
-        requests.sort(RequestComparator.AmountComparatorAscending);
-        return requests;
-    }
-
-    public List<Request> sortByAmountDescending(Book book) {
-        List<Request> requests = book.getCommonRequests();
-        requests.sort(RequestComparator.AmountComparatorDescending);
-        return requests;
-    }
-
-    public List<Request> sortByNameAscending(Book book) {
-        List<Request> requests = book.getCommonRequests();
-        requests.sort(RequestComparator.NameComparatorAscending);
-        return requests;
-    }
-
-    public List<Request> sortByNameDescending(Book book) {
-        List<Request> requests = book.getCommonRequests();
-        requests.sort(RequestComparator.NameComparatorDescending);
+        requests.sort(comparator);
         return requests;
     }
 }

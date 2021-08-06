@@ -2,7 +2,6 @@ package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.BookService;
-import com.alexeykadilnikov.utils.Utils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 public class BookController {
     private static BookController instance;
 
-    private BookService bookService;
+    private final BookService bookService;
 
     private BookController(BookService bookService) {
         this.bookService = bookService;
@@ -23,9 +22,21 @@ public class BookController {
         return instance;
     }
 
-    public void sort(Comparator<Book> comparator) {
-        List<Book> sortedBooks = bookService.getAll();
+    public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
         System.out.println(sortedBooks.toString());
+    }
+
+    public List<Book> getAll() {
+        return bookService.getAll();
+    }
+
+    public List<Book> getStaleBooks(int months) {
+        return bookService.getOldBooks(months);
+    }
+
+    public void showDescription(int bookId) {
+        Book book = bookService.getByIndex(bookId);
+        System.out.println(book.getDescription());
     }
 }

@@ -6,6 +6,7 @@ import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.BookRepository;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class BookService implements IBookService {
@@ -60,16 +61,12 @@ public class BookService implements IBookService {
         return bookRepository.getByIndex(index);
     }
 
-    public Book[] getOldBooks(int monthsAmount) {
-        Calendar calendar = new GregorianCalendar();
-        calendar.roll(Calendar.MONTH, monthsAmount);
-        Book[] books = new Book[0];
+    public List<Book> getOldBooks(int monthsAmount) {
+        LocalDate date = LocalDate.now().minusMonths(monthsAmount);
+        List<Book> books = new ArrayList<>();
         for(Book book : bookRepository.findAll()) {
-            if(book.getDateOfReceipt().before(calendar.getTime())) {
-                Book[] newBooks = new Book[books.length + 1];
-                System.arraycopy(books, 0, newBooks, 0, books.length);
-                newBooks[books.length] = book;
-                books = newBooks;
+            if(book.getDateOfReceipt().isBefore(date)) {
+                books.add(book);
             }
         }
         return books;

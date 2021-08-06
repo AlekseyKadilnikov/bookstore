@@ -34,6 +34,11 @@ public class OrderService implements IOrderService {
             }
         }
         Order order = new Order(books, user);
+        int totalOrderPrice = 0;
+        for(Book book : books) {
+            totalOrderPrice += book.getPrice();
+        }
+        order.setTotalPrice(totalOrderPrice);
         orderRepository.save(order);
         user.addOrder(order);
         System.out.println("Order id = " + order.getId() + " created");

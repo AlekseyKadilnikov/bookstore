@@ -14,6 +14,14 @@ public class Request extends BaseEntity {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "Request{" +
+                "name='" + name + '\'' +
+                ", count=" + count +
+                "}\n";
+    }
+
     public String getName() {
         return name;
     }
