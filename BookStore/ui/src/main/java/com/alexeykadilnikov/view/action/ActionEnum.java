@@ -11,6 +11,7 @@ import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.utils.MenuUtils;
+import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;
 
@@ -63,14 +64,31 @@ public enum ActionEnum implements IAction {
         requestController.search(request);
     }),
 
+    SET_ORDER_STATUS(() -> {
+        OrderController orderController = OrderController.getInstance();
+        int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
+        int statusTypeNum = getNumber("Enter status number:\n0.New\n1.Success\n2.Canceled", 2);
+        switch (statusTypeNum) {
+            case 0:
+                orderController.setStatus(orderId, OrderStatus.NEW);
+                break;
+            case 1:
+                orderController.setStatus(orderId, OrderStatus.SUCCESS);
+                break;
+            case 2:
+                orderController.setStatus(orderId, OrderStatus.CANCELED);
+                break;
+        }
+    }),
+
     SORT_BOOKS_BY_NAME(() -> {
         BookController bookController = BookController.getInstance();
 
         List<Book> books = bookController.getAll();
 
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
-        if(sortType == 0) {
+        if(sortTypeNum == 0) {
             bookController.sort(books, BookComparator.NameComparatorAscending);
         }
         else {
@@ -80,12 +98,9 @@ public enum ActionEnum implements IAction {
 
     SORT_BOOKS_BY_PRICE(() -> {
         BookController bookController = BookController.getInstance();
-
         List<Book> books = bookController.getAll();
-
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
-
-        if(sortType == 0) {
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+        if(sortTypeNum == 0) {
             bookController.sort(books, BookComparator.PriceComparatorAscending);
         }
         else {
@@ -93,11 +108,24 @@ public enum ActionEnum implements IAction {
         }
     }),
 
+    WRITE_OFF_BOOK(() -> {
+        BookController bookController = BookController.getInstance();
+        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        bookController.writeOff(bookId);
+    }),
+
+    ADD_BOOK(() -> {
+        BookController bookController = BookController.getInstance();
+        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        int count = getNumber("Enter count of books:", Integer.MAX_VALUE);
+        bookController.addBook(bookId, count);
+    }),
+
     SORT_ORDERS_BY_PRICE(() -> {
         OrderController orderController = OrderController.getInstance();
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending:", 1);
         List<Order> orders = orderController.getAll();
-        if(sortType == 0) {
+        if(sortTypeNum == 0) {
             orderController.sort(orders, OrderComparator.PriceComparatorAscending);
         }
         else {
@@ -107,9 +135,9 @@ public enum ActionEnum implements IAction {
 
     SORT_ORDERS_BY_STATUS(() -> {
         OrderController orderController = OrderController.getInstance();
-        int status = Integer.parseInt(getStringInput("Enter status:\n0.New\n1.Success\n2.Canceled"));
+        int sortTypeNum = getNumber("Enter status number:\n0.New\n1.Success\n2.Canceled", 2);
 
-        switch (status) {
+        switch (sortTypeNum) {
             case 0:
                 System.out.println(orderController.sortByStatus(OrderStatus.NEW).toString());
                 break;
@@ -125,20 +153,33 @@ public enum ActionEnum implements IAction {
     SORT_ORDERS_BY_EXEC_DATE(() -> {
         OrderController orderController = OrderController.getInstance();
         List<String> dates = getDateInput();
-        int sortName = Integer.parseInt(getStringInput("Enter sort type:\n0.By date\n1.By price"));
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
 
-        if(sortName == 0 && sortType == 0) {
+        int sortNameNum = getNumber("Enter sort type:\n0.By date\n1.By price", 1);
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+
+        if(sortNameNum == 0 && sortTypeNum == 0) {
             orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorAscending, dates.get(0), dates.get(1));
         }
-        else if(sortName == 0 && sortType == 1){
+        else if(sortNameNum == 0 && sortTypeNum == 1){
             orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorDescending, dates.get(0), dates.get(1));
         }
-        else if(sortName == 1 && sortType == 0) {
+        else if(sortNameNum == 1 && sortTypeNum == 0) {
             orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorAscending, dates.get(0), dates.get(1));
         }
-        else if(sortName == 1 && sortType == 1) {
+        else if(sortNameNum == 1 && sortTypeNum == 1) {
             orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorDescending, dates.get(0), dates.get(1));
+        }
+    }),
+
+    SORT_BY_EXEC_DATE(() -> {
+        OrderController orderController = OrderController.getInstance();
+        List<Order> orders = orderController.getAll();
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+        if(sortTypeNum == 0) {
+            orderController.sort(orders, OrderComparator.DateComparatorAscending);
+        }
+        else {
+            orderController.sort(orders, OrderComparator.DateComparatorDescending);
         }
     }),
 
@@ -156,8 +197,32 @@ public enum ActionEnum implements IAction {
 
     GET_ORDER_DETAIL(() -> {
         OrderController orderController = OrderController.getInstance();
-        int orderId = Integer.parseInt(getStringInput("Enter order id:"));
+        int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
         orderController.showOne(orderId);
+    }),
+
+    SORT_BY_COUNT(() -> {
+        BookController bookController = BookController.getInstance();
+        List<Book> books = bookController.getAll();
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+        if(sortTypeNum == 0) {
+            bookController.sort(books, BookComparator.AvailableComparatorAscending);
+        }
+        else {
+            bookController.sort(books, BookComparator.AvailableComparatorDescending);
+        }
+    }),
+
+    SORT_BOOKS_BY_DATE(() -> {
+        BookController bookController = BookController.getInstance();
+        List<Book> books = bookController.getAll();
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+        if(sortTypeNum == 0) {
+            bookController.sort(books, BookComparator.DateComparatorAscending);
+        }
+        else {
+            bookController.sort(books, BookComparator.DateComparatorDescending);
+        }
     }),
 
     NEW_ORDER(() -> {
@@ -188,56 +253,52 @@ public enum ActionEnum implements IAction {
 
     CANCEL_ORDER(() -> {
         OrderController orderController = OrderController.getInstance();
-        int orderId = Integer.parseInt(getStringInput("Enter order id:"));
+        int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
         orderController.cancel(orderId);
     }),
 
     SHOW_BOOK_DESCRIPTION(() -> {
         BookController bookController = BookController.getInstance();
-        int bookId = Integer.parseInt(getStringInput("Enter book id:"));
+        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         bookController.showDescription(bookId);
     }),
 
     SHOW_REQUESTS_FOR_BOOK(() -> {
         RequestController requestController = RequestController.getInstance();
-        int bookId = Integer.parseInt(getStringInput("Enter book id:"));
+        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        int sortNameNum = getNumber("Enter number of sort type:\n0.By books count\n1.By name", 1);
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
-        int sortName = Integer.parseInt(getStringInput("Enter sort type:\n0.By books count\n1.By name"));
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
-
-        if(sortName == 0 && sortType == 0) {
+        if(sortNameNum == 0 && sortTypeNum == 0) {
             requestController.sort(bookId, RequestComparator.AmountComparatorAscending);
         }
-        else if(sortName == 0 && sortType == 1){
+        else if(sortNameNum == 0 && sortTypeNum == 1){
             requestController.sort(bookId, RequestComparator.AmountComparatorDescending);
         }
-        else if(sortName == 1 && sortType == 0) {
+        else if(sortNameNum == 1 && sortTypeNum == 0) {
             requestController.sort(bookId, RequestComparator.NameComparatorAscending);
         }
-        else if(sortName == 1 && sortType == 1) {
+        else if(sortNameNum == 1 && sortTypeNum == 1) {
             requestController.sort(bookId, RequestComparator.NameComparatorDescending);
         }
     }),
 
     SHOW_STALE_BOOKS(() -> {
         BookController bookController = BookController.getInstance();
-        int months = Integer.parseInt(getStringInput("Enter count of months:"));
-
+        int months = getNumber("Enter count of months:", Integer.MAX_VALUE);
         List<Book> staleBooks = bookController.getStaleBooks(months);
-
-        int sortName = Integer.parseInt(getStringInput("Enter sort type:\n0.By date of receipt\n1.By price"));
-        int sortType = Integer.parseInt(getStringInput("Enter sort type:\n0.Ascending\n1.Descending"));
-
-        if(sortName == 0 && sortType == 0) {
+        int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
+        int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+        if(sortNameNum == 0 && sortTypeNum == 0) {
             bookController.sort(staleBooks, BookComparator.ReceiptComparatorAscending);
         }
-        else if(sortName == 0 && sortType == 1){
+        else if(sortNameNum == 0 && sortTypeNum == 1){
             bookController.sort(staleBooks, BookComparator.ReceiptComparatorDescending);
         }
-        else if(sortName == 1 && sortType == 0) {
+        else if(sortNameNum == 1 && sortTypeNum == 0) {
             bookController.sort(staleBooks, BookComparator.PriceComparatorAscending);
         }
-        else if(sortName == 1 && sortType == 1) {
+        else if(sortNameNum == 1 && sortTypeNum == 1) {
             bookController.sort(staleBooks, BookComparator.PriceComparatorDescending);
         }
     });
@@ -263,12 +324,38 @@ public enum ActionEnum implements IAction {
     }
 
     private static List<String> getDateInput() {
-        String dateAfter = getStringInput("Enter first date (yyyy-mm-dd):");
-        String dateBefore = getStringInput("Enter second date (yyyy-mm-dd):");
+        String dateAfter;
+        do {
+            dateAfter = getStringInput("Enter first date (yyyy-mm-dd):");
+        } while (!StringUtils.isDate(dateAfter));
+
+        String dateBefore;
+        do {
+            dateBefore = getStringInput("Enter second date (yyyy-mm-dd):");
+        } while (!StringUtils.isDate(dateBefore));
 
         List<String> dates = new ArrayList<>();
         dates.add(dateAfter);
         dates.add(dateBefore);
         return dates;
+    }
+
+    private static int getNumber(String message, int maxNumber) {
+        String str;
+        int num;
+
+        do {
+            str = getStringInput(message);
+            while (!StringUtils.isNumeric(str)) {
+                System.out.println("That's not a number. Please try again:");
+                str = getStringInput(message);
+            }
+            num = Integer.parseInt(str);
+            if(num > maxNumber) {
+                int a = 1;
+            }
+        } while (num < 0 || num > maxNumber);
+
+        return num;
     }
 }

@@ -34,4 +34,16 @@ public class BaseCatalogBuilder implements CatalogBuilder {
         MenuItem item = new MenuItem("Back", MenuUtils.rootMenu, null);
         MenuUtils.baseCatalogMenu.addItem(item);
     }
+
+    @Override
+    public void createCountItem() {
+        MenuItem item = new MenuItem("Sort by count in storage", null, ActionEnum.SORT_BY_COUNT);
+        MenuUtils.baseCatalogMenu.addItem(item);
+    }
+
+    @Override
+    public void createDateItem() {
+        MenuItem item = new MenuItem("Sort by date of publication", null, ActionEnum.SORT_BOOKS_BY_DATE);
+        MenuUtils.baseCatalogMenu.addItem(item);
+    }
 }

@@ -35,8 +35,30 @@ public class AdminCatalogBuilder implements CatalogBuilder{
         MenuUtils.adminCatalogMenu.addItem(item);
     }
 
+    @Override
+    public void createCountItem() {
+        MenuItem item = new MenuItem("Sort by count in storage", null, ActionEnum.SORT_BY_COUNT);
+        MenuUtils.adminCatalogMenu.addItem(item);
+    }
+
+    @Override
+    public void createDateItem() {
+        MenuItem item = new MenuItem("Sort by date of publication", null, ActionEnum.SORT_BOOKS_BY_DATE);
+        MenuUtils.adminCatalogMenu.addItem(item);
+    }
+
     public void createStaleBooksItem() {
         MenuItem item = new MenuItem("Show stale books", null, ActionEnum.SHOW_STALE_BOOKS);
+        MenuUtils.adminCatalogMenu.addItem(item);
+    }
+
+    public void createWriteOffBookItem() {
+        MenuItem item = new MenuItem("Write off a book from the warehouse", null, ActionEnum.WRITE_OFF_BOOK);
+        MenuUtils.adminCatalogMenu.addItem(item);
+    }
+
+    public void createAddBookItem() {
+        MenuItem item = new MenuItem("Add book", null, ActionEnum.ADD_BOOK);
         MenuUtils.adminCatalogMenu.addItem(item);
     }
 }

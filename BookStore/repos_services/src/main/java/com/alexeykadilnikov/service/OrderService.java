@@ -108,6 +108,10 @@ public class OrderService implements IOrderService {
         return instance;
     }
 
+    public Order getByIndex(int index) {
+        return orderRepository.getByIndex(index);
+    }
+
     public List<Order> sort(List<Order> orders, Comparator<Order> comparator) {
         orders.sort(comparator);
         return orders;

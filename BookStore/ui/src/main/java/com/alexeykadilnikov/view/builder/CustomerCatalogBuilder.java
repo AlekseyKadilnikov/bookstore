@@ -35,6 +35,18 @@ public class CustomerCatalogBuilder implements CatalogBuilder {
         MenuUtils.customerCatalogMenu.addItem(item);
     }
 
+    @Override
+    public void createCountItem() {
+        MenuItem item = new MenuItem("Sort by count in storage", null, ActionEnum.SORT_BY_COUNT);
+        MenuUtils.customerCatalogMenu.addItem(item);
+    }
+
+    @Override
+    public void createDateItem() {
+        MenuItem item = new MenuItem("Sort by date of publication", null, ActionEnum.SORT_BOOKS_BY_DATE);
+        MenuUtils.customerCatalogMenu.addItem(item);
+    }
+
     public void createNewOrderItem() {
         MenuItem item = new MenuItem("Create order", null, ActionEnum.NEW_ORDER);
         MenuUtils.customerCatalogMenu.addItem(item);

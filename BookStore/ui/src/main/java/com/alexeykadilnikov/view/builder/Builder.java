@@ -20,6 +20,8 @@ public class Builder {
         baseCatalogBuilder.createShowDescriptionItem();
         baseCatalogBuilder.createSortByNameItem();
         baseCatalogBuilder.createSortByPriceItem();
+        baseCatalogBuilder.createCountItem();
+        baseCatalogBuilder.createDateItem();
         baseCatalogBuilder.createGoBackItem();
 
         CustomerMenuBuilder customerMenuBuilder = new CustomerMenuBuilder();
@@ -45,6 +47,8 @@ public class Builder {
         adminOrderMenuBuilder.createGetOrderDetailItem();
         adminOrderMenuBuilder.createGetEarnedMoneyItem();
         adminOrderMenuBuilder.createSortByExecutionDateItem();
+        adminOrderMenuBuilder.createSortByExecutionItem();
+        adminOrderMenuBuilder.createSetOrderStatusItem();
         adminOrderMenuBuilder.createSortByPriceItem();
         adminOrderMenuBuilder.createSortByStatusItem();
         adminOrderMenuBuilder.createGoBackItem();
@@ -55,6 +59,8 @@ public class Builder {
         customerCatalogBuilder.createNewOrderItem();
         customerCatalogBuilder.createSortByNameItem();
         customerCatalogBuilder.createSortByPriceItem();
+        customerCatalogBuilder.createCountItem();
+        customerCatalogBuilder.createDateItem();
         customerCatalogBuilder.createGoBackItem();
 
         AdminCatalogBuilder adminCatalogBuilder = new AdminCatalogBuilder();
@@ -63,6 +69,10 @@ public class Builder {
         adminCatalogBuilder.createSortByNameItem();
         adminCatalogBuilder.createSortByPriceItem();
         adminCatalogBuilder.createStaleBooksItem();
+        adminCatalogBuilder.createWriteOffBookItem();
+        adminCatalogBuilder.createCountItem();
+        adminCatalogBuilder.createAddBookItem();
+        adminCatalogBuilder.createDateItem();
         adminCatalogBuilder.createGoBackItem();
     }
 

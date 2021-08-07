@@ -38,10 +38,14 @@ public class MenuController {
         Scanner sc = new Scanner(System.in);
         int choice = -1;
 
-        while (choice < 0 || choice > maxChoice) {
-            System.out.println("Enter your selection: ");
+        do {
+            System.out.println("Enter a number of item:");
+            while (!sc.hasNextInt()) {
+                System.out.println("That's not a number. Please try again:");
+                sc.next();
+            }
             choice = sc.nextInt();
-        }
+        } while (choice < 0 || choice > maxChoice);
 
         return choice;
     }

@@ -39,4 +39,16 @@ public class BookController {
         Book book = bookService.getByIndex(bookId);
         System.out.println(book.getDescription());
     }
+
+    public void writeOff(int bookId) {
+        Book book = bookService.getByIndex(bookId);
+        book.setCount(0);
+        System.out.println(book);
+    }
+
+    public void addBook(int bookId, int count){
+        bookService.addBook(bookId, count);
+        Book book = bookService.getByIndex(bookId);
+        System.out.println(book);
+    }
 }

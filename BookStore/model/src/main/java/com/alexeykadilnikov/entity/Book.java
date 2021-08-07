@@ -41,6 +41,7 @@ public class Book extends BaseEntity {
                 ", price=" + price +
                 ", count=" + count +
                 ", dateOfReceipt=" + dateOfReceipt +
+                ", dateOfPublication=" + publicationYear +
                 "}\n";
     }
 

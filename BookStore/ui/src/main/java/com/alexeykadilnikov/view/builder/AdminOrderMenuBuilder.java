@@ -52,4 +52,14 @@ public class AdminOrderMenuBuilder implements OrderMenuBuilder {
         MenuItem item = new MenuItem("Get order detail", null, ActionEnum.GET_ORDER_DETAIL);
         MenuUtils.adminOrderMenu.addItem(item);
     }
+
+    public void createSetOrderStatusItem() {
+        MenuItem item = new MenuItem("Set order status", null, ActionEnum.SET_ORDER_STATUS);
+        MenuUtils.adminOrderMenu.addItem(item);
+    }
+
+    public void createSortByExecutionItem() {
+        MenuItem item = new MenuItem("Sort by execution date", null, ActionEnum.SORT_BY_EXEC_DATE);
+        MenuUtils.adminOrderMenu.addItem(item);
+    }
 }

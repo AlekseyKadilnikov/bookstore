@@ -93,6 +93,12 @@ public class OrderController {
         sort(ordersBetweenDates, comparator);
     }
 
+    public void setStatus(int orderId, OrderStatus status) {
+        Order order = orderService.getByIndex(orderId);
+        order.setStatus(status);
+        System.out.println(order);
+    }
+
     public void showEarnedMoneyForPeriod(String dateAfterS, String dateBeforeS) {
         int sum = 0;
         LocalDate dateAfter = LocalDate.parse(dateAfterS);
