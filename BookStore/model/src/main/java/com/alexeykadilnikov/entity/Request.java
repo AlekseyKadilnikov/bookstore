@@ -3,6 +3,7 @@ package com.alexeykadilnikov.entity;
 import com.alexeykadilnikov.RequestStatus;
 
 public class Request extends BaseEntity {
+    private static final long serialVersionUID = 4499720100063137694L;
     private static long idCount = 0;
     private final String name;
     private int count = 1;

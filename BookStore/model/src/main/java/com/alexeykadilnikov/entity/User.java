@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User extends BaseEntity {
+    private static final long serialVersionUID = -1624659229198950104L;
     private static long idCount = 0;
     private String username;
-    private List<Order> orders = new ArrayList<>();
+    private final List<Order> orders = new ArrayList<>();
 
     public User(String username) {
         super(idCount++);

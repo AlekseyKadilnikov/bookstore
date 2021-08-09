@@ -4,10 +4,10 @@ import com.alexeykadilnikov.RequestStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Book extends BaseEntity {
+    private static final long serialVersionUID = 2032341091985408913L;
     private static long idCount = 0;
     private String name;
     private String author;
@@ -17,8 +17,8 @@ public class Book extends BaseEntity {
     private int count;
     private LocalDate dateOfReceipt = LocalDate.now();;
     private String description = "";
-    private List<Request> commonRequests = new ArrayList<>();
-    private List<Request> orderRequests = new ArrayList<>();
+    private final List<Request> commonRequests = new ArrayList<>();
+    private final List<Request> orderRequests = new ArrayList<>();
 
 
     public Book(String name, String author, String publisher, int publicationYear, int price, int count) {

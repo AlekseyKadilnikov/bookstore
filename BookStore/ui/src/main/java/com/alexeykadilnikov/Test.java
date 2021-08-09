@@ -59,8 +59,10 @@ public class Test {
         bookRepository.getByIndex(5).setDescription("Description6");
         bookRepository.getByIndex(6).setDescription("Description7");
 
-        MenuController menuController = MenuController.getInstance();
-        menuController.run();
+//        MenuController menuController = MenuController.getInstance();
+//        menuController.run();
 
+        OrderController orderController = OrderController.getInstance();
+        orderController.importOrders();
     }
 }

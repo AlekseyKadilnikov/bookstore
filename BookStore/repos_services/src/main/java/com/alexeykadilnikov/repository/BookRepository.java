@@ -48,7 +48,12 @@ public class BookRepository implements IRepository<Book, Long> {
     }
 
     public Book getByIndex(int index) {
-        return books.get(index);
+        if (index >= books.size()) {
+            return null;
+        }
+        else {
+            return books.get(index);
+        }
     }
 
     public static BookRepository getInstance() {

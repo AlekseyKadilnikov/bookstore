@@ -43,7 +43,12 @@ public class UserRepository implements IRepository<User, Long>{
     }
 
     public User getByIndex(int index) {
-        return users.get(index);
+        if(index >= users.size()) {
+            return null;
+        }
+        else {
+            return users.get(index);
+        }
     }
 
     public static UserRepository getInstance() {

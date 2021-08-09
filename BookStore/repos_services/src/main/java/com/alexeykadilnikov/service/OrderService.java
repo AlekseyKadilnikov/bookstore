@@ -108,6 +108,10 @@ public class OrderService implements IOrderService {
         return instance;
     }
 
+    public void saveOrder(Order order) {
+        orderRepository.save(order);
+    }
+
     public Order getByIndex(int index) {
         return orderRepository.getByIndex(index);
     }
