@@ -39,4 +39,12 @@ public class RequestController {
         List<Request> requests = requestService.sort(book, comparator);
         System.out.println(requests.toString());
     }
+
+    public void importRequests() {
+
+    }
+
+    public void exportRequests() {
+
+    }
 }

@@ -13,8 +13,4 @@ public class OrderComparator {
             (o1, o2) -> o1.getTotalPrice() - o2.getTotalPrice();
     public static final Comparator<Order> PriceComparatorDescending =
             (o1, o2) -> o2.getTotalPrice() - o1.getTotalPrice();
-    public static final Comparator<Order> StatusComparatorAscending =
-            (o1, o2) -> o1.getStatus().getStatusCode() - o2.getStatus().getStatusCode();
-    public static final Comparator<Order> StatusComparatorDescending =
-            (o1, o2) -> o2.getStatus().getStatusCode() - o1.getStatus().getStatusCode();
 }

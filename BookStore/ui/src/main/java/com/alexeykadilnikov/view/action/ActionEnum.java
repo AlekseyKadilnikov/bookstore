@@ -301,6 +301,46 @@ public enum ActionEnum implements IAction {
         else if(sortNameNum == 1 && sortTypeNum == 1) {
             bookController.sort(staleBooks, BookComparator.PriceComparatorDescending);
         }
+    }),
+
+    IMPORT_USERS(() -> {
+        UserController userController = UserController.getInstance();
+        userController.importUsers();
+    }),
+
+    EXPORT_USERS(() -> {
+        UserController userController = UserController.getInstance();
+        userController.exportUsers();
+    }),
+
+    IMPORT_BOOKS(() -> {
+        BookController bookController = BookController.getInstance();
+        bookController.importBooks();
+    }),
+
+    EXPORT_BOOKS(() -> {
+        BookController bookController = BookController.getInstance();
+        bookController.exportBooks();
+    }),
+
+    IMPORT_ORDERS(() -> {
+        OrderController orderController = OrderController.getInstance();
+        orderController.importOrders();
+    }),
+
+    EXPORT_ORDERS(() -> {
+        OrderController orderController = OrderController.getInstance();
+        orderController.exportOrders();
+    }),
+
+    IMPORT_REQUESTS(() -> {
+        RequestController requestController = RequestController.getInstance();
+        requestController.importRequests();
+    }),
+
+    EXPORT_REQUESTS(() -> {
+        RequestController requestController = RequestController.getInstance();
+        requestController.exportRequests();
     });
 
     private final IAction action;

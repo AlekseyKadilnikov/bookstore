@@ -39,4 +39,12 @@ public class UserController {
         }
         return instance;
     }
+
+    public void importUsers() {
+
+    }
+
+    public void exportUsers() {
+
+    }
 }

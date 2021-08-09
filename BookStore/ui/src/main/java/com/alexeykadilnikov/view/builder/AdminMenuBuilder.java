@@ -27,4 +27,9 @@ public class AdminMenuBuilder implements UserMenuBuilder {
         MenuItem item = new MenuItem("Show requests for book", null, ActionEnum.SHOW_REQUESTS_FOR_BOOK);
         MenuUtils.adminMenu.addItem(item);
     }
+
+    public void createImportExportItem() {
+        MenuItem item = new MenuItem("Import&Export", MenuUtils.importExportMenu, null);
+        MenuUtils.adminMenu.addItem(item);
+    }
 }
