@@ -22,23 +22,9 @@ public class OrderService implements IOrderService {
 
     @Override
     public void createOrder(List<Book> books, User user) {
-        for (Book book : books) {
-            if(book.getCount() == 0) {
-                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW));
-                System.out.println("Common request for " + book.getAuthor() + " - " + book.getName() + " created");
-                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.COMMON));
-                System.out.println("Order request for " + book.getAuthor() + " - " + book.getName() + " created");
-            }
-            else {
-                book.setCount(book.getCount() - 1);
-            }
-        }
+        checkBookAvailable(books);
         Order order = new Order(books, user);
-        int totalOrderPrice = 0;
-        for(Book book : books) {
-            totalOrderPrice += book.getPrice();
-        }
-        order.setTotalPrice(totalOrderPrice);
+        order.setTotalPrice(calculatePrice(order));
         orderRepository.save(order);
         user.addOrder(order);
         System.out.println("Order id = " + order.getId() + " created");
@@ -109,11 +95,38 @@ public class OrderService implements IOrderService {
     }
 
     public void saveOrder(Order order) {
+        if(order.getStatus() == OrderStatus.NEW) {
+            checkBookAvailable(order.getBooks());
+        }
+        order.setTotalPrice(calculatePrice(order));
+        order.getUser().addOrder(order);
         orderRepository.save(order);
+    }
+
+    private void checkBookAvailable(List<Book> books) {
+        for (Book book : books) {
+            if(book.getCount() == 0) {
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW));
+                System.out.println("Common request for " + book.getAuthor() + " - " + book.getName() + " created");
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.COMMON));
+                System.out.println("Order request for " + book.getAuthor() + " - " + book.getName() + " created");
+            }
+            else {
+                book.setCount(book.getCount() - 1);
+            }
+        }
     }
 
     public Order getByIndex(int index) {
         return orderRepository.getByIndex(index);
+    }
+
+    public int calculatePrice(Order order) {
+        int totalPrice = 0;
+        for (Book book : order.getBooks()) {
+            totalPrice += book.getPrice();
+        }
+        return totalPrice;
     }
 
     public List<Order> sort(List<Order> orders, Comparator<Order> comparator) {

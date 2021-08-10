@@ -20,9 +20,11 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderController {
     private static OrderController instance;
@@ -140,41 +142,41 @@ public class OrderController {
     }
 
     public void importOrders() {
+        int line = 1;
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
-            List<Order> orders = orderService.getAll();
             String[] nextRecord;
             int orderId = -1;
             int userId = -1;
+            int statusCode = -1;
+            LocalDate date = null;
             List<Integer> bookIds = new ArrayList<>();
-            int line = 1;
             while ((nextRecord = csvReader.readNext()) != null) {
-                if(nextRecord.length < 3) {
+                if (line == 1) {
+                    line++;
+                    continue;
+                }
+                if(nextRecord.length < 5) {
                     System.out.println("Not enough parameters! (line " + line + ")");
                     return;
                 }
                 for(int i = 0; i < nextRecord.length; i++) {
                     if(i == 0) {
-                        if(!StringUtils.isNumeric(nextRecord[i])) {
-                            System.out.println("Error reading order id! (line " + line + ")");
-                            return;
-                        }
                         orderId = Integer.parseInt(nextRecord[i]);
                     }
+                    else if (i == 1) {
+                        statusCode = Integer.parseInt(nextRecord[i]);
+                    }
+                    else if (i == 2) {
+                        if(!nextRecord[i].equals(" "))
+                            date = LocalDate.parse(nextRecord[i]);
+                    }
                     else if(i == nextRecord.length - 1) {
-                        if(!StringUtils.isNumeric(nextRecord[i])) {
-                            System.out.println("Error reading user id! (line " + line + ")");
-                            return;
-                        }
                         userId = Integer.parseInt(nextRecord[i]);
                     }
                     else {
-                        if(!StringUtils.isNumeric(nextRecord[i])) {
-                            System.out.println("Error reading book id! (line " + line + ")");
-                            return;
-                        }
                         bookIds.add(Integer.parseInt(nextRecord[i]));
                     }
                 }
@@ -183,6 +185,22 @@ public class OrderController {
                 BookService bookService = BookService.getInstance();
                 User user = userService.getByIndex(userId);
                 Order order = orderService.getByIndex(orderId);
+                OrderStatus status = null;
+                switch (statusCode) {
+                    case 0:
+                        status = OrderStatus.NEW;
+                        break;
+                    case 1:
+                        status = OrderStatus.SUCCESS;
+                        break;
+                    case 2:
+                        status = OrderStatus.CANCELED;
+                        break;
+                    default:
+                        System.out.println("Invalid status code! (line " + line + ")");
+                        return;
+                }
+
                 List<Book> books = new ArrayList<>();
                 Book book;
                 for (int id : bookIds) {
@@ -193,31 +211,59 @@ public class OrderController {
                     }
                     books.add(book);
                 }
+
+                if(status != OrderStatus.SUCCESS && date != null) {
+                    System.out.println("There should be no execution date with status code 0 or 2! (line " + line + ")");
+                    return;
+                }
+                else if(status == OrderStatus.SUCCESS && date == null) {
+                    System.out.println("Invalid execution date! (line " + line + ")");
+                    return;
+                }
+
                 if(user == null) {
                     System.out.println("User with id = " + userId + " does not exists!");
                     return;
                 }
                 else {
                     if(order == null) {
-                        orderService.createOrder(books, user);
+                        order = new Order(books, user);
+                        order.setStatus(status);
+                        order.setExecutionDate(date);
+                        order.setId(orderId);
+                        orderService.saveOrder(order);
                     }
                     else {
                         order.setBooks(books);
                         order.setUser(user);
+                        order.setStatus(status);
+                        order.setExecutionDate(date);
+                        order.setTotalPrice(orderService.calculatePrice(order));
                     }
                 }
                 bookIds.clear();
+                date = null;
                 line++;
             }
         }
         catch (IOException e) {
             System.out.println("File not found!");
         }
+        catch (IndexOutOfBoundsException e) {
+            System.out.println("Invalid count of parameters! (line " + line + ")");
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Invalid parameter! (line " + line + ")");
+        }
+        catch (DateTimeParseException e) {
+            System.out.println("Invalid date (should be: yyyy-mm-dd)! (line " + line + ")");
+        }
         catch (CsvValidationException e) {
-            System.out.println("CSV validation error!");
+            System.out.println("CSV validation error! (line " + line + ")");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!");
+            System.out.println("Unknown error! (line " + line + ")");
+            e.printStackTrace();
         }
     }
 
