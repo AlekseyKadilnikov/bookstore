@@ -157,26 +157,22 @@ public class OrderController {
                     line++;
                     continue;
                 }
-                if(nextRecord.length < 5) {
-                    System.out.println("Not enough parameters! (line " + line + ")");
-                    return;
-                }
                 for(int i = 0; i < nextRecord.length; i++) {
                     if(i == 0) {
-                        orderId = Integer.parseInt(nextRecord[i]);
+                        orderId = Integer.parseInt(nextRecord[i].trim());
                     }
                     else if (i == 1) {
-                        statusCode = Integer.parseInt(nextRecord[i]);
+                        statusCode = Integer.parseInt(nextRecord[i].trim());
                     }
                     else if (i == 2) {
                         if(!nextRecord[i].equals(" "))
-                            date = LocalDate.parse(nextRecord[i]);
+                            date = LocalDate.parse(nextRecord[i].trim());
                     }
                     else if(i == nextRecord.length - 1) {
-                        userId = Integer.parseInt(nextRecord[i]);
+                        userId = Integer.parseInt(nextRecord[i].trim());
                     }
                     else {
-                        bookIds.add(Integer.parseInt(nextRecord[i]));
+                        bookIds.add(Integer.parseInt(nextRecord[i].trim()));
                     }
                 }
 

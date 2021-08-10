@@ -1,5 +1,6 @@
 package com.alexeykadilnikov;
 
+import com.alexeykadilnikov.controller.BookController;
 import com.alexeykadilnikov.controller.OrderController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
@@ -65,5 +66,7 @@ public class Test {
         OrderController orderController = OrderController.getInstance();
         orderController.importOrders();
         orderController.exportOrders("-1");
+        BookController bookController = BookController.getInstance();
+        bookController.importBooks();
     }
 }

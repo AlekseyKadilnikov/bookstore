@@ -61,6 +61,10 @@ public class BookService implements IBookService {
         return bookRepository.getByIndex(index);
     }
 
+    public Book getById(long id) {
+        return bookRepository.getById(id);
+    }
+
     public List<Book> getOldBooks(int monthsAmount) {
         LocalDate date = LocalDate.now().minusMonths(monthsAmount);
         List<Book> books = new ArrayList<>();
