@@ -64,5 +64,6 @@ public class Test {
 
         OrderController orderController = OrderController.getInstance();
         orderController.importOrders();
+        orderController.exportOrders("-1");
     }
 }

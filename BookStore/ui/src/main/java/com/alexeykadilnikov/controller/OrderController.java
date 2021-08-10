@@ -9,14 +9,12 @@ import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.UserService;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
+import com.alexeykadilnikov.view.builder.ImportExportBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -31,7 +29,8 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    private static final String CSV_FILE_PATH = "./orders.csv";
+    private static final String CSV_FILE_PATH_READ = "./ordersRead.csv";
+    private static final String CSV_FILE_PATH_WRITE = "./ordersWrite.csv";
 
     private OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -144,7 +143,7 @@ public class OrderController {
     public void importOrders() {
         int line = 1;
         try (
-                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH));
+                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH_READ));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             String[] nextRecord;
@@ -267,7 +266,51 @@ public class OrderController {
         }
     }
 
-    public void exportOrders() {
+    public void exportOrders(String orderIds) {
+        int line = 1;
+        try (
+                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                CSVWriter csvWriter = new CSVWriter(writer);
+        ) {
+            List<String[]> entries = new ArrayList<>();
+            if(orderIds.equals("-1")) {
+                List<Order> orders = orderService.getAll();
+                for(Order order : orders) {
+                    fillEntry(entries, order);
+                }
+            }
+            else {
+                String[] idsStr = orderIds.split(" ");
+                List<Long> ids = new ArrayList<>();
+                for(String idStr : idsStr) {
+                    ids.add(Long.parseLong(idStr));
+                }
+                for(long id : ids) {
+                    Order order = orderService.getById(id);
+                    fillEntry(entries, order);
+                }
+            }
+            csvWriter.writeAll(entries);
+        }
+        catch (IOException e) {
+            System.out.println("File not found!");
+        }
+        catch (Exception e) {
+            System.out.println("Unknown error! (line " + line + ")");
+            //e.printStackTrace();
+        }
+    }
 
+    private void fillEntry(List<String[]> entries, Order order) {
+        List<Book> books = order.getBooks();
+        String[] item = new String[4 + books.size()];
+        item[0] = String.valueOf(order.getId());
+        item[1] = String.valueOf(order.getStatus().getStatusCode());
+        item[2] = String.valueOf(order.getExecutionDate());
+        for(int i = 0; i < books.size(); i++) {
+            item[i + 3] = String.valueOf(books.get(i).getId());
+        }
+        item[item.length - 1] = String.valueOf(order.getUser().getId());
+        entries.add(item);
     }
 }

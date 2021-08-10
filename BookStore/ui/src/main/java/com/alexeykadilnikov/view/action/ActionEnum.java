@@ -330,7 +330,7 @@ public enum ActionEnum implements IAction {
 
     EXPORT_ORDERS(() -> {
         OrderController orderController = OrderController.getInstance();
-        orderController.exportOrders();
+        orderController.exportOrders("0");
     }),
 
     IMPORT_REQUESTS(() -> {
@@ -391,9 +391,6 @@ public enum ActionEnum implements IAction {
                 str = getStringInput(message);
             }
             num = Integer.parseInt(str);
-            if(num > maxNumber) {
-                int a = 1;
-            }
         } while (num < 0 || num > maxNumber);
 
         return num;

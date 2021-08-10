@@ -121,6 +121,10 @@ public class OrderService implements IOrderService {
         return orderRepository.getByIndex(index);
     }
 
+    public Order getById(long id) {
+        return orderRepository.getById(id);
+    }
+
     public int calculatePrice(Order order) {
         int totalPrice = 0;
         for (Book book : order.getBooks()) {
