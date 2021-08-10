@@ -310,7 +310,7 @@ public enum ActionEnum implements IAction {
 
     EXPORT_USERS(() -> {
         UserController userController = UserController.getInstance();
-        userController.exportUsers();
+        userController.exportUsers("0");
     }),
 
     IMPORT_BOOKS(() -> {

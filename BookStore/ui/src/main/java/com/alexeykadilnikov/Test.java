@@ -2,9 +2,11 @@ package com.alexeykadilnikov;
 
 import com.alexeykadilnikov.controller.BookController;
 import com.alexeykadilnikov.controller.OrderController;
+import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
 import com.alexeykadilnikov.repository.UserRepository;
@@ -68,5 +70,9 @@ public class Test {
         orderController.exportOrders("-1");
         BookController bookController = BookController.getInstance();
         bookController.importBooks();
+        bookController.exportBooks("9");
+        UserController userController = UserController.getInstance();
+        userController.importUsers();
+        userController.exportUsers("0 1");
     }
 }

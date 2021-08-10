@@ -283,6 +283,10 @@ public class OrderController {
                 }
                 for(long id : ids) {
                     Order order = orderService.getById(id);
+                    if(order == null) {
+                        System.out.println("Order with id = " + id + " does not exist!");
+                        return;
+                    }
                     fillEntry(entries, order);
                 }
             }

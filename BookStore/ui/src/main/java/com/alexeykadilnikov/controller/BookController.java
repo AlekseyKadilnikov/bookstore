@@ -77,9 +77,13 @@ public class BookController {
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             String[] nextRecord;
-            int bookId = 0;
-            String name = "", author = "", publisher = "";
-            int year = 0, price = 0, count = 0;
+            String name = "";
+            String author = "";
+            String publisher = "";
+            String description = "";
+            int year = 0;
+            int price = 0;
+            int count = 0;
             long id = 0;
             LocalDate dateOfReceipt = null;
             while ((nextRecord = csvReader.readNext()) != null) {
@@ -102,15 +106,18 @@ public class BookController {
                             publisher = nextRecord[i];
                             break;
                         case 4:
-                            year = Integer.parseInt(nextRecord[i].trim());
+                            description = nextRecord[i];
                             break;
                         case 5:
-                            price = Integer.parseInt(nextRecord[i].trim());
+                            year = Integer.parseInt(nextRecord[i].trim());
                             break;
                         case 6:
-                            count = Integer.parseInt(nextRecord[i].trim());
+                            price = Integer.parseInt(nextRecord[i].trim());
                             break;
                         case 7:
+                            count = Integer.parseInt(nextRecord[i].trim());
+                            break;
+                        case 8:
                             dateOfReceipt = LocalDate.parse(nextRecord[i].trim());
                             break;
                         default:
@@ -127,6 +134,7 @@ public class BookController {
                     book.setName(name);
                     book.setAuthor(author);
                     book.setPublisher(publisher);
+                    book.setDescription(description);
                     book.setPublicationYear(year);
                     book.setPrice(price);
                     book.setCount(count);
@@ -157,50 +165,55 @@ public class BookController {
     }
 
     public void exportBooks(String bookIds) {
-//        int line = 1;
-//        try (
-//                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
-//                CSVWriter csvWriter = new CSVWriter(writer);
-//        ) {
-//            List<String[]> entries = new ArrayList<>();
-//            if(orderIds.equals("-1")) {
-//                List<Order> orders = orderService.getAll();
-//                for(Order order : orders) {
-//                    fillEntry(entries, order);
-//                }
-//            }
-//            else {
-//                String[] idsStr = orderIds.split(" ");
-//                List<Long> ids = new ArrayList<>();
-//                for(String idStr : idsStr) {
-//                    ids.add(Long.parseLong(idStr));
-//                }
-//                for(long id : ids) {
-//                    Order order = orderService.getById(id);
-//                    fillEntry(entries, order);
-//                }
-//            }
-//            csvWriter.writeAll(entries);
-//        }
-//        catch (IOException e) {
-//            System.out.println("File not found!");
-//        }
-//        catch (Exception e) {
-//            System.out.println("Unknown error! (line " + line + ")");
-//            //e.printStackTrace();
-//        }
+        int line = 1;
+        try (
+                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                CSVWriter csvWriter = new CSVWriter(writer);
+        ) {
+            List<String[]> entries = new ArrayList<>();
+            List<Book> books = bookService.getAll();
+            if(bookIds.equals("-1")) {
+                for(Book book : books) {
+                    fillEntry(entries, book);
+                }
+            }
+            else {
+                String[] idsStr = bookIds.split(" ");
+                List<Long> ids = new ArrayList<>();
+                for(String idStr : idsStr) {
+                    ids.add(Long.parseLong(idStr));
+                }
+                for(long id : ids) {
+                    Book book = bookService.getById(id);
+                    if(book == null) {
+                        System.out.println("Book with id = " + id + " does not exist!");
+                        return;
+                    }
+                    fillEntry(entries, book);
+                }
+            }
+            csvWriter.writeAll(entries);
+        }
+        catch (IOException e) {
+            System.out.println("File not found!");
+        }
+        catch (Exception e) {
+            System.out.println("Unknown error! (line " + line + ")");
+            //e.printStackTrace();
+        }
     }
 
-    private void fillEntry(List<String[]> entries, Order order) {
-        List<Book> books = order.getBooks();
-        String[] item = new String[4 + books.size()];
-        item[0] = String.valueOf(order.getId());
-        item[1] = String.valueOf(order.getStatus().getStatusCode());
-        item[2] = String.valueOf(order.getExecutionDate());
-        for(int i = 0; i < books.size(); i++) {
-            item[i + 3] = String.valueOf(books.get(i).getId());
-        }
-        item[item.length - 1] = String.valueOf(order.getUser().getId());
+    private void fillEntry(List<String[]> entries, Book book) {
+        String[] item = new String[9];
+        item[0] = String.valueOf(book.getId());
+        item[1] = book.getName();
+        item[2] = book.getAuthor();
+        item[3] = book.getPublisher();
+        item[4] = book.getDescription();
+        item[5] = String.valueOf(book.getPublicationYear());
+        item[6] = String.valueOf(book.getCount());
+        item[7] = String.valueOf(book.getCount());
+        item[8] = String.valueOf(book.getPublicationYear());
         entries.add(item);
     }
 }
