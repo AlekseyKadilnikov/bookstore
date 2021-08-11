@@ -43,7 +43,7 @@ public class OrderService implements IOrderService {
             List<Request> orderRequests = book.getOrderRequests();
             for(Request request : orderRequests) {
                 if(request.getStatus() == RequestStatus.NEW) {
-                    book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS));
+                    book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS), 1);
                     if(request.getCount() > 0) {
                         request.setCount(request.getCount() - 1);
                     }
@@ -106,9 +106,9 @@ public class OrderService implements IOrderService {
     private void checkBookAvailable(List<Book> books) {
         for (Book book : books) {
             if(book.getCount() == 0) {
-                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW));
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.NEW), 1);
                 System.out.println("Common request for " + book.getAuthor() + " - " + book.getName() + " created");
-                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.COMMON));
+                book.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(), RequestStatus.COMMON), 1);
                 System.out.println("Order request for " + book.getAuthor() + " - " + book.getName() + " created");
             }
             else {

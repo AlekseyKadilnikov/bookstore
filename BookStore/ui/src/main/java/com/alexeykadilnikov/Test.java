@@ -43,13 +43,13 @@ public class Test {
         orderService.completeOrder(3);
 
         RequestService requestService = RequestService.getInstance();
-        requestService.createRequest("читать Бесы достоевский");
-        requestService.createRequest("читать Бесы достоевский");
-        requestService.createRequest("Бесы Федор");
-        requestService.createRequest("достоевский Бесы");
-        requestService.createRequest("достоевский Бесы");
-        requestService.createRequest("достоевский Бесы");
-        requestService.createRequest("федор достоевский");
+        requestService.createRequest("читать Бесы достоевский", 1);
+        requestService.createRequest("читать Бесы достоевский", 1);
+        requestService.createRequest("Бесы Федор", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("федор достоевский", 1);
 
         bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
         bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
@@ -79,5 +79,7 @@ public class Test {
         userController.exportUsers("-1");
 
         RequestController requestController = RequestController.getInstance();
+        requestController.importRequests();
+        requestController.exportRequests("1");
     }
 }

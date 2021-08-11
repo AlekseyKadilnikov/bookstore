@@ -25,7 +25,7 @@ public class BookService implements IBookService {
         List<Request> requests = book.getOrderRequests();
         for(Request request : requests) {
             if(request.getStatus() == RequestStatus.NEW) {;
-                book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS));
+                book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS), 1);
                 if(request.getCount() > 0) {
                     request.setCount(request.getCount() - 1);
                 }

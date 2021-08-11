@@ -53,23 +53,25 @@ public class Book extends BaseEntity {
         return orderRequests;
     }
 
-    public void addRequest(Request request) {
+    public void addRequest(Request request, int count) {
         if(request.getStatus() == RequestStatus.COMMON) {
             for(Request r : commonRequests) {
                 if(request.getName().equals(r.getName())) {
-                    r.setCount(r.getCount() + 1);
+                    r.setCount(r.getCount() + count);
                     return;
                 }
             }
+            request.setCount(count);
             commonRequests.add(request);
         }
         else {
             for(Request r : orderRequests) {
                 if(request.getName().equals(r.getName())) {
-                    r.setCount(r.getCount() + 1);
+                    r.setCount(r.getCount() + count);
                     return;
                 }
             }
+            request.setCount(count);
             orderRequests.add(request);
         }
     }

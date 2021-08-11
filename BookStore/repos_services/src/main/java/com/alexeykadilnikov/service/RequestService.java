@@ -20,7 +20,7 @@ public class RequestService implements IRequestService {
         this.bookRepository = bookRepository;
     }
 
-    public Set<Book> createRequest(String name) {
+    public Set<Book> createRequest(String name, int count) {
         String[] words = name.split(" ");
         List<Book> books = bookRepository.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
@@ -38,20 +38,20 @@ public class RequestService implements IRequestService {
 
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
             for(Book book : booksByName) {
-                book.addRequest(new Request(name, RequestStatus.COMMON));
+                book.addRequest(new Request(name, RequestStatus.COMMON), count);
             }
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
             for(Book book : booksByAuthor) {
-                book.addRequest(new Request(name, RequestStatus.COMMON));
+                book.addRequest(new Request(name, RequestStatus.COMMON), count);
             }
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
             for(Book book : booksByAuthor) {
-                book.addRequest(new Request(name, RequestStatus.COMMON));
+                book.addRequest(new Request(name, RequestStatus.COMMON), count);
             }
             return booksByAuthor;
         }

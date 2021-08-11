@@ -263,7 +263,6 @@ public class OrderController {
     }
 
     public void exportOrders(String orderIds) {
-        int line = 1;
         try (
                 Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
                 CSVWriter csvWriter = new CSVWriter(writer);
@@ -296,7 +295,7 @@ public class OrderController {
             System.out.println("File not found!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error! (line " + line + ")");
+            System.out.println("Unknown error!");
             //e.printStackTrace();
         }
     }

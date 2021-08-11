@@ -340,7 +340,7 @@ public enum ActionEnum implements IAction {
 
     EXPORT_REQUESTS(() -> {
         RequestController requestController = RequestController.getInstance();
-        requestController.exportRequests();
+        requestController.exportRequests("2");
     });
 
     private final IAction action;
