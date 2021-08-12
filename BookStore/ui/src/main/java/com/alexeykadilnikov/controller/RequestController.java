@@ -7,6 +7,7 @@ import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.RequestService;
+import com.alexeykadilnikov.utils.StringUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -21,9 +22,6 @@ import java.util.*;
 
 public class RequestController {
     private static RequestController instance;
-
-    private static final String CSV_FILE_PATH_READ = "./requestRead.csv";
-    private static final String CSV_FILE_PATH_WRITE = "./requestWrite.csv";
 
     private final RequestService requestService;
 
@@ -51,35 +49,112 @@ public class RequestController {
         System.out.println(requests.toString());
     }
 
-    public void importRequests() {
+    public void importRequests(String path) {
         int line = 1;
         try (
-                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH_READ));
+                Reader reader = Files.newBufferedReader(Paths.get(path));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
+            BookService bookService = BookService.getInstance();
             String name = "";
+            String status = "";
             int count = 0;
+            long id = 0;
+            Set<Long> ordersId = new HashSet<>();
+            Set<Long> booksId = new HashSet<>();
             String[] nextRecord;
-            RequestStatus status = null;
             while ((nextRecord = csvReader.readNext()) != null) {
-                if (line == 1) {
-                    line++;
-                    continue;
-                }
+//                if (line == 1) {
+//                    line++;
+//                    continue;
+//                }
                 for(int i = 0; i < nextRecord.length; i++) {
-                    switch (i) {
-                        case 0:
-                            name = nextRecord[i];
-                            break;
-                        case 1:
-                            count = Integer.parseInt(nextRecord[i].trim());
-                            break;
-                        default:
-                            break;
+                    if(i == 0) {
+                        id = Long.parseLong(nextRecord[i].trim());
+                    } else if(i == 1) {
+                        while (StringUtils.isNumeric(nextRecord[i].trim())) {
+                            booksId.add(Long.parseLong(nextRecord[i].trim()));
+                            i++;
+                        }
+                        name = nextRecord[i];
+                        i++;
+                        count = Integer.parseInt(nextRecord[i].trim());
+                        i++;
+                        status = nextRecord[i].trim();
+                    } else {
+                        ordersId.add(Long.parseLong(nextRecord[i].trim()));
                     }
                 }
-
-                requestService.createRequest(name, count);
+                switch (status.toLowerCase()) {
+                    case "new":
+                        for(long bookId : booksId) {
+                            Request request = new Request(name, bookId, ordersId, RequestStatus.NEW);
+                            request.setId(id);
+                            Book book = bookService.getById(bookId);
+                            Request[] orderRequests = book.getOrderRequests();
+                            if(orderRequests[0].getId() != id) {
+                                System.out.println("Invalid request id! (line " + line + ")");
+                            }
+                            if(!orderRequests[0].getName().trim().equals(name.trim())) {
+                                System.out.println("Invalid name of request! (line " + line + ")");
+                                return;
+                            }
+                            if(book.getCount() != 0) {
+                                System.out.println("Invalid status! (line " + line + ")");
+                                return;
+                            }
+                            orderRequests[0].setOrdersId(ordersId);
+                            bookService.createRequest(request, count, bookId);
+                        }
+                        break;
+                    case "common":
+                        Request req = null;
+                        for(long bookId : booksId) {
+                            Book book = bookService.getById(bookId);
+                            List<Request> common = book.getCommonRequests();
+                            long finalId = id;
+                            Request request = common.stream()
+                                    .filter(r -> r.getId() == finalId)
+                                    .findAny()
+                                    .orElse(null);
+                            if(request == null) {
+                                Request r = new Request(name,booksId);
+                                r.setId(id);
+                                bookService.createRequest(r, count, bookId);
+                            }
+                            else if(!request.getName().trim().equals(name.trim())) {
+                                System.out.println("Invalid name of request! (line " + line + ")");
+                                return;
+                            } else {
+                                req = request;
+                            }
+                        }
+                        if(req != null) {
+                            req.setCount(req.getCount() + count);
+                        }
+                        break;
+                    case "success":
+                        for(long bookId : booksId) {
+                            Request request = new Request(name, bookId, new HashSet<>(), RequestStatus.SUCCESS);
+                            request.setId(id);
+                            Book book = bookService.getById(bookId);
+                            Request[] orderRequests = book.getOrderRequests();
+                            if (orderRequests[1].getId() != id) {
+                                System.out.println("Invalid request id! (line " + line + ")");
+                            }
+                            if (!orderRequests[1].getName().trim().equals(name.trim())) {
+                                System.out.println("Invalid name of request! (line " + line + ")");
+                                return;
+                            }
+                            orderRequests[0].setOrdersId(ordersId);
+                            bookService.createRequest(request, count, bookId);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                booksId.clear();
+                ordersId.clear();
                 line++;
             }
         }
@@ -104,24 +179,37 @@ public class RequestController {
         }
     }
 
-    public void exportRequests(String bookId) {
+    public void exportRequests(String path, String bookIds) {
         try (
-                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                Writer writer = Files.newBufferedWriter(Paths.get(path));
                 CSVWriter csvWriter = new CSVWriter(writer);
         ) {
-            List<String[]> entries = new ArrayList<>();
-            long id = Long.parseLong(bookId.trim());
             BookService bookService = BookService.getInstance();
-            Book book = bookService.getById(id);
-            if(book == null) {
-                System.out.println("Book with id = " + bookId + " does not exist!");
-                return;
-            }
-            for(Request request : book.getCommonRequests()) {
-                String[] item = new String[2];
-                item[0] = request.getName();
-                item[1] = String.valueOf(request.getCount());
-                entries.add(item);
+            List<String[]> entries = new ArrayList<>();
+            List<Book> books = bookService.getAll();
+            Set<Request> requests = new HashSet<>();
+            if(bookIds.equals("-1")) {
+                for(Book book : books) {
+                    requests.addAll(book.getCommonRequests());
+                    requests.addAll(Arrays.asList(book.getOrderRequests()));
+                }
+                fillEntry(entries, requests);
+            } else {
+                String[] idsStr = bookIds.split(" ");
+                List<Long> ids = new ArrayList<>();
+                for(String idStr : idsStr) {
+                    ids.add(Long.parseLong(idStr));
+                }
+                for(long id : ids) {
+                    Book book = bookService.getById(id);
+                    if(book == null) {
+                        System.out.println("Book with id = " + id + " does not exist!");
+                        return;
+                    }
+                    requests.addAll(book.getCommonRequests());
+                    requests.addAll(Arrays.asList(book.getOrderRequests()));
+                    fillEntry(entries, requests);
+                }
             }
             csvWriter.writeAll(entries);
         }
@@ -132,8 +220,31 @@ public class RequestController {
             System.out.println("Invalid book id!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!)");
-            //e.printStackTrace();
+            System.out.println("Unknown error!");
+            e.printStackTrace();
+        }
+    }
+
+    private void fillEntry(List<String[]> dst, Set<Request> src) {
+        for (Request request : src) {
+            if(request.getCount() == 0) continue;
+            List<String> itemList = new ArrayList<>();
+            itemList.add(String.valueOf(request.getId()));
+            for(long bookId : request.getBooksId()) {
+                itemList.add(String.valueOf(bookId));
+            }
+            itemList.add(request.getName());
+            itemList.add(String.valueOf(request.getCount()));
+            itemList.add(String.valueOf(request.getStatus().toString()));
+
+            if(request.getStatus() != RequestStatus.COMMON) {
+                for(long orderId : request.getOrdersId()) {
+                    itemList.add(String.valueOf(orderId));
+                }
+            }
+            String[] item = new String[itemList.size()];
+            item = itemList.toArray(item);
+            dst.add(item);
         }
     }
 }

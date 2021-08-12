@@ -21,9 +21,6 @@ import java.util.List;
 public class UserController {
     private static UserController instance;
 
-    private static final String CSV_FILE_PATH_READ = "./userRead.csv";
-    private static final String CSV_FILE_PATH_WRITE = "./userWrite.csv";
-
     private final UserService userService;
 
     private UserController(UserService userService) {
@@ -54,20 +51,16 @@ public class UserController {
         return instance;
     }
 
-    public void importUsers() {
+    public void importUsers(String path) {
         int line = 1;
         try (
-                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH_READ));
+                Reader reader = Files.newBufferedReader(Paths.get(path));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             long id = 0;
             String name = "";
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
-                if (line == 1) {
-                    line++;
-                    continue;
-                }
                 for(int i = 0; i < nextRecord.length; i++) {
                     switch (i) {
                         case 0:
@@ -114,9 +107,9 @@ public class UserController {
         }
     }
 
-    public void exportUsers(String userIds) {
+    public void exportUsers(String path, String userIds) {
         try (
-                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                Writer writer = Files.newBufferedWriter(Paths.get(path));
                 CSVWriter csvWriter = new CSVWriter(writer);
         ) {
             List<String[]> entries = new ArrayList<>();

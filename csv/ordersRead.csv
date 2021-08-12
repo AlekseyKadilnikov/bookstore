@@ -1,4 +1,4 @@
 id,statusCode,execDate,books[],userId
-4,0, ,0,1,2,1
+4,0, ;0,1,2;1
 0,1,2021-08-23,1,1
 6,2, ,2,1

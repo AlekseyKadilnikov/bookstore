@@ -29,9 +29,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    private static final String CSV_FILE_PATH_READ = "./ordersRead.csv";
-    private static final String CSV_FILE_PATH_WRITE = "./ordersWrite.csv";
-
     private OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
@@ -140,10 +137,10 @@ public class OrderController {
         System.out.println("Count = " + count);
     }
 
-    public void importOrders() {
+    public void importOrders(String path) {
         int line = 1;
         try (
-                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH_READ));
+                Reader reader = Files.newBufferedReader(Paths.get(path));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             String[] nextRecord;
@@ -153,10 +150,6 @@ public class OrderController {
             LocalDate date = null;
             List<Integer> bookIds = new ArrayList<>();
             while ((nextRecord = csvReader.readNext()) != null) {
-                if (line == 1) {
-                    line++;
-                    continue;
-                }
                 for(int i = 0; i < nextRecord.length; i++) {
                     if(i == 0) {
                         orderId = Integer.parseInt(nextRecord[i].trim());
@@ -262,9 +255,9 @@ public class OrderController {
         }
     }
 
-    public void exportOrders(String orderIds) {
+    public void exportOrders(String path, String orderIds) {
         try (
-                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                Writer writer = Files.newBufferedWriter(Paths.get(path));
                 CSVWriter csvWriter = new CSVWriter(writer);
         ) {
             List<String[]> entries = new ArrayList<>();

@@ -1,11 +1,7 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
-import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.BookService;
-import com.alexeykadilnikov.service.UserService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -23,9 +19,6 @@ import java.util.List;
 
 public class BookController {
     private static BookController instance;
-
-    private static final String CSV_FILE_PATH_READ = "./booksRead.csv";
-    private static final String CSV_FILE_PATH_WRITE = "./booksWrite.csv";
 
     private final BookService bookService;
 
@@ -70,10 +63,10 @@ public class BookController {
         System.out.println(book);
     }
 
-    public void importBooks() {
+    public void importBooks(String path) {
         int line = 1;
         try (
-                Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH_READ));
+                Reader reader = Files.newBufferedReader(Paths.get(path));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             String[] nextRecord;
@@ -87,10 +80,6 @@ public class BookController {
             long id = 0;
             LocalDate dateOfReceipt = null;
             while ((nextRecord = csvReader.readNext()) != null) {
-                if (line == 1) {
-                    line++;
-                    continue;
-                }
                 for(int i = 0; i < nextRecord.length; i++) {
                     switch (i) {
                         case 0:
@@ -127,7 +116,11 @@ public class BookController {
 
                 Book book = bookService.getById(id);
                 if (book == null) {
-                    System.out.println("Book with id = " + id + " does not exist!");
+                    book = new Book(name,author,publisher,year,price,count);
+                    bookService.createBook(book);
+                    book.setDescription(description);
+                    book.setDateOfReceipt(dateOfReceipt);
+                    book.setId(id);
                     return;
                 }
                 else {
@@ -160,13 +153,13 @@ public class BookController {
         }
         catch (Exception e) {
             System.out.println("Unknown error! (line " + line + ")");
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
-    public void exportBooks(String bookIds) {
+    public void exportBooks(String path, String bookIds) {
         try (
-                Writer writer = Files.newBufferedWriter(Paths.get(CSV_FILE_PATH_WRITE));
+                Writer writer = Files.newBufferedWriter(Paths.get(path));
                 CSVWriter csvWriter = new CSVWriter(writer);
         ) {
             List<String[]> entries = new ArrayList<>();
@@ -211,8 +204,8 @@ public class BookController {
         item[4] = book.getDescription();
         item[5] = String.valueOf(book.getPublicationYear());
         item[6] = String.valueOf(book.getCount());
-        item[7] = String.valueOf(book.getCount());
-        item[8] = String.valueOf(book.getPublicationYear());
+        item[7] = String.valueOf(book.getPrice());
+        item[8] = String.valueOf(book.getDateOfReceipt());
         entries.add(item);
     }
 }

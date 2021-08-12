@@ -36,22 +36,35 @@ public class RequestService implements IRequestService {
             }
         }
 
+        Set<Long> bookIdSet = new HashSet<>();
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
             for(Book book : booksByName) {
-                book.addRequest(new Request(name, RequestStatus.COMMON), count);
+                bookIdSet.add(book.getId());
+            }
+            Request request = new Request(name, bookIdSet);
+            for(Book book : booksByName) {
+                bookRepository.addRequest(request, count, book.getId());
             }
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
             for(Book book : booksByAuthor) {
-                book.addRequest(new Request(name, RequestStatus.COMMON), count);
+                bookIdSet.add(book.getId());
+            }
+            Request request = new Request(name, bookIdSet);
+            for(Book book : booksByAuthor) {
+                bookRepository.addRequest(request, count, book.getId());
             }
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
             for(Book book : booksByAuthor) {
-                book.addRequest(new Request(name, RequestStatus.COMMON), count);
+                bookIdSet.add(book.getId());
+            }
+            Request request = new Request(name, bookIdSet);
+            for(Book book : booksByAuthor) {
+                bookRepository.addRequest(request, count, book.getId());
             }
             return booksByAuthor;
         }

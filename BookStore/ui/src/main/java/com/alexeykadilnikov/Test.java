@@ -25,6 +25,7 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
+        RequestService requestService = RequestService.getInstance();
         BookRepository bookRepository = BookRepository.getInstance();
         UserRepository userRepository = UserRepository.getInstance();
         Book book = bookRepository.getByIndex(0);
@@ -32,17 +33,22 @@ public class Test {
         Book book2 = bookRepository.getByIndex(2);
         Book book3 = bookRepository.getByIndex(3);
         OrderService orderService = OrderService.getInstance();
+        BookService bookService = BookService.getInstance();
         orderService.createOrder(Arrays.asList(book, book1), userRepository.getByIndex(1));
         orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
-        orderService.createOrder(Arrays.asList(book2), userRepository.getByIndex(1));
-        orderService.createOrder(Arrays.asList(book3), userRepository.getByIndex(1));
-
+        orderService.createOrder(Arrays.asList(book2, book2, book2), userRepository.getByIndex(1));
+        orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
+        bookService.addBook(2, 2);
         orderService.completeOrder(0);
         orderService.completeOrder(1);
         orderService.completeOrder(2);
         orderService.completeOrder(3);
 
-        RequestService requestService = RequestService.getInstance();
+
+
+        System.out.println(orderService.getById(0).toString());
+
+
         requestService.createRequest("читать Бесы достоевский", 1);
         requestService.createRequest("читать Бесы достоевский", 1);
         requestService.createRequest("Бесы Федор", 1);
@@ -50,6 +56,7 @@ public class Test {
         requestService.createRequest("достоевский Бесы", 1);
         requestService.createRequest("достоевский Бесы", 1);
         requestService.createRequest("федор достоевский", 1);
+        requestService.createRequest("достоевский", 200);
 
         bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
         bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
@@ -63,23 +70,23 @@ public class Test {
         bookRepository.getByIndex(5).setDescription("Description6");
         bookRepository.getByIndex(6).setDescription("Description7");
 
-//        MenuController menuController = MenuController.getInstance();
-//        menuController.run();
+        MenuController menuController = MenuController.getInstance();
+        menuController.run();
 
-        OrderController orderController = OrderController.getInstance();
-        orderController.importOrders();
-        orderController.exportOrders("-1");
-
-        BookController bookController = BookController.getInstance();
-        bookController.importBooks();
-        bookController.exportBooks("6");
-
-        UserController userController = UserController.getInstance();
-        userController.importUsers();
-        userController.exportUsers("-1");
-
-        RequestController requestController = RequestController.getInstance();
-        requestController.importRequests();
-        requestController.exportRequests("1");
+//        OrderController orderController = OrderController.getInstance();
+//        orderController.importOrders();
+//        orderController.exportOrders("-1");
+//
+//        BookController bookController = BookController.getInstance();
+//        bookController.importBooks(".\\csv\\booksRead.csv");
+//        bookController.exportBooks(".\\csv\\booksWrite.csv", "-1");
+//
+//        UserController userController = UserController.getInstance();
+//        userController.importUsers();
+//        userController.exportUsers("-1");
+//
+//        RequestController requestController = RequestController.getInstance();
+//        requestController.importRequests(".\\csv\\requestRead.csv");
+//        requestController.exportRequests(".\\csv\\requestWrite.csv", "-1");
     }
 }

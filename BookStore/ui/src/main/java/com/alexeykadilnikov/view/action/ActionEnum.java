@@ -305,42 +305,54 @@ public enum ActionEnum implements IAction {
 
     IMPORT_USERS(() -> {
         UserController userController = UserController.getInstance();
-        userController.importUsers();
+        String path = getStringInput("Enter .csv file path:");
+        userController.importUsers(path);
     }),
 
     EXPORT_USERS(() -> {
         UserController userController = UserController.getInstance();
-        userController.exportUsers("0");
+        String path = getStringInput("Enter .csv file path:");
+        String ids = getStringInput("Enter user id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
+        userController.exportUsers(path, ids);
     }),
 
     IMPORT_BOOKS(() -> {
         BookController bookController = BookController.getInstance();
-        bookController.importBooks();
+        String path = getStringInput("Enter .csv file path:");
+        bookController.importBooks(path);
     }),
 
     EXPORT_BOOKS(() -> {
         BookController bookController = BookController.getInstance();
-        bookController.exportBooks("0");
+        String path = getStringInput("Enter .csv file path:");
+        String ids = getStringInput("Enter book id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
+        bookController.exportBooks(path, ids);
     }),
 
     IMPORT_ORDERS(() -> {
         OrderController orderController = OrderController.getInstance();
-        orderController.importOrders();
+        String path = getStringInput("Enter .csv file path:");
+        orderController.importOrders(path);
     }),
 
     EXPORT_ORDERS(() -> {
         OrderController orderController = OrderController.getInstance();
-        orderController.exportOrders("0");
+        String path = getStringInput("Enter .csv file path:");
+        String ids = getStringInput("Enter order id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
+        orderController.exportOrders(path, ids);
     }),
 
     IMPORT_REQUESTS(() -> {
         RequestController requestController = RequestController.getInstance();
-        requestController.importRequests();
+        String path = getStringInput("Enter .csv file path:");
+        requestController.importRequests(path);
     }),
 
     EXPORT_REQUESTS(() -> {
         RequestController requestController = RequestController.getInstance();
-        requestController.exportRequests("2");
+        String path = getStringInput("Enter .csv file path:");
+        String ids = getStringInput("Enter book id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
+        requestController.exportRequests(path, ids);
     });
 
     private final IAction action;
@@ -354,7 +366,7 @@ public enum ActionEnum implements IAction {
         action.execute();
     }
 
-    private static String getStringInput(String param) {
+    public static String getStringInput(String param) {
         Scanner sc = new Scanner(System.in);
         String str = "";
         System.out.println(param);
@@ -390,7 +402,7 @@ public enum ActionEnum implements IAction {
                 System.out.println("That's not a number. Please try again:");
                 str = getStringInput(message);
             }
-            num = Integer.parseInt(str);
+            num = Integer.parseInt(str.trim());
         } while (num < 0 || num > maxNumber);
 
         return num;
