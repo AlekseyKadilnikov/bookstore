@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
+import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.UserService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -13,10 +13,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserController {
     private static UserController instance;
@@ -60,6 +58,7 @@ public class UserController {
             long id = 0;
             String name = "";
             String[] nextRecord;
+            List<Long> ordersId = new ArrayList<>();
             while ((nextRecord = csvReader.readNext()) != null) {
                 for(int i = 0; i < nextRecord.length; i++) {
                     switch (i) {
@@ -70,18 +69,32 @@ public class UserController {
                             name = nextRecord[i];
                             break;
                         default:
+                            ordersId.add(Long.parseLong(nextRecord[i].trim()));
                             break;
                     }
                 }
 
                 User user = userService.getById(id);
+                Set<Order> orders = new HashSet<>();
+                OrderService orderService = OrderService.getInstance();
+                for(Long orderId : ordersId) {
+                    Order order = orderService.getById(orderId);
+                    if(order == null) {
+                        System.out.println("Order with id = " + orderId + " does not exist! (line + " + line + ")");
+                        return;
+                    }
+                    orders.add(order);
+                }
+
                 if (user == null) {
                     user = new User(name);
                     user.setId(id);
+                    user.setOrders(orders);
                     userService.addUser(user);
                 }
                 else {
                     user.setUsername(name);
+                    user.getOrders().addAll(orders);
                 }
                 line++;
             }
@@ -141,14 +154,22 @@ public class UserController {
         }
         catch (Exception e) {
             System.out.println("Unknown error!");
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     private void fillEntry(List<String[]> entries, User user) {
-        String[] item = new String[2];
+        Set<Order> orders = user.getOrders();
+        String[] item = new String[2 + user.getOrders().size()];
         item[0] = String.valueOf(user.getId());
         item[1] = user.getUsername();
+        Iterator<Order> iterator = orders.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            item[i + 2] = String.valueOf(iterator.next().getId());
+            i++;
+        }
+
         entries.add(item);
     }
 }

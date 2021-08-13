@@ -82,8 +82,8 @@ public class Test {
 //        bookController.exportBooks(".\\csv\\booksWrite.csv", "-1");
 //
 //        UserController userController = UserController.getInstance();
-//        userController.importUsers();
-//        userController.exportUsers("-1");
+//        userController.importUsers(".\\csv\\userRead.csv");
+//        userController.exportUsers(".\\csv\\userWrite.csv", "-1");
 //
 //        RequestController requestController = RequestController.getInstance();
 //        requestController.importRequests(".\\csv\\requestRead.csv");
