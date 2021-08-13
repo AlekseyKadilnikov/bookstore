@@ -38,7 +38,12 @@ public class OrderRepository implements IRepository<Order, Long> {
     }
 
     public Order getByIndex(int index) {
-        return orders.get(index);
+        if(index >= orders.size()) {
+            return null;
+        }
+        else {
+            return orders.get(index);
+        }
     }
 
     public static OrderRepository getInstance() {

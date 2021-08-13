@@ -4,10 +4,11 @@ import com.alexeykadilnikov.RequestStatus;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 public class Book extends BaseEntity {
+    private static final long serialVersionUID = 2032341091985408913L;
     private static long idCount = 0;
     private String name;
     private String author;
@@ -15,11 +16,10 @@ public class Book extends BaseEntity {
     private int publicationYear;
     private int price;
     private int count;
-    private LocalDate dateOfReceipt = LocalDate.now();;
+    private LocalDate dateOfReceipt = LocalDate.now();
     private String description = "";
-    private List<Request> commonRequests = new ArrayList<>();
-    private List<Request> orderRequests = new ArrayList<>();
-
+    private final List<Request> commonRequests = new ArrayList<>();
+    private final Request[] orderRequests = new Request[2];
 
     public Book(String name, String author, String publisher, int publicationYear, int price, int count) {
         super(idCount++);
@@ -29,6 +29,13 @@ public class Book extends BaseEntity {
         this.publicationYear = publicationYear;
         this.price = price;
         this.count = count;
+
+        orderRequests[0] = new Request("Request for " + author + " - " + name,
+                getId(), new HashSet<>(), RequestStatus.NEW);
+        orderRequests[0].setCount(0);
+        orderRequests[1] = new Request("Request for " + author + " - " + name,
+                getId(), new HashSet<>(), RequestStatus.SUCCESS);
+        orderRequests[1].setCount(0);
     }
 
     @Override
@@ -49,29 +56,8 @@ public class Book extends BaseEntity {
         return commonRequests;
     }
 
-    public List<Request> getOrderRequests() {
+    public Request[] getOrderRequests() {
         return orderRequests;
-    }
-
-    public void addRequest(Request request) {
-        if(request.getStatus() == RequestStatus.COMMON) {
-            for(Request r : commonRequests) {
-                if(request.getName().equals(r.getName())) {
-                    r.setCount(r.getCount() + 1);
-                    return;
-                }
-            }
-            commonRequests.add(request);
-        }
-        else {
-            for(Request r : orderRequests) {
-                if(request.getName().equals(r.getName())) {
-                    r.setCount(r.getCount() + 1);
-                    return;
-                }
-            }
-            orderRequests.add(request);
-        }
     }
 
     public String getDescription() {

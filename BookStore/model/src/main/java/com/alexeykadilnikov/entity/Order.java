@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class Order extends BaseEntity {
+    private static final long serialVersionUID = -5713427368399553474L;
     private static long idCount = 0;
     private List<Book> books;
     private User user;
@@ -31,6 +32,10 @@ public class Order extends BaseEntity {
                 ", executionDate=" + executionDate +
                 ", total price=" + totalPrice +
                 "}\n";
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
     }
 
     public Date getInitDate() {

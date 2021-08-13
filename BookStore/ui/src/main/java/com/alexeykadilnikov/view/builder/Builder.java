@@ -33,6 +33,7 @@ public class Builder {
         adminMenuBuilder.createCatalogItem();
         adminMenuBuilder.createOrderItem();
         adminMenuBuilder.createRequestItem();
+        adminMenuBuilder.createImportExportItem();
         adminMenuBuilder.createGoBackItem();
 
         CustomerOrderMenuBuilder customerOrderMenuBuilder = new CustomerOrderMenuBuilder();
@@ -74,6 +75,17 @@ public class Builder {
         adminCatalogBuilder.createAddBookItem();
         adminCatalogBuilder.createDateItem();
         adminCatalogBuilder.createGoBackItem();
+
+        ImportExportBuilder importExportBuilder = new ImportExportBuilder();
+        importExportBuilder.createExportBookItem();
+        importExportBuilder.createExportOrderItem();
+        importExportBuilder.createExportRequestItem();
+        importExportBuilder.createExportUserItem();
+        importExportBuilder.createImportBookItem();
+        importExportBuilder.createImportOrderItem();
+        importExportBuilder.createImportRequestItem();
+        importExportBuilder.createImportUserItem();
+        importExportBuilder.createGoBackItem();
     }
 
     public ConsoleMenu getRootMenu() {

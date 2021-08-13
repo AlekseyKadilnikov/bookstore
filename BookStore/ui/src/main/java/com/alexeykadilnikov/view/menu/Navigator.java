@@ -38,7 +38,7 @@ public class Navigator {
 
     private void printHeader() {
         System.out.println("\n******************************************************");
-        System.out.println("\t" + currentMenu.getName().toUpperCase());
+        System.out.println("   " + currentMenu.getName().toUpperCase());
         System.out.println("******************************************************");
     }
 }

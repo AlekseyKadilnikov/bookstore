@@ -1,6 +1,5 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.BookComparator;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
@@ -19,18 +18,21 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public void addBook(int index, int count) {
+    public void addBook(int index, int bookCount) {
         Book book = bookRepository.getByIndex(index);
-        book.setCount(book.getCount() + count);
-        List<Request> requests = book.getOrderRequests();
+        Request[] requests = book.getOrderRequests();
         for(Request request : requests) {
-            if(request.getStatus() == RequestStatus.NEW) {;
-                book.addRequest(new Request(request.getName(), RequestStatus.SUCCESS));
-                if(request.getCount() > 0) {
-                    request.setCount(request.getCount() - 1);
-                }
-                else {
-                    requests.remove(request);
+            if(request.getStatus() == RequestStatus.NEW) {
+                Request r = new Request(request.getName(), book.getId(), request.getOrdersId(), RequestStatus.SUCCESS);
+                int diff = bookCount - request.getCount();
+                if(diff >= 0) {
+                    bookRepository.addRequest(r, request.getCount(), book.getId());
+                    request.setCount(0);
+                    request.getOrdersId().clear();
+                    book.setCount(diff);
+                } else {
+                    bookRepository.addRequest(r, bookCount, book.getId());
+                    request.setCount(request.getCount() - bookCount);
                 }
             }
         }
@@ -53,12 +55,24 @@ public class BookService implements IBookService {
         return instance;
     }
 
+    public void createBook(Book book) {
+        bookRepository.save(book);
+    }
+
     public String getBookDescription(Book book) {
         return book.getDescription();
     }
 
     public Book getByIndex(int index) {
         return bookRepository.getByIndex(index);
+    }
+
+    public Book getById(long id) {
+        return bookRepository.getById(id);
+    }
+
+    public void createRequest(Request request, int count, long id) {
+        bookRepository.addRequest(request, count, id);
     }
 
     public List<Book> getOldBooks(int monthsAmount) {
