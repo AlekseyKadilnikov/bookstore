@@ -1,7 +1,5 @@
 package com.alexeykadilnikov;
 
-import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 
 import java.util.Comparator;

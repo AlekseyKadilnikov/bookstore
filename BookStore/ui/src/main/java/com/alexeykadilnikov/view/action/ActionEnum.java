@@ -10,7 +10,7 @@ import com.alexeykadilnikov.controller.RequestController;
 import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
-import com.alexeykadilnikov.utils.MenuUtils;
+import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;

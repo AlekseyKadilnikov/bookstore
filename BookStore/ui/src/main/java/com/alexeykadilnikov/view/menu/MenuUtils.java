@@ -1,6 +1,4 @@
-package com.alexeykadilnikov.utils;
-
-import com.alexeykadilnikov.view.menu.ConsoleMenu;
+package com.alexeykadilnikov.view.menu;
 
 public class MenuUtils {
     public static final ConsoleMenu rootMenu = new ConsoleMenu("ROOT MENU");
