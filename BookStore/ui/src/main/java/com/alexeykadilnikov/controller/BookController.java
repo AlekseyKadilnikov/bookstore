@@ -1,6 +1,5 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.Test;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.BookService;
 import com.opencsv.CSVReader;
@@ -182,7 +181,7 @@ public class BookController {
                 for(long id : ids) {
                     Book book = bookService.getById(id);
                     if(book == null) {
-                        System.out.println("Book with id = " + id + " does not exist!");
+                        logger.error("Book with id = {} does not exist!", id);
                         return;
                     }
                     fillEntry(entries, book);
@@ -191,11 +190,10 @@ public class BookController {
             csvWriter.writeAll(entries);
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!)");
-            //e.printStackTrace();
+            logger.error("Unknown error!");
         }
     }
 
