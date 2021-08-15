@@ -1,10 +1,13 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.Test;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.BookService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -18,6 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class BookController {
+    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
+
     private static BookController instance;
 
     private final BookService bookService;
@@ -137,23 +142,22 @@ public class BookController {
             }
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid count of parameters! (line " + line + ")");
+            logger.error("Invalid count of parameters! (line {})", line);
         }
         catch (NumberFormatException e) {
-            System.out.println("Invalid parameter! (line " + line + ")");
+            logger.error("Invalid parameter! (line {})", line);
         }
         catch (DateTimeParseException e) {
-            System.out.println("Invalid date (should be: yyyy-mm-dd)! (line " + line + ")");
+            logger.error("Invalid date (should be: yyyy-mm-dd)! (line {})", line);
         }
         catch (CsvValidationException e) {
-            System.out.println("CSV validation error! (line " + line + ")");
+            logger.error("CSV validation error! (line {})", line);
         }
         catch (Exception e) {
-            System.out.println("Unknown error! (line " + line + ")");
-            e.printStackTrace();
+            logger.error("Unknown error! (line {})", line);
         }
     }
 

@@ -25,53 +25,53 @@ public class Test {
         logger.debug("start");
         logger.info("end");
 
-//        RequestService requestService = RequestService.getInstance();
-//        BookRepository bookRepository = BookRepository.getInstance();
-//        UserRepository userRepository = UserRepository.getInstance();
-//        Book book = bookRepository.getByIndex(0);
-//        Book book1 = bookRepository.getByIndex(1);
-//        Book book2 = bookRepository.getByIndex(2);
-//        Book book3 = bookRepository.getByIndex(3);
-//        OrderService orderService = OrderService.getInstance();
-//        BookService bookService = BookService.getInstance();
-//        orderService.createOrder(Arrays.asList(book, book1), userRepository.getByIndex(1));
-//        orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
-//        orderService.createOrder(Arrays.asList(book2, book2, book2), userRepository.getByIndex(1));
-//        orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
-//        bookService.addBook(2, 2);
-//        orderService.completeOrder(0);
-//        orderService.completeOrder(1);
-//        orderService.completeOrder(2);
-//        orderService.completeOrder(3);
-//
-//
-//
-//        System.out.println(orderService.getById(0).toString());
-//
-//
-//        requestService.createRequest("читать Бесы достоевский", 1);
-//        requestService.createRequest("читать Бесы достоевский", 1);
-//        requestService.createRequest("Бесы Федор", 1);
-//        requestService.createRequest("достоевский Бесы", 1);
-//        requestService.createRequest("достоевский Бесы", 1);
-//        requestService.createRequest("достоевский Бесы", 1);
-//        requestService.createRequest("федор достоевский", 1);
-//        requestService.createRequest("достоевский", 200);
-//
-//        bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
-//        bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
-//        bookRepository.getByIndex(2).setDateOfReceipt(LocalDate.now().minusMonths(13));
-//
-//        bookRepository.getByIndex(0).setDescription("Description1");
-//        bookRepository.getByIndex(1).setDescription("Description2");
-//        bookRepository.getByIndex(2).setDescription("Description3");
-//        bookRepository.getByIndex(3).setDescription("Description4");
-//        bookRepository.getByIndex(4).setDescription("Description5");
-//        bookRepository.getByIndex(5).setDescription("Description6");
-//        bookRepository.getByIndex(6).setDescription("Description7");
-//
-//        MenuController menuController = MenuController.getInstance();
-//        menuController.run();
+        RequestService requestService = RequestService.getInstance();
+        BookRepository bookRepository = BookRepository.getInstance();
+        UserRepository userRepository = UserRepository.getInstance();
+        Book book = bookRepository.getByIndex(0);
+        Book book1 = bookRepository.getByIndex(1);
+        Book book2 = bookRepository.getByIndex(2);
+        Book book3 = bookRepository.getByIndex(3);
+        OrderService orderService = OrderService.getInstance();
+        BookService bookService = BookService.getInstance();
+        orderService.createOrder(Arrays.asList(book, book1), userRepository.getByIndex(1));
+        orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
+        orderService.createOrder(Arrays.asList(book2, book2, book2), userRepository.getByIndex(1));
+        orderService.createOrder(Arrays.asList(book2, book3), userRepository.getByIndex(1));
+        bookService.addBook(2, 2);
+        orderService.completeOrder(0);
+        orderService.completeOrder(1);
+        orderService.completeOrder(2);
+        orderService.completeOrder(3);
+
+
+
+        System.out.println(orderService.getById(0).toString());
+
+
+        requestService.createRequest("читать Бесы достоевский", 1);
+        requestService.createRequest("читать Бесы достоевский", 1);
+        requestService.createRequest("Бесы Федор", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("достоевский Бесы", 1);
+        requestService.createRequest("федор достоевский", 1);
+        requestService.createRequest("достоевский", 200);
+
+        bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
+        bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
+        bookRepository.getByIndex(2).setDateOfReceipt(LocalDate.now().minusMonths(13));
+
+        bookRepository.getByIndex(0).setDescription("Description1");
+        bookRepository.getByIndex(1).setDescription("Description2");
+        bookRepository.getByIndex(2).setDescription("Description3");
+        bookRepository.getByIndex(3).setDescription("Description4");
+        bookRepository.getByIndex(4).setDescription("Description5");
+        bookRepository.getByIndex(5).setDescription("Description6");
+        bookRepository.getByIndex(6).setDescription("Description7");
+
+        MenuController menuController = MenuController.getInstance();
+        menuController.run();
 
 //        OrderController orderController = OrderController.getInstance();
 //        orderController.importOrders();
