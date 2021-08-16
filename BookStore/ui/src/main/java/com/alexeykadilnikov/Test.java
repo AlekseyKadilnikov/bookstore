@@ -28,10 +28,17 @@ public class Test {
         RequestService requestService = RequestService.getInstance();
         BookRepository bookRepository = BookRepository.getInstance();
         UserRepository userRepository = UserRepository.getInstance();
+        LocalDate localDate = LocalDate.now();
         Book book = bookRepository.getByIndex(0);
         Book book1 = bookRepository.getByIndex(1);
         Book book2 = bookRepository.getByIndex(2);
         Book book3 = bookRepository.getByIndex(3);
+
+        book.setDateOfReceipt(localDate.minusMonths(1));
+        book1.setDateOfReceipt(localDate.minusMonths(2));
+        book2.setDateOfReceipt(localDate.minusMonths(3));
+        book3.setDateOfReceipt(localDate.minusMonths(4));
+
         OrderService orderService = OrderService.getInstance();
         BookService bookService = BookService.getInstance();
         orderService.createOrder(Arrays.asList(book, book1), userRepository.getByIndex(1));
@@ -57,10 +64,6 @@ public class Test {
         requestService.createRequest("достоевский Бесы", 1);
         requestService.createRequest("федор достоевский", 1);
         requestService.createRequest("достоевский", 200);
-
-        bookRepository.getByIndex(0).setDateOfReceipt(LocalDate.now().minusMonths(10));
-        bookRepository.getByIndex(1).setDateOfReceipt(LocalDate.now().minusMonths(12));
-        bookRepository.getByIndex(2).setDateOfReceipt(LocalDate.now().minusMonths(13));
 
         bookRepository.getByIndex(0).setDescription("Description1");
         bookRepository.getByIndex(1).setDescription("Description2");

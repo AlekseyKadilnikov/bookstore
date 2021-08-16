@@ -14,9 +14,15 @@ import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 public enum ActionEnum implements IAction {
@@ -285,7 +291,19 @@ public enum ActionEnum implements IAction {
 
     SHOW_STALE_BOOKS(() -> {
         BookController bookController = BookController.getInstance();
-        int months = getNumber("Enter count of months:", Integer.MAX_VALUE);
+        FileInputStream fis;
+        Properties property = new Properties();
+        int months = 6;
+        try {
+            fis = new FileInputStream("src\\main\\properties\\bookstore.yml");
+            property.load(fis);
+            months = Integer.parseInt(property.getProperty("months").trim());
+            fis.close();
+        } catch (IOException e) {
+            System.err.println("Error: file bookstore.yml not found! Months = 6 as default");
+        } catch (NumberFormatException e) {
+            System.err.println("Error: invalid parameter format! Months = 6 as default");
+        }
         List<Book> staleBooks = bookController.getStaleBooks(months);
         int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
