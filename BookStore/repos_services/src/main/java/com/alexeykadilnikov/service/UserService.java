@@ -2,10 +2,14 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class UserService implements IUserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private static UserService instance;
 
     private final UserRepository userRepository;
@@ -21,8 +25,11 @@ public class UserService implements IUserService {
                 return 1;
             }
         }
-        userRepository.save(new User(username));
+        User user = new User(username);
+        userRepository.save(user);
+
         System.out.println("User successfully created.");
+        logger.info("User with id = {} and username = {} created", user.getId(), user.getUsername());
         return 0;
     }
 

@@ -1,7 +1,6 @@
 package com.alexeykadilnikov.view.builder;
 
-import com.alexeykadilnikov.utils.MenuUtils;
-import com.alexeykadilnikov.view.action.ActionEnum;
+import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;
 
 public class CustomerMenuBuilder implements UserMenuBuilder {

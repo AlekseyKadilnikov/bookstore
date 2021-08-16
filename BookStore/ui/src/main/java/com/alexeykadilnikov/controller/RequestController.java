@@ -1,16 +1,16 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.RequestService;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -21,6 +21,8 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class RequestController {
+    private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
+
     private static RequestController instance;
 
     private final RequestService requestService;
@@ -64,10 +66,6 @@ public class RequestController {
             Set<Long> booksId = new HashSet<>();
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
-//                if (line == 1) {
-//                    line++;
-//                    continue;
-//                }
                 for(int i = 0; i < nextRecord.length; i++) {
                     if(i == 0) {
                         id = Long.parseLong(nextRecord[i].trim());
@@ -93,14 +91,14 @@ public class RequestController {
                             Book book = bookService.getById(bookId);
                             Request[] orderRequests = book.getOrderRequests();
                             if(orderRequests[0].getId() != id) {
-                                System.out.println("Invalid request id! (line " + line + ")");
+                                logger.error("Invalid request id! (line {})", line);
                             }
                             if(!orderRequests[0].getName().trim().equals(name.trim())) {
-                                System.out.println("Invalid name of request! (line " + line + ")");
+                                logger.error("Invalid name of request! (line {})", line);
                                 return;
                             }
                             if(book.getCount() != 0) {
-                                System.out.println("Invalid status! (line " + line + ")");
+                                logger.error("Invalid status! (line {})", line);
                                 return;
                             }
                             orderRequests[0].setOrdersId(ordersId);
@@ -123,7 +121,7 @@ public class RequestController {
                                 bookService.createRequest(r, count, bookId);
                             }
                             else if(!request.getName().trim().equals(name.trim())) {
-                                System.out.println("Invalid name of request! (line " + line + ")");
+                                logger.error("Invalid name of request! (line {})", line);
                                 return;
                             } else {
                                 req = request;
@@ -140,10 +138,10 @@ public class RequestController {
                             Book book = bookService.getById(bookId);
                             Request[] orderRequests = book.getOrderRequests();
                             if (orderRequests[1].getId() != id) {
-                                System.out.println("Invalid request id! (line " + line + ")");
+                                logger.error("Invalid request id! (line {})", line);
                             }
                             if (!orderRequests[1].getName().trim().equals(name.trim())) {
-                                System.out.println("Invalid name of request! (line " + line + ")");
+                                logger.error("Invalid name of request! (line {})", line);
                                 return;
                             }
                             orderRequests[0].setOrdersId(ordersId);
@@ -159,23 +157,22 @@ public class RequestController {
             }
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid count of parameters! (line " + line + ")");
+            logger.error("Invalid count of parameters! (line {})", line);
         }
         catch (NumberFormatException e) {
-            System.out.println("Invalid parameter! (line " + line + ")");
+            logger.error("Invalid parameter! (line {})", line);
         }
         catch (DateTimeParseException e) {
-            System.out.println("Invalid date (should be: yyyy-mm-dd)! (line " + line + ")");
+            logger.error("Invalid date (should be: yyyy-mm-dd)! (line {})", line);
         }
         catch (CsvValidationException e) {
-            System.out.println("CSV validation error! (line " + line + ")");
+            logger.error("CSV validation error! (line {})", line);
         }
         catch (Exception e) {
-            System.out.println("Unknown error! (line " + line + ")");
-            //e.printStackTrace();
+            logger.error("Unknown error! (line {})", line);
         }
     }
 
@@ -203,7 +200,7 @@ public class RequestController {
                 for(long id : ids) {
                     Book book = bookService.getById(id);
                     if(book == null) {
-                        System.out.println("Book with id = " + id + " does not exist!");
+                        logger.error("Book with id = {} does not exist!", id);
                         return;
                     }
                     requests.addAll(book.getCommonRequests());
@@ -214,14 +211,13 @@ public class RequestController {
             csvWriter.writeAll(entries);
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (NumberFormatException e) {
-            System.out.println("Invalid book id!");
+            logger.error("Invalid book id!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!");
-            e.printStackTrace();
+            logger.error("Unknown error!");
         }
     }
 

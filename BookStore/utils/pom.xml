@@ -10,16 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>utils</artifactId>
-    <packaging>pom</packaging>
+
     <dependencies>
         <dependency>
             <groupId>com.alexeykadilnikov</groupId>
             <artifactId>model</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alexeykadilnikov</groupId>
-            <artifactId>ui</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

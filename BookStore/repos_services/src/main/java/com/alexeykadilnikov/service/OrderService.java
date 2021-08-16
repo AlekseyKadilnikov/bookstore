@@ -5,11 +5,15 @@ import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class OrderService implements IOrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+
     private static OrderService instance;
 
     private final OrderRepository orderRepository;
@@ -25,7 +29,8 @@ public class OrderService implements IOrderService {
         order.setTotalPrice(calculatePrice(order));
         orderRepository.save(order);
         user.addOrder(order);
-        System.out.println("Order id = " + order.getId() + " created");
+
+        logger.info("Order id = {} created", order.getId());
     }
 
     @Override
@@ -54,7 +59,7 @@ public class OrderService implements IOrderService {
             }
         }
         order.setStatus(OrderStatus.CANCELED);
-        System.out.println("Order id = " + order.getId() + " canceled\n");
+        logger.info("Order id = {} canceled", order.getId());
     }
 
     @Override
@@ -68,8 +73,8 @@ public class OrderService implements IOrderService {
         for(Book book : order.getBooks()) {
             for(Request request : book.getOrderRequests()) {
                 if(request.getStatus() == RequestStatus.NEW) {
-                    System.out.println("Order id = " + order.getId() + " couldn't be completed: request for " +
-                            book.getAuthor() + " - " + book.getName() + " not closed");
+                    logger.info("Order id = {} couldn't be completed: request for {} - {} not closed", order.getId(),
+                            book.getAuthor(), book.getName());
                     return;
                 }
             }
@@ -79,7 +84,7 @@ public class OrderService implements IOrderService {
         LocalDate date = LocalDate.now();
         date = date.plusDays(random.nextInt(4));
         order.setExecutionDate(date);
-        System.out.println("Order id = " + order.getId() + " completed");
+        logger.info("Order id = {} completed", order.getId());
     }
 
     @Override
@@ -110,11 +115,11 @@ public class OrderService implements IOrderService {
                 Request[] orderRequests = book.getOrderRequests();
                 orderRequests[0].setCount(orderRequests[0].getCount() + 1);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
-                System.out.println("Order request for " + book.getAuthor() + " - " + book.getName() + " created");
+                logger.info("Order request for {} - {} created", book.getAuthor(), book.getName());
 
                 bookRepository.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(),
                         Collections.singleton(book.getId())), 1, book.getId());
-                System.out.println("Common request for " + book.getAuthor() + " - " + book.getName() + " created");
+                logger.info("Common request for {} - {} created", book.getAuthor(), book.getName());
             }
             else {
                 book.setCount(book.getCount() - 1);

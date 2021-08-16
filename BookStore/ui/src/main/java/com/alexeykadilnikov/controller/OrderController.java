@@ -13,6 +13,8 @@ import com.alexeykadilnikov.view.builder.ImportExportBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class OrderController {
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     private static OrderController instance;
 
     private final OrderService orderService;
@@ -185,7 +189,7 @@ public class OrderController {
                         status = OrderStatus.CANCELED;
                         break;
                     default:
-                        System.out.println("Invalid status code! (line " + line + ")");
+                        logger.error("Invalid status code! (line {})", line);
                         return;
                 }
 
@@ -194,23 +198,23 @@ public class OrderController {
                 for (int id : bookIds) {
                     book = bookService.getByIndex(id);
                     if (book == null) {
-                        System.out.println("Book with id = " + id + " does not exist!");
+                        logger.error("Book with id = {} does not exist!", id);
                         return;
                     }
                     books.add(book);
                 }
 
                 if(status != OrderStatus.SUCCESS && date != null) {
-                    System.out.println("There should be no execution date with status code 0 or 2! (line " + line + ")");
+                    logger.error("There should be no execution date with status code 0 or 2! (line {})", line);
                     return;
                 }
                 else if(status == OrderStatus.SUCCESS && date == null) {
-                    System.out.println("Invalid execution date! (line " + line + ")");
+                    logger.error("Invalid execution date! (line {})", line);
                     return;
                 }
 
                 if(user == null) {
-                    System.out.println("User with id = " + userId + " does not exists!");
+                    logger.error("User with id = {} does not exists!", line);
                     return;
                 }
                 else {
@@ -235,23 +239,22 @@ public class OrderController {
             }
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid count of parameters! (line " + line + ")");
+            logger.error("Invalid count of parameters! (line {})", line);
         }
         catch (NumberFormatException e) {
-            System.out.println("Invalid parameter! (line " + line + ")");
+            logger.error("Invalid parameter! (line {})", line);
         }
         catch (DateTimeParseException e) {
-            System.out.println("Invalid date (should be: yyyy-mm-dd)! (line " + line + ")");
+            logger.error("Invalid date (should be: yyyy-mm-dd)! (line {})", line);
         }
         catch (CsvValidationException e) {
-            System.out.println("CSV validation error! (line " + line + ")");
+            logger.error("CSV validation error! (line {})", line);
         }
         catch (Exception e) {
-            System.out.println("Unknown error! (line " + line + ")");
-            //e.printStackTrace();
+            logger.error("Unknown error! (line {})", line);
         }
     }
 
@@ -276,7 +279,7 @@ public class OrderController {
                 for(long id : ids) {
                     Order order = orderService.getById(id);
                     if(order == null) {
-                        System.out.println("Order with id = " + id + " does not exist!");
+                        logger.error("Order with id = {} does not exist!", id);
                         return;
                     }
                     fillEntry(entries, order);
@@ -285,11 +288,10 @@ public class OrderController {
             csvWriter.writeAll(entries);
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!");
-            //e.printStackTrace();
+            logger.error("Unknown error!");
         }
     }
 

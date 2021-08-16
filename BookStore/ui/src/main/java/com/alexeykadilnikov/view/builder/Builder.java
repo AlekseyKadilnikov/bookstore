@@ -1,6 +1,6 @@
 package com.alexeykadilnikov.view.builder;
 
-import com.alexeykadilnikov.utils.MenuUtils;
+import com.alexeykadilnikov.view.menu.MenuUtils;
 
 import com.alexeykadilnikov.view.menu.ConsoleMenu;
 

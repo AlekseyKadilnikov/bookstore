@@ -7,6 +7,8 @@ import com.alexeykadilnikov.service.UserService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,6 +19,8 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     private static UserController instance;
 
     private final UserService userService;
@@ -80,7 +84,7 @@ public class UserController {
                 for(Long orderId : ordersId) {
                     Order order = orderService.getById(orderId);
                     if(order == null) {
-                        System.out.println("Order with id = " + orderId + " does not exist! (line + " + line + ")");
+                        logger.error("Order with id = {} does not exist! (line {})", id, line);
                         return;
                     }
                     orders.add(order);
@@ -100,23 +104,22 @@ public class UserController {
             }
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid count of parameters! (line " + line + ")");
+            logger.error("Invalid count of parameters! (line {})", line);
         }
         catch (NumberFormatException e) {
-            System.out.println("Invalid parameter! (line " + line + ")");
+            logger.error("Invalid parameter! (line {})", line);
         }
         catch (DateTimeParseException e) {
-            System.out.println("Invalid date (should be: yyyy-mm-dd)! (line " + line + ")");
+            logger.error("Invalid date (should be: yyyy-mm-dd)! (line {})", line);
         }
         catch (CsvValidationException e) {
-            System.out.println("CSV validation error! (line " + line + ")");
+            logger.error("CSV validation error! (line {})", line);
         }
         catch (Exception e) {
-            System.out.println("Unknown error! (line " + line + ")");
-            //e.printStackTrace();
+            logger.error("Unknown error! (line {})", line);
         }
     }
 
@@ -141,7 +144,7 @@ public class UserController {
                 for(long id : ids) {
                     User user = userService.getById(id);
                     if(user == null) {
-                        System.out.println("User with id = " + id + " does not exist!");
+                        logger.error("User with id = {} does not exist!", id);
                         return;
                     }
                     fillEntry(entries, user);
@@ -150,11 +153,10 @@ public class UserController {
             csvWriter.writeAll(entries);
         }
         catch (IOException e) {
-            System.out.println("File not found!");
+            logger.error("File not found!");
         }
         catch (Exception e) {
-            System.out.println("Unknown error!");
-            e.printStackTrace();
+            logger.error("Unknown error!");
         }
     }
 

@@ -5,26 +5,26 @@ import com.alexeykadilnikov.controller.OrderController;
 import com.alexeykadilnikov.controller.RequestController;
 import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
-import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.BookRepository;
-import com.alexeykadilnikov.repository.OrderRepository;
 import com.alexeykadilnikov.repository.UserRepository;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.RequestService;
-import com.alexeykadilnikov.service.UserService;
 import com.alexeykadilnikov.view.menu.MenuController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
 
 public class Test {
+
+    private static final Logger logger = LoggerFactory.getLogger(Test.class);
+
     public static void main(String[] args) {
+        logger.debug("start");
+        logger.info("end");
+
         RequestService requestService = RequestService.getInstance();
         BookRepository bookRepository = BookRepository.getInstance();
         UserRepository userRepository = UserRepository.getInstance();
