@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -25,7 +24,7 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public void addBook(int index, int bookCount) {
+    public void addBook(long id, int bookCount) {
         boolean doSuccess = true;
         try(
                 FileInputStream fis = new FileInputStream("properties\\bookstore.yml");
@@ -37,7 +36,7 @@ public class BookService implements IBookService {
             logger.error("File bookstore.yml not found!");
         }
 
-        Book book = bookRepository.getByIndex(index);
+        Book book = bookRepository.getById(id);
         if(doSuccess) {
             Request[] requests = book.getOrderRequests();
             for(Request request : requests) {
@@ -61,8 +60,8 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public String showBook(int index) {
-        return bookRepository.getByIndex(index).toString();
+    public String showBook(long id) {
+        return bookRepository.getById(id).toString();
     }
 
     @Override
@@ -83,10 +82,6 @@ public class BookService implements IBookService {
 
     public String getBookDescription(Book book) {
         return book.getDescription();
-    }
-
-    public Book getByIndex(int index) {
-        return bookRepository.getByIndex(index);
     }
 
     public Book getById(long id) {

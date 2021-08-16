@@ -7,9 +7,7 @@ import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.UserService;
-import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
-import com.alexeykadilnikov.view.builder.ImportExportBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -24,7 +22,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -148,15 +145,15 @@ public class OrderController {
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             String[] nextRecord;
-            int orderId = -1;
-            int userId = -1;
+            long orderId = -1;
+            long userId = -1;
             int statusCode = -1;
             LocalDate date = null;
             List<Integer> bookIds = new ArrayList<>();
             while ((nextRecord = csvReader.readNext()) != null) {
                 for(int i = 0; i < nextRecord.length; i++) {
                     if(i == 0) {
-                        orderId = Integer.parseInt(nextRecord[i].trim());
+                        orderId = Long.parseLong(nextRecord[i].trim());
                     }
                     else if (i == 1) {
                         statusCode = Integer.parseInt(nextRecord[i].trim());
@@ -166,7 +163,7 @@ public class OrderController {
                             date = LocalDate.parse(nextRecord[i].trim());
                     }
                     else if(i == nextRecord.length - 1) {
-                        userId = Integer.parseInt(nextRecord[i].trim());
+                        userId = Long.parseLong(nextRecord[i].trim());
                     }
                     else {
                         bookIds.add(Integer.parseInt(nextRecord[i].trim()));
@@ -175,9 +172,9 @@ public class OrderController {
 
                 UserService userService = UserService.getInstance();
                 BookService bookService = BookService.getInstance();
-                User user = userService.getByIndex(userId);
-                Order order = orderService.getByIndex(orderId);
-                OrderStatus status = null;
+                User user = userService.getById(userId);
+                Order order = orderService.getById(orderId);
+                OrderStatus status;
                 switch (statusCode) {
                     case 0:
                         status = OrderStatus.NEW;
@@ -196,7 +193,7 @@ public class OrderController {
                 List<Book> books = new ArrayList<>();
                 Book book;
                 for (int id : bookIds) {
-                    book = bookService.getByIndex(id);
+                    book = bookService.getById(id);
                     if (book == null) {
                         logger.error("Book with id = {} does not exist!", id);
                         return;
@@ -219,7 +216,7 @@ public class OrderController {
                 }
                 else {
                     if(order == null) {
-                        order = new Order(books, user);
+                        order = new Order(books, userId);
                         order.setStatus(status);
                         order.setExecutionDate(date);
                         order.setId(orderId);
@@ -227,7 +224,7 @@ public class OrderController {
                     }
                     else {
                         order.setBooks(books);
-                        order.setUser(user);
+                        order.setUserId(userId);
                         order.setStatus(status);
                         order.setExecutionDate(date);
                         order.setTotalPrice(orderService.calculatePrice(order));
@@ -304,7 +301,7 @@ public class OrderController {
         for(int i = 0; i < books.size(); i++) {
             item[i + 3] = String.valueOf(books.get(i).getId());
         }
-        item[item.length - 1] = String.valueOf(order.getUser().getId());
+        item[item.length - 1] = String.valueOf(order.getUserId());
         entries.add(item);
     }
 }

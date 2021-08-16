@@ -41,8 +41,9 @@ public class UserController {
     }
 
     public void getOrders(User user) {
-        for(Order order : user.getOrders()) {
-            System.out.println(order.toString());
+        OrderService orderService = OrderService.getInstance();
+        for(Long orderId : user.getOrders()) {
+            System.out.println(orderService.getById(orderId).toString());
         }
     }
 
@@ -51,6 +52,10 @@ public class UserController {
             instance = new UserController(UserService.getInstance());
         }
         return instance;
+    }
+
+    public List<User> getAll() {
+        return userService.getAll();
     }
 
     public void importUsers(String path) {
@@ -62,7 +67,7 @@ public class UserController {
             long id = 0;
             String name = "";
             String[] nextRecord;
-            List<Long> ordersId = new ArrayList<>();
+            Set<Long> ordersId = new HashSet<>();
             while ((nextRecord = csvReader.readNext()) != null) {
                 for(int i = 0; i < nextRecord.length; i++) {
                     switch (i) {
@@ -79,26 +84,23 @@ public class UserController {
                 }
 
                 User user = userService.getById(id);
-                Set<Order> orders = new HashSet<>();
                 OrderService orderService = OrderService.getInstance();
                 for(Long orderId : ordersId) {
-                    Order order = orderService.getById(orderId);
-                    if(order == null) {
+                    if(orderService.getById(orderId) == null) {
                         logger.error("Order with id = {} does not exist! (line {})", id, line);
                         return;
                     }
-                    orders.add(order);
                 }
 
                 if (user == null) {
                     user = new User(name);
                     user.setId(id);
-                    user.setOrders(orders);
+                    user.setOrders(ordersId);
                     userService.addUser(user);
                 }
                 else {
                     user.setUsername(name);
-                    user.getOrders().addAll(orders);
+                    user.getOrders().addAll(ordersId);
                 }
                 line++;
             }
@@ -161,14 +163,14 @@ public class UserController {
     }
 
     private void fillEntry(List<String[]> entries, User user) {
-        Set<Order> orders = user.getOrders();
+        Set<Long> ordersId = user.getOrders();
         String[] item = new String[2 + user.getOrders().size()];
         item[0] = String.valueOf(user.getId());
         item[1] = user.getUsername();
-        Iterator<Order> iterator = orders.iterator();
+        Iterator<Long> iterator = ordersId.iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            item[i + 2] = String.valueOf(iterator.next().getId());
+            item[i + 2] = String.valueOf(iterator.next());
             i++;
         }
 

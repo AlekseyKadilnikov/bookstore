@@ -10,22 +10,18 @@ import com.alexeykadilnikov.controller.RequestController;
 import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
+import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public enum ActionEnum implements IAction {
     CREATE_USER(() -> {
@@ -376,6 +372,35 @@ public enum ActionEnum implements IAction {
     }),
 
     EXIT(() -> {
+        BookController bookController = BookController.getInstance();
+        OrderController orderController = OrderController.getInstance();
+        RequestController requestController = RequestController.getInstance();
+        UserController userController = UserController.getInstance();
+
+        List<Book> bookList = bookController.getAll();
+        List<Order> orderList = orderController.getAll();
+        List<User> userList = userController.getAll();
+        List<Request> requestList = requestController.getAll();
+
+        try {
+            FileOutputStream fos = new FileOutputStream("serialize\\books.bin");
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(bookList);
+            fos = new FileOutputStream("serialize\\orders.bin");
+            out = new ObjectOutputStream(fos);
+            out.writeObject(orderList);
+            fos = new FileOutputStream("serialize\\requests.bin");
+            out = new ObjectOutputStream(fos);
+            out.writeObject(requestList);
+            fos = new FileOutputStream("serialize\\users.bin");
+            out = new ObjectOutputStream(fos);
+            out.writeObject(userList);
+            fos.close();
+            out.close();
+        }
+        catch (IOException e) {
+            Constants.logger.error("Error with writing to file!");
+        }
 
         System.exit(0);
     });

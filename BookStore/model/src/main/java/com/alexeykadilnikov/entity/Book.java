@@ -2,12 +2,13 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class Book extends BaseEntity {
+public class Book extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2032341091985408913L;
     private static long idCount = 0;
     private String name;

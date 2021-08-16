@@ -34,7 +34,12 @@ public class OrderRepository implements IRepository<Order, Long> {
 
     @Override
     public void delete(Order order) {
+        orders.remove(order);
+    }
 
+    @Override
+    public void saveAll(List<Order> all) {
+        orders = all;
     }
 
     public Order getByIndex(int index) {
