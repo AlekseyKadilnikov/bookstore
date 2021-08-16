@@ -10,10 +10,12 @@ import com.alexeykadilnikov.controller.RequestController;
 import com.alexeykadilnikov.controller.UserController;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
+import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.alexeykadilnikov.view.menu.MenuItem;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,14 +297,14 @@ public enum ActionEnum implements IAction {
         Properties property = new Properties();
         int months = 6;
         try {
-            fis = new FileInputStream("src\\main\\properties\\bookstore.yml");
+            fis = new FileInputStream("properties\\bookstore.yml");
             property.load(fis);
             months = Integer.parseInt(property.getProperty("months").trim());
             fis.close();
         } catch (IOException e) {
-            System.err.println("Error: file bookstore.yml not found! Months = 6 as default");
+            Constants.logger.error("Error: file bookstore.yml not found! Months = 6 as default");
         } catch (NumberFormatException e) {
-            System.err.println("Error: invalid parameter format! Months = 6 as default");
+            Constants.logger.error("Error: invalid parameter format! Months = 6 as default");
         }
         List<Book> staleBooks = bookController.getStaleBooks(months);
         int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
@@ -371,7 +373,16 @@ public enum ActionEnum implements IAction {
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter book id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
         requestController.exportRequests(path, ids);
+    }),
+
+    EXIT(() -> {
+
+        System.exit(0);
     });
+
+    private static class Constants {
+        private static final Logger logger = LoggerFactory.getLogger(ActionEnum.class);
+    }
 
     private final IAction action;
 

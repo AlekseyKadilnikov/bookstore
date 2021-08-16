@@ -23,6 +23,12 @@ public class AdminMenuBuilder implements UserMenuBuilder {
         MenuUtils.adminMenu.addItem(item);
     }
 
+    @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.adminMenu.addItem(item);
+    }
+
     public void createRequestItem() {
         MenuItem item = new MenuItem("Show requests for book", null, ActionEnum.SHOW_REQUESTS_FOR_BOOK);
         MenuUtils.adminMenu.addItem(item);

@@ -22,4 +22,10 @@ public class CustomerOrderMenuBuilder implements OrderMenuBuilder {
         MenuItem item = new MenuItem("Back", MenuUtils.customerMenu, null);
         MenuUtils.customerOrderMenu.addItem(item);
     }
+
+    @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.customerOrderMenu.addItem(item);
+    }
 }

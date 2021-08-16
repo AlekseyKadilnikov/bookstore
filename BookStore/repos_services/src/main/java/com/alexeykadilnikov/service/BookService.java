@@ -4,7 +4,8 @@ import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.BookRepository;
-import net.sf.saxon.trans.SymbolicName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +14,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class BookService implements IBookService {
+    private static final Logger logger = LoggerFactory.getLogger(BookService.class);
+
     private static BookService instance;
 
     private final BookRepository bookRepository;
@@ -25,13 +28,13 @@ public class BookService implements IBookService {
     public void addBook(int index, int bookCount) {
         boolean doSuccess = true;
         try(
-                FileInputStream fis = new FileInputStream("src\\main\\properties\\bookstore.yml");
+                FileInputStream fis = new FileInputStream("properties\\bookstore.yml");
                 ) {
             Properties property = new Properties();
             property.load(fis);
             doSuccess = Boolean.getBoolean(property.getProperty("successRequests").trim());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("File bookstore.yml not found!");
         }
 
         Book book = bookRepository.getByIndex(index);
