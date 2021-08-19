@@ -1,21 +1,14 @@
 package com.alexeykadilnikov.repository;
 
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Request;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class RequestRepository implements IRequestRepository {
-//    private static RequestRepository instance;
-
     private List<Request> requests = new ArrayList<>();
-
-//    public static RequestRepository getInstance() {
-//        if(instance == null) {
-//            instance = new RequestRepository();
-//        }
-//        return instance;
-//    }
 
     @Override
     public List<Request> findAll() {

@@ -1,17 +1,14 @@
 package com.alexeykadilnikov.repository;
 
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Order;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class OrderRepository implements IOrderRepository {
-//    private static OrderRepository instance;
-
     private List<Order> orders = new ArrayList<>();
-
-//    private OrderRepository() {
-//    }
 
     @Override
     public List<Order> findAll() {
@@ -40,11 +37,4 @@ public class OrderRepository implements IOrderRepository {
     public void saveAll(List<Order> all) {
         orders = all;
     }
-
-//    public static OrderRepository getInstance() {
-//        if(instance == null) {
-//            instance = new OrderRepository();
-//        }
-//        return instance;
-//    }
 }

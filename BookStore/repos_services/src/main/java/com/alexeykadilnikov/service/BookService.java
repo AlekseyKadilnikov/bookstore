@@ -1,35 +1,28 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.ConfigProperty;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
+@Singleton
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
-
-//    private static BookService instance;
 
     @InjectBean
     private IBookRepository bookRepository;
 
-//    private BookService() {
-//    }
-//
-//    public static BookService getInstance() {
-//        if(instance == null) {
-//            instance = new BookService();
-//        }
-//        return instance;
-//    }
+    @ConfigProperty("successRequests")
+    private String doSuccess;
 
     @Override
     public void saveAll(List<Book> bookList) {
@@ -38,19 +31,15 @@ public class BookService implements IBookService {
 
     @Override
     public void addBook(long id, int bookCount) {
-        boolean doSuccess = true;
-        try(
-                FileInputStream fis = new FileInputStream("properties\\bookstore.yml");
-                ) {
-            Properties property = new Properties();
-            property.load(fis);
-            doSuccess = Boolean.getBoolean(property.getProperty("successRequests").trim());
-        } catch (IOException e) {
-            logger.error("File bookstore.yml not found!");
+        boolean doSuccessRequests = true;
+        if(!doSuccess.equals("false") && !doSuccess.equals("true")) {
+            logger.warn("Invalid property \"successRequests\". \"true\" as default");
         }
-
+        else {
+            doSuccessRequests = Boolean.parseBoolean(doSuccess);
+        }
         Book book = bookRepository.getById(id);
-        if(doSuccess) {
+        if(doSuccessRequests) {
             Request[] requests = book.getOrderRequests();
             for(Request request : requests) {
                 if(request.getStatus() == RequestStatus.NEW) {

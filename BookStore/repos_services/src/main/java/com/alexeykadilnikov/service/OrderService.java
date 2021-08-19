@@ -3,8 +3,8 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.*;
-import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IOrderRepository;
 import com.alexeykadilnikov.repository.IUserRepository;
@@ -14,10 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.*;
 
+@Singleton
 public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
-
-//    private static OrderService instance;
 
     @InjectBean
     private IOrderRepository orderRepository;
@@ -25,16 +24,6 @@ public class OrderService implements IOrderService {
     private IUserRepository userRepository;
     @InjectBean
     private IBookRepository bookRepository;
-
-//    private OrderService() {
-//    }
-//
-//    public static OrderService getInstance() {
-//        if(instance == null) {
-//            instance = new OrderService();
-//        }
-//        return instance;
-//    }
 
     @Override
     public void createOrder(List<Book> books, User user) {

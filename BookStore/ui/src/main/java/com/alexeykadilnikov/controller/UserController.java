@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.IOrderService;
@@ -21,25 +22,14 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+@Singleton
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
-//    private static UserController instance;
 
     @InjectBean
     private IUserService userService;
     @InjectBean
     private IOrderService orderService;
-
-//    private UserController() {
-//    }
-//
-//    public static UserController getInstance() {
-//        if(instance == null) {
-//            instance = new UserController();
-//        }
-//        return instance;
-//    }
 
     public int create(String username) {
         if(userService.addUser(username) > 0) {

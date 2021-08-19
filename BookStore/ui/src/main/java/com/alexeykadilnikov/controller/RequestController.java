@@ -2,6 +2,7 @@ package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.service.BookService;
@@ -23,26 +24,15 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+@Singleton
 public class RequestController {
     private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
-
-    private static RequestController instance;
 
     @InjectBean
     private IRequestService requestService;
     @InjectBean
     private IBookService bookService;
 
-//    private RequestController(RequestService requestService) {
-//        this.requestService = requestService;
-//    }
-//
-//    public static RequestController getInstance() {
-//        if(instance == null) {
-//            instance = new RequestController(RequestService.getInstance());
-//        }
-//        return instance;
-//    }
 
     public void search(String request) {
         Set<Book> foundBooks = requestService.createRequest(request, 1);

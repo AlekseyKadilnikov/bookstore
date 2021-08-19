@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 
@@ -8,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Singleton
 public class BookRepository implements IBookRepository {
-//    private static BookRepository instance;
 
     private List<Book> books = new ArrayList<>(Arrays.asList(
             new Book("Идиот", "Федор Достоевский", "Наука", 1990, 350, 0),
@@ -22,9 +23,6 @@ public class BookRepository implements IBookRepository {
             new Book("Сияние", "Стивен Кинг", "Питер", 2018, 500,11),
             new Book("1984", "Джордж Оруэлл", "Питер", 2010, 550, 10))
     );
-
-//    private BookRepository() {
-//    }
 
     @Override
     public List<Book> findAll() {
@@ -53,13 +51,6 @@ public class BookRepository implements IBookRepository {
     public void saveAll(List<Book> all) {
         books = all;
     }
-
-//    public static BookRepository getInstance() {
-//        if(instance == null) {
-//            instance = new BookRepository();
-//        }
-//        return instance;
-//    }
 
     public void addRequest(Request request, int count, long id) {
         Book book = getById(id);

@@ -1,12 +1,12 @@
 package com.alexeykadilnikov;
 
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.controller.ControllerUtils;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.view.action.ActionEnum;
 import com.alexeykadilnikov.view.menu.MenuController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class BookStore {
     @InjectBean
     private ControllerUtils controllers;

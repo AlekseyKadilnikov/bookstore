@@ -1,9 +1,11 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.ConfigProperty;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.IBookService;
+import com.alexeykadilnikov.utils.StringUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -21,23 +23,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Singleton
 public class BookController {
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
-
-//    private static BookController instance;
 
     @InjectBean
     private IBookService bookService;
 
-//    private BookController() {
-//    }
-//
-//    public static BookController getInstance() {
-//        if(instance == null) {
-//            instance = new BookController(BookService.getInstance());
-//        }
-//        return instance;
-//    }
+    @ConfigProperty("months")
+    private String monthsForOldBook;
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
@@ -52,7 +46,14 @@ public class BookController {
         bookService.saveAll(bookList);
     }
 
-    public List<Book> getStaleBooks(int months) {
+    public List<Book> getStaleBooks() {
+        int months = 6;
+        if(!StringUtils.isNumeric(monthsForOldBook)) {
+            logger.warn("Invalid property \"months\". 6 as default");
+        }
+        else {
+            months = Integer.parseInt(monthsForOldBook);
+        }
         return bookService.getOldBooks(months);
     }
 

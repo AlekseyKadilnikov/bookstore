@@ -1,5 +1,7 @@
 package com.alexeykadilnikov.configurator;
 
+import com.alexeykadilnikov.context.ApplicationContext;
+
 public interface BeanConfigurator {
-    <T> Class<? extends T> getImplementationClass(Class<T> interfaceClass);
+    void configure(Object t, ApplicationContext context);
 }

@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.IBookRepository;
@@ -8,6 +9,7 @@ import com.alexeykadilnikov.repository.IRequestRepository;
 
 import java.util.*;
 
+@Singleton
 public class RequestService implements IRequestService {
     @InjectBean
     private IBookRepository bookRepository;

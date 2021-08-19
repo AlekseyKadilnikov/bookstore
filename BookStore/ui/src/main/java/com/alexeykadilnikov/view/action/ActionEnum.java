@@ -21,7 +21,6 @@ import java.util.*;
 
 public enum ActionEnum implements IAction {
     CREATE_USER(() -> {
-//        UserController userController = UserController.getInstance();
         String username = getStringInput("Enter new username:");
 
         while (ControllerUtils.userController.create(username) > 0) {
@@ -34,7 +33,6 @@ public enum ActionEnum implements IAction {
     }),
 
     SIGN_IN(() -> {
-//        UserController userController = UserController.getInstance();
         String username = getStringInput("Enter username:");
 
         while (ControllerUtils.userController.getOne(username) == null) {
@@ -259,20 +257,7 @@ public enum ActionEnum implements IAction {
     }),
 
     SHOW_STALE_BOOKS(() -> {
-        FileInputStream fis;
-        Properties property = new Properties();
-        int months = 6;
-        try {
-            fis = new FileInputStream("properties\\bookstore.yml");
-            property.load(fis);
-            months = Integer.parseInt(property.getProperty("months").trim());
-            fis.close();
-        } catch (IOException e) {
-            getLogger().error("Error: file bookstore.yml not found! Months = 6 as default");
-        } catch (NumberFormatException e) {
-            getLogger().error("Error: invalid parameter format! Months = 6 as default");
-        }
-        List<Book> staleBooks = ControllerUtils.bookController.getStaleBooks(months);
+        List<Book> staleBooks = ControllerUtils.bookController.getStaleBooks();
         int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortNameNum == 0 && sortTypeNum == 0) {
@@ -290,13 +275,11 @@ public enum ActionEnum implements IAction {
     }),
 
     IMPORT_USERS(() -> {
-//        UserController userController = UserController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         ControllerUtils.userController.importUsers(path);
     }),
 
     EXPORT_USERS(() -> {
-//        UserController userController = UserController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter user id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
         ControllerUtils.userController.exportUsers(path, ids);

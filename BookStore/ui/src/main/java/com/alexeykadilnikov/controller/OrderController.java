@@ -2,6 +2,7 @@ package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
@@ -22,10 +23,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Singleton
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
-
-    private static OrderController instance;
 
     @InjectBean
     private IOrderService orderService;
@@ -33,16 +33,6 @@ public class OrderController {
     private IUserService userService;
     @InjectBean
     private IBookService bookService;
-
-//    private OrderController() {
-//    }
-//
-//    public static OrderController getInstance() {
-//        if(instance == null) {
-//            instance = new OrderController(OrderService.getInstance());
-//        }
-//        return instance;
-//    }
 
     public void create(List<Integer> ids) {
         List<Book> booksAtId = new ArrayList<>();

@@ -1,7 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.annotation.Singleton;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Singleton
 public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 

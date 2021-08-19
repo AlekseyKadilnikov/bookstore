@@ -1,11 +1,13 @@
 package com.alexeykadilnikov;
 
-import com.alexeykadilnikov.factory.BeanFactory;
+import com.alexeykadilnikov.context.Application;
+import com.alexeykadilnikov.context.ApplicationContext;
 
 public class Main {
 
     public static void main(String[] args) {
-        BookStore bookStore = BeanFactory.getInstance().getBean(BookStore.class);
+        ApplicationContext context = Application.run("com.alexeykadilnikov");
+        BookStore bookStore = context.getBean(BookStore.class);
         bookStore.start();
     }
 }
