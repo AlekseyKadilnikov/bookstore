@@ -20,4 +20,9 @@ public class RootMenuBuilder {
         MenuItem item = new MenuItem("Catalog", MenuUtils.baseCatalogMenu, null);
         MenuUtils.rootMenu.addItem(item);
     }
+
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.rootMenu.addItem(item);
+    }
 }

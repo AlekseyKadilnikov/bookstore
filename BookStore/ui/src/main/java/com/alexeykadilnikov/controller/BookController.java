@@ -51,19 +51,19 @@ public class BookController {
     }
 
     public void showDescription(int bookId) {
-        Book book = bookService.getByIndex(bookId);
+        Book book = bookService.getById(bookId);
         System.out.println(book.getDescription());
     }
 
     public void writeOff(int bookId) {
-        Book book = bookService.getByIndex(bookId);
+        Book book = bookService.getById(bookId);
         book.setCount(0);
         System.out.println(book);
     }
 
     public void addBook(int bookId, int count){
         bookService.addBook(bookId, count);
-        Book book = bookService.getByIndex(bookId);
+        Book book = bookService.getById(bookId);
         System.out.println(book);
     }
 

@@ -8,6 +8,7 @@ import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.BookRepository;
 import com.alexeykadilnikov.repository.OrderRepository;
+import com.alexeykadilnikov.repository.RequestRepository;
 
 import java.util.*;
 
@@ -15,9 +16,18 @@ public class RequestService implements IRequestService {
     private static RequestService instance;
 
     private final BookRepository bookRepository;
+    private final RequestRepository requestRepository;
 
-    private RequestService(BookRepository bookRepository) {
+    private RequestService(RequestRepository requestRepository, BookRepository bookRepository) {
         this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
+    }
+
+    public static RequestService getInstance() {
+        if(instance == null) {
+            instance = new RequestService(RequestRepository.getInstance(), BookRepository.getInstance());
+        }
+        return instance;
     }
 
     public Set<Book> createRequest(String name, int count) {
@@ -70,16 +80,17 @@ public class RequestService implements IRequestService {
         }
     }
 
-    public static RequestService getInstance() {
-        if(instance == null) {
-            instance = new RequestService(BookRepository.getInstance());
-        }
-        return instance;
-    }
-
     public List<Request> sort(Book book, Comparator<Request> comparator) {
         List<Request> requests = book.getCommonRequests();
         requests.sort(comparator);
         return requests;
+    }
+
+    public List<Request> getAll() {
+        return requestRepository.findAll();
+    }
+
+    public Request getById(long id) {
+        return requestRepository.getById(id);
     }
 }

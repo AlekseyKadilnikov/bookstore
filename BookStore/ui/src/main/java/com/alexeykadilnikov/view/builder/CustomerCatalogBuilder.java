@@ -47,6 +47,11 @@ public class CustomerCatalogBuilder implements CatalogBuilder {
         MenuUtils.customerCatalogMenu.addItem(item);
     }
 
+    @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.customerCatalogMenu.addItem(item);
+    }
     public void createNewOrderItem() {
         MenuItem item = new MenuItem("Create order", null, ActionEnum.NEW_ORDER);
         MenuUtils.customerCatalogMenu.addItem(item);

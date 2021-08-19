@@ -11,6 +11,12 @@ public class ImportExportBuilder implements BaseBuilder {
         MenuUtils.importExportMenu.addItem(item);
     }
 
+    @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.importExportMenu.addItem(item);
+    }
+
     public void createImportBookItem() {
         MenuItem item = new MenuItem("Import books", null, ActionEnum.IMPORT_BOOKS);
         MenuUtils.importExportMenu.addItem(item);

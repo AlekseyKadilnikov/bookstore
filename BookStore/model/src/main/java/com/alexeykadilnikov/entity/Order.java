@@ -2,23 +2,24 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.OrderStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Order extends BaseEntity {
+public class Order extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5713427368399553474L;
     private static long idCount = 0;
     private List<Book> books;
-    private User user;
+    private Long userId;
     private int totalPrice = 0;
     private OrderStatus status;
     private LocalDate executionDate;
     private final Date initDate = new Date();
 
-    public Order(List<Book> books, User user) {
+    public Order(List<Book> books, Long userId) {
         super(idCount++);
         this.books = books;
-        this.user = user;
+        this.userId = userId;
         status = OrderStatus.NEW;
     }
 
@@ -27,7 +28,7 @@ public class Order extends BaseEntity {
         return "Order{" +
                 "id = " + getId() +
                 ", books=\n" + books.toString() +
-                ", username=" + user.getUsername() +
+                ", userId=" + userId +
                 ", status=" + status +
                 ", executionDate=" + executionDate +
                 ", total price=" + totalPrice +
@@ -51,12 +52,12 @@ public class Order extends BaseEntity {
         totalPrice += book.getPrice();
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public OrderStatus getStatus() {

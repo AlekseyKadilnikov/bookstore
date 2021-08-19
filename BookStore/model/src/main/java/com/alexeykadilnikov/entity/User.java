@@ -1,15 +1,14 @@
 package com.alexeykadilnikov.entity;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1624659229198950104L;
     private static long idCount = 0;
     private String username;
-    private Set<Order> orders = new HashSet<>();
+    private Set<Long> ordersId = new HashSet<>();
 
     public User(String username) {
         super(idCount++);
@@ -21,7 +20,7 @@ public class User extends BaseEntity {
         return "User{" +
                 "id = " + getId() +
                 ", username='" + username + '\'' +
-                ", orders=" + orders.toString() +
+                ", orders=" + ordersId.toString() +
                 '}';
     }
 
@@ -33,15 +32,15 @@ public class User extends BaseEntity {
         this.username = username;
     }
 
-    public Set<Order> getOrders() {
-        return orders;
+    public Set<Long> getOrders() {
+        return ordersId;
     }
 
-    public void setOrders(Set<Order> orders) {
-        this.orders = orders;
+    public void setOrders(Set<Long> ordersId) {
+        this.ordersId = ordersId;
     }
 
-    public void addOrder(Order order) {
-        orders.add(order);
+    public void addOrder(Long orderId) {
+        ordersId.add(orderId);
     }
 }

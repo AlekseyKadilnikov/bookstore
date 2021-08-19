@@ -11,7 +11,7 @@ import java.util.List;
 public class BookRepository implements IRepository<Book, Long> {
     private static BookRepository instance;
 
-    private final List<Book> books = new ArrayList<>(Arrays.asList(
+    private List<Book> books = new ArrayList<>(Arrays.asList(
             new Book("Идиот", "Федор Достоевский", "Наука", 1990, 350, 0),
             new Book("Бесы", "Федор Достоевский", "Наука", 1988, 370, 0),
             new Book("Война и мир", "Лев Толстой", "Наука", 2009, 400,0),
@@ -49,13 +49,9 @@ public class BookRepository implements IRepository<Book, Long> {
         books.remove(book);
     }
 
-    public Book getByIndex(int index) {
-        if (index >= books.size()) {
-            return null;
-        }
-        else {
-            return books.get(index);
-        }
+    @Override
+    public void saveAll(List<Book> all) {
+        books = all;
     }
 
     public static BookRepository getInstance() {
@@ -88,5 +84,7 @@ public class BookRepository implements IRepository<Book, Long> {
             }
             request.setCount(count);
         }
+        RequestRepository requestRepository = RequestRepository.getInstance();
+        requestRepository.save(request);
     }
 }

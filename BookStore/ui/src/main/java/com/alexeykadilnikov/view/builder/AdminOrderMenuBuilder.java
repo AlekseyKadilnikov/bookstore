@@ -23,6 +23,12 @@ public class AdminOrderMenuBuilder implements OrderMenuBuilder {
         MenuUtils.adminOrderMenu.addItem(item);
     }
 
+    @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.adminOrderMenu.addItem(item);
+    }
+
     public void createSortByPriceItem() {
         MenuItem item = new MenuItem("Sort by price", null, ActionEnum.SORT_ORDERS_BY_PRICE);
         MenuUtils.adminOrderMenu.addItem(item);

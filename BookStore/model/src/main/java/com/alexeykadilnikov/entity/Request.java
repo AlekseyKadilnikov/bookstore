@@ -2,10 +2,11 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Request extends BaseEntity {
+public class Request extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4499720100063137694L;
     private static long idCount = 0;
     private final String name;

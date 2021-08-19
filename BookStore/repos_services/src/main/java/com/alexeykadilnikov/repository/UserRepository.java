@@ -42,6 +42,11 @@ public class UserRepository implements IRepository<User, Long>{
         users.remove(user);
     }
 
+    @Override
+    public void saveAll(List<User> all) {
+        users = all;
+    }
+
     public User getByIndex(int index) {
         if(index >= users.size()) {
             return null;

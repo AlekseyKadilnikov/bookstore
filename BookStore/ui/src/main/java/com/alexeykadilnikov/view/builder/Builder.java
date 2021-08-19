@@ -14,6 +14,7 @@ public class Builder {
         rootMenuBuilder.createSignInItem();
         rootMenuBuilder.createRegistrationItem();
         rootMenuBuilder.createBaseCatalogItem();
+        rootMenuBuilder.createExitItem();
 
         BaseCatalogBuilder baseCatalogBuilder = new BaseCatalogBuilder();
         baseCatalogBuilder.createSearchItem();
@@ -23,11 +24,13 @@ public class Builder {
         baseCatalogBuilder.createCountItem();
         baseCatalogBuilder.createDateItem();
         baseCatalogBuilder.createGoBackItem();
+        baseCatalogBuilder.createExitItem();
 
         CustomerMenuBuilder customerMenuBuilder = new CustomerMenuBuilder();
         customerMenuBuilder.createCatalogItem();
         customerMenuBuilder.createOrderItem();
         customerMenuBuilder.createGoBackItem();
+        customerMenuBuilder.createExitItem();
 
         AdminMenuBuilder adminMenuBuilder = new AdminMenuBuilder();
         adminMenuBuilder.createCatalogItem();
@@ -35,11 +38,13 @@ public class Builder {
         adminMenuBuilder.createRequestItem();
         adminMenuBuilder.createImportExportItem();
         adminMenuBuilder.createGoBackItem();
+        adminMenuBuilder.createExitItem();
 
         CustomerOrderMenuBuilder customerOrderMenuBuilder = new CustomerOrderMenuBuilder();
         customerOrderMenuBuilder.createGetOrdersItem();
         customerOrderMenuBuilder.createCancelOrderItem();
         customerOrderMenuBuilder.createGoBackItem();
+        customerOrderMenuBuilder.createExitItem();
 
         AdminOrderMenuBuilder adminOrderMenuBuilder = new AdminOrderMenuBuilder();
         adminOrderMenuBuilder.createGetOrdersItem();
@@ -53,6 +58,7 @@ public class Builder {
         adminOrderMenuBuilder.createSortByPriceItem();
         adminOrderMenuBuilder.createSortByStatusItem();
         adminOrderMenuBuilder.createGoBackItem();
+        adminOrderMenuBuilder.createExitItem();
 
         CustomerCatalogBuilder customerCatalogBuilder = new CustomerCatalogBuilder();
         customerCatalogBuilder.createSearchItem();
@@ -63,6 +69,7 @@ public class Builder {
         customerCatalogBuilder.createCountItem();
         customerCatalogBuilder.createDateItem();
         customerCatalogBuilder.createGoBackItem();
+        customerCatalogBuilder.createExitItem();
 
         AdminCatalogBuilder adminCatalogBuilder = new AdminCatalogBuilder();
         adminCatalogBuilder.createSearchItem();
@@ -75,6 +82,7 @@ public class Builder {
         adminCatalogBuilder.createAddBookItem();
         adminCatalogBuilder.createDateItem();
         adminCatalogBuilder.createGoBackItem();
+        adminCatalogBuilder.createExitItem();
 
         ImportExportBuilder importExportBuilder = new ImportExportBuilder();
         importExportBuilder.createExportBookItem();
@@ -86,6 +94,7 @@ public class Builder {
         importExportBuilder.createImportRequestItem();
         importExportBuilder.createImportUserItem();
         importExportBuilder.createGoBackItem();
+        importExportBuilder.createExitItem();
     }
 
     public ConsoleMenu getRootMenu() {

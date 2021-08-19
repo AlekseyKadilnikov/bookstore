@@ -41,14 +41,18 @@ public class RequestController {
     public void search(String request) {
         Set<Book> foundBooks = requestService.createRequest(request, 1);
         List<Book> books = new ArrayList<>(foundBooks);
-        System.out.println(books.toString());
+        System.out.println(books);
     }
 
     public void sort(int bookId, Comparator<Request> comparator) {
         BookService bookService = BookService.getInstance();
-        Book book = bookService.getByIndex(bookId);
+        Book book = bookService.getById(bookId);
         List<Request> requests = requestService.sort(book, comparator);
         System.out.println(requests.toString());
+    }
+
+    public List<Request> getAll() {
+        return requestService.getAll();
     }
 
     public void importRequests(String path) {

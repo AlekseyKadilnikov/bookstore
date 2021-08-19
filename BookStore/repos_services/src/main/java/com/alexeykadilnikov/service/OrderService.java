@@ -24,11 +24,11 @@ public class OrderService implements IOrderService {
 
     @Override
     public void createOrder(List<Book> books, User user) {
-        Order order = new Order(books, user);
+        Order order = new Order(books, user.getId());
         checkBookAvailable(books, order.getId());
         order.setTotalPrice(calculatePrice(order));
         orderRepository.save(order);
-        user.addOrder(order);
+        user.addOrder(order.getId());
 
         logger.info("Order id = {} created", order.getId());
     }
@@ -104,7 +104,9 @@ public class OrderService implements IOrderService {
             checkBookAvailable(order.getBooks(), order.getId());
         }
         order.setTotalPrice(calculatePrice(order));
-        order.getUser().addOrder(order);
+        UserService userService = UserService.getInstance();
+        User user = userService.getById(order.getUserId());
+        user.addOrder(order.getId());
         orderRepository.save(order);
     }
 

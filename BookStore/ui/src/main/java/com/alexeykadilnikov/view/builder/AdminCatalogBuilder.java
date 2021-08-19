@@ -36,6 +36,12 @@ public class AdminCatalogBuilder implements CatalogBuilder{
     }
 
     @Override
+    public void createExitItem() {
+        MenuItem item = new MenuItem("Exit", null, ActionEnum.EXIT);
+        MenuUtils.adminCatalogMenu.addItem(item);
+    }
+
+    @Override
     public void createCountItem() {
         MenuItem item = new MenuItem("Sort by count in storage", null, ActionEnum.SORT_BY_COUNT);
         MenuUtils.adminCatalogMenu.addItem(item);
