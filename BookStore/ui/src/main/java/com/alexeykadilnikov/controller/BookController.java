@@ -1,7 +1,9 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.annotation.InjectBean;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.BookService;
+import com.alexeykadilnikov.service.IBookService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
@@ -22,20 +24,20 @@ import java.util.List;
 public class BookController {
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
-    private static BookController instance;
+//    private static BookController instance;
 
-    private final BookService bookService;
+    @InjectBean
+    private IBookService bookService;
 
-    private BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
-
-    public static BookController getInstance() {
-        if(instance == null) {
-            instance = new BookController(BookService.getInstance());
-        }
-        return instance;
-    }
+//    private BookController() {
+//    }
+//
+//    public static BookController getInstance() {
+//        if(instance == null) {
+//            instance = new BookController(BookService.getInstance());
+//        }
+//        return instance;
+//    }
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
@@ -44,6 +46,10 @@ public class BookController {
 
     public List<Book> getAll() {
         return bookService.getAll();
+    }
+
+    public void saveAll(List<Book> bookList) {
+        bookService.saveAll(bookList);
     }
 
     public List<Book> getStaleBooks(int months) {

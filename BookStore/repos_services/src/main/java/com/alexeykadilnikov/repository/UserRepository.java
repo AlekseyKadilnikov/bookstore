@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class UserRepository implements IRepository<User, Long>{
-    private static UserRepository instance;
+public class UserRepository implements IUserRepository {
+//    private static UserRepository instance;
 
     private List<User> users = new ArrayList<>();
 
@@ -16,8 +16,8 @@ public class UserRepository implements IRepository<User, Long>{
         users.add(new User("testUser"));
     }
 
-    private UserRepository() {
-    }
+//    private UserRepository() {
+//    }
 
     @Override
     public List<User> findAll() {
@@ -47,19 +47,10 @@ public class UserRepository implements IRepository<User, Long>{
         users = all;
     }
 
-    public User getByIndex(int index) {
-        if(index >= users.size()) {
-            return null;
-        }
-        else {
-            return users.get(index);
-        }
-    }
-
-    public static UserRepository getInstance() {
-        if(instance == null) {
-            instance = new UserRepository();
-        }
-        return instance;
-    }
+//    public static UserRepository getInstance() {
+//        if(instance == null) {
+//            instance = new UserRepository();
+//        }
+//        return instance;
+//    }
 }

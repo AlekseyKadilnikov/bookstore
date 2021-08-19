@@ -1,18 +1,17 @@
 package com.alexeykadilnikov.repository;
 
-import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderRepository implements IRepository<Order, Long> {
-    private static OrderRepository instance;
+public class OrderRepository implements IOrderRepository {
+//    private static OrderRepository instance;
 
     private List<Order> orders = new ArrayList<>();
 
-    private OrderRepository() {
-    }
+//    private OrderRepository() {
+//    }
 
     @Override
     public List<Order> findAll() {
@@ -42,19 +41,10 @@ public class OrderRepository implements IRepository<Order, Long> {
         orders = all;
     }
 
-    public Order getByIndex(int index) {
-        if(index >= orders.size()) {
-            return null;
-        }
-        else {
-            return orders.get(index);
-        }
-    }
-
-    public static OrderRepository getInstance() {
-        if(instance == null) {
-            instance = new OrderRepository();
-        }
-        return instance;
-    }
+//    public static OrderRepository getInstance() {
+//        if(instance == null) {
+//            instance = new OrderRepository();
+//        }
+//        return instance;
+//    }
 }

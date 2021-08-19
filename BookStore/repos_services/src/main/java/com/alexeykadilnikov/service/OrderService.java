@@ -2,9 +2,12 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.annotation.InjectBean;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.BookRepository;
-import com.alexeykadilnikov.repository.OrderRepository;
+import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IOrderRepository;
+import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +17,24 @@ import java.util.*;
 public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
-    private static OrderService instance;
+//    private static OrderService instance;
 
-    private final OrderRepository orderRepository;
+    @InjectBean
+    private IOrderRepository orderRepository;
+    @InjectBean
+    private IUserRepository userRepository;
+    @InjectBean
+    private IBookRepository bookRepository;
 
-    private OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
+//    private OrderService() {
+//    }
+//
+//    public static OrderService getInstance() {
+//        if(instance == null) {
+//            instance = new OrderService();
+//        }
+//        return instance;
+//    }
 
     @Override
     public void createOrder(List<Book> books, User user) {
@@ -34,14 +48,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public String showOrder(int index) {
-        return orderRepository.getByIndex(index).toString();
+    public String showOrder(long id) {
+        return orderRepository.getById(id).toString();
     }
 
     @Override
-    public void cancelOrder(int id) {
-        BookRepository bookRepository = BookRepository.getInstance();
-        Order order = orderRepository.getByIndex(id);
+    public void cancelOrder(long id) {
+        Order order = orderRepository.getById(id);
         for(Book book : order.getBooks()) {
             book.setCount(book.getCount() + 1);
             Request[] orderRequests = book.getOrderRequests();
@@ -63,13 +76,13 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void setStatus(int index, OrderStatus status) {
-        orderRepository.getByIndex(index).setStatus(status);
+    public void setStatus(long id, OrderStatus status) {
+        orderRepository.getById(id).setStatus(status);
     }
 
     @Override
-    public void completeOrder(int id) {
-        Order order = orderRepository.getByIndex(id);
+    public void completeOrder(long id) {
+        Order order = orderRepository.getById(id);
         for(Book book : order.getBooks()) {
             for(Request request : book.getOrderRequests()) {
                 if(request.getStatus() == RequestStatus.NEW) {
@@ -92,28 +105,26 @@ public class OrderService implements IOrderService {
         return orderRepository.findAll();
     }
 
-    public static OrderService getInstance() {
-        if(instance == null) {
-            instance = new OrderService(OrderRepository.getInstance());
-        }
-        return instance;
-    }
-
+    @Override
     public void saveOrder(Order order) {
         if(order.getStatus() == OrderStatus.NEW) {
             checkBookAvailable(order.getBooks(), order.getId());
         }
         order.setTotalPrice(calculatePrice(order));
-        UserService userService = UserService.getInstance();
-        User user = userService.getById(order.getUserId());
+        User user = userRepository.getById(order.getUserId());
         user.addOrder(order.getId());
         orderRepository.save(order);
     }
 
-    private void checkBookAvailable(List<Book> books, long orderId) {
+    @Override
+    public void saveAll(List<Order> orderList) {
+        orderRepository.saveAll(orderList);
+    }
+
+    @Override
+    public void checkBookAvailable(List<Book> books, long orderId) {
         for (Book book : books) {
             if(book.getCount() == 0) {
-                BookRepository bookRepository = BookRepository.getInstance();
                 Request[] orderRequests = book.getOrderRequests();
                 orderRequests[0].setCount(orderRequests[0].getCount() + 1);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
@@ -129,14 +140,17 @@ public class OrderService implements IOrderService {
         }
     }
 
-    public Order getByIndex(int index) {
-        return orderRepository.getByIndex(index);
+    @Override
+    public Order getByIndex(long id) {
+        return orderRepository.getById(id);
     }
 
+    @Override
     public Order getById(long id) {
         return orderRepository.getById(id);
     }
 
+    @Override
     public int calculatePrice(Order order) {
         int totalPrice = 0;
         for (Book book : order.getBooks()) {
@@ -145,6 +159,7 @@ public class OrderService implements IOrderService {
         return totalPrice;
     }
 
+    @Override
     public List<Order> sort(List<Order> orders, Comparator<Order> comparator) {
         orders.sort(comparator);
         return orders;

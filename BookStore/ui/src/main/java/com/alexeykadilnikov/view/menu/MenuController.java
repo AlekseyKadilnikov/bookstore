@@ -6,25 +6,11 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MenuController {
-    private static MenuController instance;
-
-    private Builder builder;
-    private Navigator navigator;
-
-    private MenuController() {
-    }
-
-    public static MenuController getInstance() {
-        if(instance == null) {
-            instance = new MenuController();
-        }
-        return instance;
-    }
 
     public void run() {
-        builder = new Builder();
+        Builder builder = new Builder();
         builder.buildMenu();
-        navigator = new Navigator(builder.getRootMenu());
+        Navigator navigator = new Navigator(builder.getRootMenu());
 
         int index = 0;
         while (index != -1) {

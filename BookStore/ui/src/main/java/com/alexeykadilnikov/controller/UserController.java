@@ -1,7 +1,10 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.annotation.InjectBean;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
+import com.alexeykadilnikov.service.IOrderService;
+import com.alexeykadilnikov.service.IUserService;
 import com.alexeykadilnikov.service.OrderService;
 import com.alexeykadilnikov.service.UserService;
 import com.opencsv.CSVReader;
@@ -21,13 +24,22 @@ import java.util.*;
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    private static UserController instance;
+//    private static UserController instance;
 
-    private final UserService userService;
+    @InjectBean
+    private IUserService userService;
+    @InjectBean
+    private IOrderService orderService;
 
-    private UserController(UserService userService) {
-        this.userService = userService;
-    }
+//    private UserController() {
+//    }
+//
+//    public static UserController getInstance() {
+//        if(instance == null) {
+//            instance = new UserController();
+//        }
+//        return instance;
+//    }
 
     public int create(String username) {
         if(userService.addUser(username) > 0) {
@@ -41,21 +53,17 @@ public class UserController {
     }
 
     public void getOrders(User user) {
-        OrderService orderService = OrderService.getInstance();
         for(Long orderId : user.getOrders()) {
             System.out.println(orderService.getById(orderId).toString());
         }
     }
 
-    public static UserController getInstance() {
-        if(instance == null) {
-            instance = new UserController(UserService.getInstance());
-        }
-        return instance;
-    }
-
     public List<User> getAll() {
         return userService.getAll();
+    }
+
+    public void saveAll(List<User> userList) {
+        userService.saveAll(userList);
     }
 
     public void importUsers(String path) {
@@ -84,7 +92,6 @@ public class UserController {
                 }
 
                 User user = userService.getById(id);
-                OrderService orderService = OrderService.getInstance();
                 for(Long orderId : ordersId) {
                     if(orderService.getById(orderId) == null) {
                         logger.error("Order with id = {} does not exist! (line {})", id, line);

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BookRepository implements IRepository<Book, Long> {
-    private static BookRepository instance;
+public class BookRepository implements IBookRepository {
+//    private static BookRepository instance;
 
     private List<Book> books = new ArrayList<>(Arrays.asList(
             new Book("Идиот", "Федор Достоевский", "Наука", 1990, 350, 0),
@@ -23,8 +23,8 @@ public class BookRepository implements IRepository<Book, Long> {
             new Book("1984", "Джордж Оруэлл", "Питер", 2010, 550, 10))
     );
 
-    private BookRepository() {
-    }
+//    private BookRepository() {
+//    }
 
     @Override
     public List<Book> findAll() {
@@ -54,12 +54,12 @@ public class BookRepository implements IRepository<Book, Long> {
         books = all;
     }
 
-    public static BookRepository getInstance() {
-        if(instance == null) {
-            instance = new BookRepository();
-        }
-        return instance;
-    }
+//    public static BookRepository getInstance() {
+//        if(instance == null) {
+//            instance = new BookRepository();
+//        }
+//        return instance;
+//    }
 
     public void addRequest(Request request, int count, long id) {
         Book book = getById(id);
@@ -84,7 +84,7 @@ public class BookRepository implements IRepository<Book, Long> {
             }
             request.setCount(count);
         }
-        RequestRepository requestRepository = RequestRepository.getInstance();
-        requestRepository.save(request);
+//        RequestRepository requestRepository = RequestRepository.getInstance();
+//        requestRepository.save(request);
     }
 }

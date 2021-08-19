@@ -1,9 +1,10 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.annotation.InjectBean;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.repository.BookRepository;
+import com.alexeykadilnikov.repository.IBookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,12 +16,24 @@ import java.util.*;
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
-    private static BookService instance;
+//    private static BookService instance;
 
-    private final BookRepository bookRepository;
+    @InjectBean
+    private IBookRepository bookRepository;
 
-    private BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+//    private BookService() {
+//    }
+//
+//    public static BookService getInstance() {
+//        if(instance == null) {
+//            instance = new BookService();
+//        }
+//        return instance;
+//    }
+
+    @Override
+    public void saveAll(List<Book> bookList) {
+        bookRepository.saveAll(bookList);
     }
 
     @Override
@@ -69,29 +82,27 @@ public class BookService implements IBookService {
         return bookRepository.findAll();
     }
 
-    public static BookService getInstance() {
-        if(instance == null) {
-            instance = new BookService(BookRepository.getInstance());
-        }
-        return instance;
-    }
-
+    @Override
     public void createBook(Book book) {
         bookRepository.save(book);
     }
 
+    @Override
     public String getBookDescription(Book book) {
         return book.getDescription();
     }
 
+    @Override
     public Book getById(long id) {
         return bookRepository.getById(id);
     }
 
+    @Override
     public void createRequest(Request request, int count, long id) {
         bookRepository.addRequest(request, count, id);
     }
 
+    @Override
     public List<Book> getOldBooks(int monthsAmount) {
         LocalDate date = LocalDate.now().minusMonths(monthsAmount);
         List<Book> books = new ArrayList<>();
@@ -103,6 +114,7 @@ public class BookService implements IBookService {
         return books;
     }
 
+    @Override
     public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
         books.sort(comparator);
         return books;

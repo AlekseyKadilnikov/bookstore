@@ -4,15 +4,11 @@ import com.alexeykadilnikov.BookComparator;
 import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestComparator;
-import com.alexeykadilnikov.controller.BookController;
-import com.alexeykadilnikov.controller.OrderController;
-import com.alexeykadilnikov.controller.RequestController;
-import com.alexeykadilnikov.controller.UserController;
+import com.alexeykadilnikov.controller.*;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.view.menu.MenuUtils;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.alexeykadilnikov.utils.UserUtils;
@@ -25,27 +21,27 @@ import java.util.*;
 
 public enum ActionEnum implements IAction {
     CREATE_USER(() -> {
-        UserController userController = UserController.getInstance();
+//        UserController userController = UserController.getInstance();
         String username = getStringInput("Enter new username:");
 
-        while (userController.create(username) > 0) {
+        while (ControllerUtils.userController.create(username) > 0) {
             username = getStringInput("This username already created. Please try again\nEnter new username:");
         }
 
-        userController.create(username);
+        ControllerUtils.userController.create(username);
 
-        UserUtils.setCurrentUser(userController.getOne(username));
+        UserUtils.setCurrentUser(ControllerUtils.userController.getOne(username));
     }),
 
     SIGN_IN(() -> {
-        UserController userController = UserController.getInstance();
+//        UserController userController = UserController.getInstance();
         String username = getStringInput("Enter username:");
 
-        while (userController.getOne(username) == null) {
+        while (ControllerUtils.userController.getOne(username) == null) {
             username = getStringInput("User not found. Please try again:\nEnter username:");
         }
 
-        UserUtils.setCurrentUser(userController.getOne(username));
+        UserUtils.setCurrentUser(ControllerUtils.userController.getOne(username));
 
         List<MenuItem> items = MenuUtils.rootMenu.getMenuItems();
         for(MenuItem item : items) {
@@ -62,177 +58,160 @@ public enum ActionEnum implements IAction {
     }),
 
     SEARCH(() -> {
-        RequestController requestController = RequestController.getInstance();
         String request = getStringInput("Enter request");
 
-        requestController.search(request);
+        ControllerUtils.requestController.search(request);
     }),
 
     SET_ORDER_STATUS(() -> {
-        OrderController orderController = OrderController.getInstance();
         int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
         int statusTypeNum = getNumber("Enter status number:\n0.New\n1.Success\n2.Canceled", 2);
         switch (statusTypeNum) {
             case 0:
-                orderController.setStatus(orderId, OrderStatus.NEW);
+                ControllerUtils.orderController.setStatus(orderId, OrderStatus.NEW);
                 break;
             case 1:
-                orderController.setStatus(orderId, OrderStatus.SUCCESS);
+                ControllerUtils.orderController.setStatus(orderId, OrderStatus.SUCCESS);
                 break;
             case 2:
-                orderController.setStatus(orderId, OrderStatus.CANCELED);
+                ControllerUtils.orderController.setStatus(orderId, OrderStatus.CANCELED);
                 break;
         }
     }),
 
     SORT_BOOKS_BY_NAME(() -> {
-        BookController bookController = BookController.getInstance();
-
-        List<Book> books = bookController.getAll();
+        List<Book> books = ControllerUtils.bookController.getAll();
 
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortTypeNum == 0) {
-            bookController.sort(books, BookComparator.NameComparatorAscending);
+            ControllerUtils.bookController.sort(books, BookComparator.NameComparatorAscending);
         }
         else {
-            bookController.sort(books, BookComparator.NameComparatorDescending);
+            ControllerUtils.bookController.sort(books, BookComparator.NameComparatorDescending);
         }
     }),
 
     SORT_BOOKS_BY_PRICE(() -> {
-        BookController bookController = BookController.getInstance();
-        List<Book> books = bookController.getAll();
+        List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            bookController.sort(books, BookComparator.PriceComparatorAscending);
+            ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorAscending);
         }
         else {
-            bookController.sort(books, BookComparator.PriceComparatorDescending);
+            ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorDescending);
         }
     }),
 
     WRITE_OFF_BOOK(() -> {
-        BookController bookController = BookController.getInstance();
         int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
-        bookController.writeOff(bookId);
+        ControllerUtils.bookController.writeOff(bookId);
     }),
 
     ADD_BOOK(() -> {
-        BookController bookController = BookController.getInstance();
         int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         int count = getNumber("Enter count of books:", Integer.MAX_VALUE);
-        bookController.addBook(bookId, count);
+        ControllerUtils.bookController.addBook(bookId, count);
     }),
 
     SORT_ORDERS_BY_PRICE(() -> {
-        OrderController orderController = OrderController.getInstance();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending:", 1);
-        List<Order> orders = orderController.getAll();
+        List<Order> orders = ControllerUtils.orderController.getAll();
         if(sortTypeNum == 0) {
-            orderController.sort(orders, OrderComparator.PriceComparatorAscending);
+            ControllerUtils.orderController.sort(orders, OrderComparator.PriceComparatorAscending);
         }
         else {
-            orderController.sort(orders, OrderComparator.PriceComparatorDescending);
+            ControllerUtils.orderController.sort(orders, OrderComparator.PriceComparatorDescending);
         }
     }),
 
     SORT_ORDERS_BY_STATUS(() -> {
-        OrderController orderController = OrderController.getInstance();
         int sortTypeNum = getNumber("Enter status number:\n0.New\n1.Success\n2.Canceled", 2);
 
         switch (sortTypeNum) {
             case 0:
-                System.out.println(orderController.sortByStatus(OrderStatus.NEW).toString());
+                System.out.println(ControllerUtils.orderController.sortByStatus(OrderStatus.NEW).toString());
                 break;
             case 1:
-                System.out.println(orderController.sortByStatus(OrderStatus.SUCCESS).toString());
+                System.out.println(ControllerUtils.orderController.sortByStatus(OrderStatus.SUCCESS).toString());
                 break;
             case 2:
-                System.out.println(orderController.sortByStatus(OrderStatus.CANCELED).toString());
+                System.out.println(ControllerUtils.orderController.sortByStatus(OrderStatus.CANCELED).toString());
                 break;
         }
     }),
 
     SORT_ORDERS_BY_EXEC_DATE(() -> {
-        OrderController orderController = OrderController.getInstance();
         List<String> dates = getDateInput();
 
         int sortNameNum = getNumber("Enter sort type:\n0.By date\n1.By price", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorAscending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorAscending, dates.get(0), dates.get(1));
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorDescending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorDescending, dates.get(0), dates.get(1));
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorAscending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorAscending, dates.get(0), dates.get(1));
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorDescending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorDescending, dates.get(0), dates.get(1));
         }
     }),
 
     SORT_BY_EXEC_DATE(() -> {
-        OrderController orderController = OrderController.getInstance();
-        List<Order> orders = orderController.getAll();
+        List<Order> orders = ControllerUtils.orderController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            orderController.sort(orders, OrderComparator.DateComparatorAscending);
+            ControllerUtils.orderController.sort(orders, OrderComparator.DateComparatorAscending);
         }
         else {
-            orderController.sort(orders, OrderComparator.DateComparatorDescending);
+            ControllerUtils.orderController.sort(orders, OrderComparator.DateComparatorDescending);
         }
     }),
 
     EARNED_MONEY(() -> {
-        OrderController orderController = OrderController.getInstance();
         List<String> dates = getDateInput();
-        orderController.showEarnedMoneyForPeriod(dates.get(0), dates.get(1));
+        ControllerUtils.orderController.showEarnedMoneyForPeriod(dates.get(0), dates.get(1));
     }),
 
     COMPL_ORDERS_COUNT(() -> {
-        OrderController orderController = OrderController.getInstance();
         List<String> dates = getDateInput();
-        orderController.showCompletedOrdersCountForPeriod(dates.get(0), dates.get(1));
+        ControllerUtils.orderController.showCompletedOrdersCountForPeriod(dates.get(0), dates.get(1));
     }),
 
     GET_ORDER_DETAIL(() -> {
-        OrderController orderController = OrderController.getInstance();
         int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
-        orderController.showOne(orderId);
+        ControllerUtils.orderController.showOne(orderId);
     }),
 
     SORT_BY_COUNT(() -> {
-        BookController bookController = BookController.getInstance();
-        List<Book> books = bookController.getAll();
+        List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            bookController.sort(books, BookComparator.AvailableComparatorAscending);
+            ControllerUtils.bookController.sort(books, BookComparator.AvailableComparatorAscending);
         }
         else {
-            bookController.sort(books, BookComparator.AvailableComparatorDescending);
+            ControllerUtils.bookController.sort(books, BookComparator.AvailableComparatorDescending);
         }
     }),
 
     SORT_BOOKS_BY_DATE(() -> {
-        BookController bookController = BookController.getInstance();
-        List<Book> books = bookController.getAll();
+        List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            bookController.sort(books, BookComparator.DateComparatorAscending);
+            ControllerUtils.bookController.sort(books, BookComparator.DateComparatorAscending);
         }
         else {
-            bookController.sort(books, BookComparator.DateComparatorDescending);
+            ControllerUtils.bookController.sort(books, BookComparator.DateComparatorDescending);
         }
     }),
 
     NEW_ORDER(() -> {
-        BookController bookController = BookController.getInstance();
-        List<Book> books = bookController.getAll();
-        bookController.sort(books, BookComparator.PriceComparatorAscending);
+        List<Book> books = ControllerUtils.bookController.getAll();
+        ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorAscending);
 
         String bookIds = getStringInput("Enter book ids (example: 1 1 5)");
         String[] stringIds = bookIds.split(" ");
@@ -241,54 +220,45 @@ public enum ActionEnum implements IAction {
             intIds.add(Integer.parseInt(id));
         }
 
-        OrderController orderController = OrderController.getInstance();
-        orderController.create(intIds);
+        ControllerUtils.orderController.create(intIds);
     }),
 
     GET_USER_ORDERS(() -> {
-        UserController userController = UserController.getInstance();
-        userController.getOrders(UserUtils.getCurrentUser());
+        ControllerUtils.userController.getOrders(UserUtils.getCurrentUser());
     }),
 
-    GET_ADMIN_ORDERS(() -> {
-        OrderController orderController = OrderController.getInstance();
-        orderController.showAll();
-    }),
+    GET_ADMIN_ORDERS(ControllerUtils.orderController::showAll),
 
     CANCEL_ORDER(() -> {
-        OrderController orderController = OrderController.getInstance();
         int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
-        orderController.cancel(orderId);
+        ControllerUtils.orderController.cancel(orderId);
     }),
 
     SHOW_BOOK_DESCRIPTION(() -> {
-        BookController bookController = BookController.getInstance();
         int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
-        bookController.showDescription(bookId);
+        ControllerUtils.bookController.showDescription(bookId);
     }),
 
     SHOW_REQUESTS_FOR_BOOK(() -> {
-        RequestController requestController = RequestController.getInstance();
         int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         int sortNameNum = getNumber("Enter number of sort type:\n0.By books count\n1.By name", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            requestController.sort(bookId, RequestComparator.AmountComparatorAscending);
+            ControllerUtils.requestController.sort(bookId, RequestComparator.AmountComparatorAscending);
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            requestController.sort(bookId, RequestComparator.AmountComparatorDescending);
+            ControllerUtils.requestController.sort(bookId, RequestComparator.AmountComparatorDescending);
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            requestController.sort(bookId, RequestComparator.NameComparatorAscending);
+            ControllerUtils.requestController.sort(bookId, RequestComparator.NameComparatorAscending);
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            requestController.sort(bookId, RequestComparator.NameComparatorDescending);
+            ControllerUtils.requestController.sort(bookId, RequestComparator.NameComparatorDescending);
         }
     }),
 
     SHOW_STALE_BOOKS(() -> {
-        BookController bookController = BookController.getInstance();
         FileInputStream fis;
         Properties property = new Properties();
         int months = 6;
@@ -298,89 +268,78 @@ public enum ActionEnum implements IAction {
             months = Integer.parseInt(property.getProperty("months").trim());
             fis.close();
         } catch (IOException e) {
-            Constants.logger.error("Error: file bookstore.yml not found! Months = 6 as default");
+            getLogger().error("Error: file bookstore.yml not found! Months = 6 as default");
         } catch (NumberFormatException e) {
-            Constants.logger.error("Error: invalid parameter format! Months = 6 as default");
+            getLogger().error("Error: invalid parameter format! Months = 6 as default");
         }
-        List<Book> staleBooks = bookController.getStaleBooks(months);
+        List<Book> staleBooks = ControllerUtils.bookController.getStaleBooks(months);
         int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            bookController.sort(staleBooks, BookComparator.ReceiptComparatorAscending);
+            ControllerUtils.bookController.sort(staleBooks, BookComparator.ReceiptComparatorAscending);
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            bookController.sort(staleBooks, BookComparator.ReceiptComparatorDescending);
+            ControllerUtils.bookController.sort(staleBooks, BookComparator.ReceiptComparatorDescending);
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            bookController.sort(staleBooks, BookComparator.PriceComparatorAscending);
+            ControllerUtils.bookController.sort(staleBooks, BookComparator.PriceComparatorAscending);
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            bookController.sort(staleBooks, BookComparator.PriceComparatorDescending);
+            ControllerUtils.bookController.sort(staleBooks, BookComparator.PriceComparatorDescending);
         }
     }),
 
     IMPORT_USERS(() -> {
-        UserController userController = UserController.getInstance();
+//        UserController userController = UserController.getInstance();
         String path = getStringInput("Enter .csv file path:");
-        userController.importUsers(path);
+        ControllerUtils.userController.importUsers(path);
     }),
 
     EXPORT_USERS(() -> {
-        UserController userController = UserController.getInstance();
+//        UserController userController = UserController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter user id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
-        userController.exportUsers(path, ids);
+        ControllerUtils.userController.exportUsers(path, ids);
     }),
 
     IMPORT_BOOKS(() -> {
-        BookController bookController = BookController.getInstance();
         String path = getStringInput("Enter .csv file path:");
-        bookController.importBooks(path);
+        ControllerUtils.bookController.importBooks(path);
     }),
 
     EXPORT_BOOKS(() -> {
-        BookController bookController = BookController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter book id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
-        bookController.exportBooks(path, ids);
+        ControllerUtils.bookController.exportBooks(path, ids);
     }),
 
     IMPORT_ORDERS(() -> {
-        OrderController orderController = OrderController.getInstance();
         String path = getStringInput("Enter .csv file path:");
-        orderController.importOrders(path);
+        ControllerUtils.orderController.importOrders(path);
     }),
 
     EXPORT_ORDERS(() -> {
-        OrderController orderController = OrderController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter order id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
-        orderController.exportOrders(path, ids);
+        ControllerUtils.orderController.exportOrders(path, ids);
     }),
 
     IMPORT_REQUESTS(() -> {
-        RequestController requestController = RequestController.getInstance();
         String path = getStringInput("Enter .csv file path:");
-        requestController.importRequests(path);
+        ControllerUtils.requestController.importRequests(path);
     }),
 
     EXPORT_REQUESTS(() -> {
-        RequestController requestController = RequestController.getInstance();
         String path = getStringInput("Enter .csv file path:");
         String ids = getStringInput("Enter book id. Example: \"-1\" (all), \"1\" (one), \"1 2 3\" (some)");
-        requestController.exportRequests(path, ids);
+        ControllerUtils.requestController.exportRequests(path, ids);
     }),
 
     EXIT(() -> {
-        BookController bookController = BookController.getInstance();
-        OrderController orderController = OrderController.getInstance();
-        RequestController requestController = RequestController.getInstance();
-        UserController userController = UserController.getInstance();
-
-        List<Book> bookList = bookController.getAll();
-        List<Order> orderList = orderController.getAll();
-        List<User> userList = userController.getAll();
-        List<Request> requestList = requestController.getAll();
+        List<Book> bookList = ControllerUtils.bookController.getAll();
+        List<Order> orderList = ControllerUtils.orderController.getAll();
+        List<User> userList = ControllerUtils.userController.getAll();
+        List<Request> requestList = ControllerUtils.requestController.getAll();
 
         try {
             FileOutputStream fos = new FileOutputStream("serialize\\books.bin");
@@ -399,15 +358,13 @@ public enum ActionEnum implements IAction {
             out.close();
         }
         catch (IOException e) {
-            Constants.logger.error("Error with writing to file!");
+            getLogger().error("Error with writing to file!");
         }
 
         System.exit(0);
     });
 
-    private static class Constants {
-        private static final Logger logger = LoggerFactory.getLogger(ActionEnum.class);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ActionEnum.class);
 
     private final IAction action;
 
@@ -418,6 +375,10 @@ public enum ActionEnum implements IAction {
     @Override
     public void execute() {
         action.execute();
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 
     public static String getStringInput(String param) {
