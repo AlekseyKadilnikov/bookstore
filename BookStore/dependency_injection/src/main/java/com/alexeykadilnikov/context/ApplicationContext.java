@@ -1,6 +1,6 @@
 package com.alexeykadilnikov.context;
 
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.configurator.Config;
 import com.alexeykadilnikov.factory.BeanFactory;
 

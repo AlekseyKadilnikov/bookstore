@@ -1,4 +1,4 @@
-package com.alexeykadilnikov.annotation;
+package com.alexeykadilnikov;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

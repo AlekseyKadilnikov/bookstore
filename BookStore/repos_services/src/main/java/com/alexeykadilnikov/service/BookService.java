@@ -1,13 +1,12 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.ConfigProperty;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.ConfigProperty;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +20,8 @@ public class BookService implements IBookService {
     @InjectBean
     private IBookRepository bookRepository;
 
-    @ConfigProperty("successRequests")
-    private String doSuccess;
+    @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
+    private boolean doSuccess;
 
     @Override
     public void saveAll(List<Book> bookList) {
@@ -31,15 +30,8 @@ public class BookService implements IBookService {
 
     @Override
     public void addBook(long id, int bookCount) {
-        boolean doSuccessRequests = true;
-        if(!doSuccess.equals("false") && !doSuccess.equals("true")) {
-            logger.warn("Invalid property \"successRequests\". \"true\" as default");
-        }
-        else {
-            doSuccessRequests = Boolean.parseBoolean(doSuccess);
-        }
         Book book = bookRepository.getById(id);
-        if(doSuccessRequests) {
+        if(doSuccess) {
             Request[] requests = book.getOrderRequests();
             for(Request request : requests) {
                 if(request.getStatus() == RequestStatus.NEW) {

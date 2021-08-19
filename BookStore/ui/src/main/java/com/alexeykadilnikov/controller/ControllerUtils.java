@@ -1,7 +1,7 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 
 @Singleton
 public class ControllerUtils {

@@ -16,6 +16,7 @@
         <module>utils</module>
         <module>dependency_injection</module>
         <module>property_injection</module>
+        <module>annotation</module>
     </modules>
 
     <properties>

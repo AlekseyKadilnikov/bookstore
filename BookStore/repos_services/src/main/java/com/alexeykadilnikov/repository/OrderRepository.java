@@ -1,6 +1,6 @@
 package com.alexeykadilnikov.repository;
 
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Order;
 
 import java.util.ArrayList;

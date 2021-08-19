@@ -1,10 +1,9 @@
 package com.alexeykadilnikov.repository;
 
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Singleton

@@ -1,7 +1,7 @@
 package com.alexeykadilnikov;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.controller.ControllerUtils;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;

@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.ConfigProperty;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.ConfigProperty;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.IBookService;
 import com.alexeykadilnikov.utils.StringUtils;
@@ -30,8 +30,8 @@ public class BookController {
     @InjectBean
     private IBookService bookService;
 
-    @ConfigProperty("months")
-    private String monthsForOldBook;
+    @ConfigProperty()
+    private int months;
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
@@ -47,13 +47,6 @@ public class BookController {
     }
 
     public List<Book> getStaleBooks() {
-        int months = 6;
-        if(!StringUtils.isNumeric(monthsForOldBook)) {
-            logger.warn("Invalid property \"months\". 6 as default");
-        }
-        else {
-            months = Integer.parseInt(monthsForOldBook);
-        }
         return bookService.getOldBooks(months);
     }
 

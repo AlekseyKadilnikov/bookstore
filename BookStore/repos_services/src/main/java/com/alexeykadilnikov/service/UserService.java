@@ -1,7 +1,7 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 

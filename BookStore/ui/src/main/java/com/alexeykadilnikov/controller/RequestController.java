@@ -1,14 +1,12 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.service.IBookService;
 import com.alexeykadilnikov.service.IRequestService;
-import com.alexeykadilnikov.service.RequestService;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;

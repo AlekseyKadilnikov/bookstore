@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;

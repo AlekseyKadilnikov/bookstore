@@ -1,8 +1,7 @@
 package com.alexeykadilnikov.configurator;
 
-import com.alexeykadilnikov.annotation.InjectBean;
+import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.context.ApplicationContext;
-import com.alexeykadilnikov.factory.BeanFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

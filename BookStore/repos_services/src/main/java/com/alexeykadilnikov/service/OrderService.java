@@ -2,8 +2,8 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IOrderRepository;

@@ -1,13 +1,10 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.annotation.InjectBean;
-import com.alexeykadilnikov.annotation.Singleton;
-import com.alexeykadilnikov.entity.Order;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.IOrderService;
 import com.alexeykadilnikov.service.IUserService;
-import com.alexeykadilnikov.service.OrderService;
-import com.alexeykadilnikov.service.UserService;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;

@@ -1,9 +1,8 @@
 package com.alexeykadilnikov.view.menu;
 
-import com.alexeykadilnikov.annotation.Singleton;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.view.builder.Builder;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 @Singleton
