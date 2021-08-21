@@ -30,8 +30,8 @@ public class BookController {
     @InjectBean
     private IBookService bookService;
 
-    @ConfigProperty()
-    private int months;
+    @ConfigProperty
+    private Integer[] months;
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
@@ -47,7 +47,7 @@ public class BookController {
     }
 
     public List<Book> getStaleBooks() {
-        return bookService.getOldBooks(months);
+        return bookService.getOldBooks(months[0]);
     }
 
     public void showDescription(int bookId) {
