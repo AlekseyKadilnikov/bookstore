@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 
 public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurator {
     private static final Logger logger = LoggerFactory.getLogger(ConfigPropertyAnnotationBeanConfigurator.class);
@@ -78,7 +75,11 @@ public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurato
                     if(values.length == 1) {
                         field.set(t, values[0]);
                     } else if (Collection.class.isAssignableFrom(field.getType())) {
-                        field.set(t, Arrays.asList(values));
+                        if(field.getType().equals(Set.class)) {
+                            field.set(t, Set.of(values));
+                        } else {
+                            field.set(t, Arrays.asList(values));
+                        }
                     } else {
                         if (Integer.class.equals(type)) {
                             Integer[] arr = new Integer[values.length];
