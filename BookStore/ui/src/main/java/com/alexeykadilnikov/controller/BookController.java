@@ -28,7 +28,7 @@ public class BookController {
     @InjectBean
     private IBookService bookService;
 
-    @ConfigProperty
+    @ConfigProperty(type=Integer[].class)
     private Integer[] months;
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {

@@ -51,7 +51,7 @@ public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurato
                     Class<?> type = annotation.type();
 
                     Class<?> contentClass = null;
-                    if(props.length > 1) {
+                    if(props.length > 1 && type != Class.class) {
                         if(field.getType().isArray()) {
                             type = field.getType().getComponentType();
                         } else {
