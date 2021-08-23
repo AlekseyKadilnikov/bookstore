@@ -9,7 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Properties;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurator {
     private static final Logger logger = LoggerFactory.getLogger(ConfigPropertyAnnotationBeanConfigurator.class);
@@ -42,20 +43,102 @@ public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurato
                             ? property.getProperty(field.getDeclaringClass().getSimpleName() + "." + field.getName())
                             : property.getProperty(annotation.propertyName());
 
+                    String[] props = propertyName.split(",");
+
+                    Object[] values = new Object[props.length];
+
                     Class<?> type = annotation.type();
 
-                    Object value = propertyName;
-
-                    if(type == Class.class) {
-                        if(field.getType() != Class.class) {
-                            value = toObject(field.getType(), propertyName);
+                    Class<?> contentClass = null;
+                    if(props.length > 1 && type == Class.class) {
+                        if(field.getType().isArray()) {
+                            type = field.getType().getComponentType();
+                        } else {
+                            ParameterizedType listType= (ParameterizedType) field.getGenericType();
+                            contentClass = (Class<?>) listType.getActualTypeArguments()[0];
+                            type = contentClass;
                         }
-                    } else {
-                        value = toObject(type, propertyName);
+                    }
+
+                    for(int i = 0; i < props.length; i++) {
+                        if(type == Class.class) {
+                            if(field.getType() != Class.class) {
+                                values[i] = toObject(field.getType(), props[i]);
+                            }
+                        } else {
+                            values[i] = toObject(type, props[i]);
+                        }
                     }
 
                     field.setAccessible(true);
-                    field.set(t, value);
+                    if(values.length == 1) {
+                        field.set(t, values[0]);
+                    } else if (Collection.class.isAssignableFrom(field.getType())) {
+                        if(field.getType().equals(Set.class)) {
+                            field.set(t, Set.of(values));
+                        } else {
+                            field.set(t, Arrays.asList(values));
+                        }
+                    } else {
+                        if (Integer.class.equals(type)) {
+                            Integer[] arr = new Integer[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Integer) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Boolean.class.equals(type)) {
+                            Boolean[] arr = new Boolean[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Boolean) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Byte.class.equals(type)) {
+                            Byte[] arr = new Byte[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Byte) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Short.class.equals(type)) {
+                            Short[] arr = new Short[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Short) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Float.class.equals(type)) {
+                            Float[] arr = new Float[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Float) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Double.class.equals(type)) {
+                            Double[] arr = new Double[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Double) values[i];
+                            }
+                            field.set(t, arr);
+                        } else if (Long.class.equals(type)) {
+                            Long[] arr = new Long[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (Long) values[i];
+                            }
+                            field.set(t, arr);
+                        } else {
+                            String[] arr = new String[values.length];
+                            for(int i = 0; i < values.length; i++)
+                            {
+                                arr[i] = (String) values[i];
+                            }
+                            field.set(t, arr);
+
+                        }
+                    }
                 }
             }
         } catch (IllegalAccessException e) {
