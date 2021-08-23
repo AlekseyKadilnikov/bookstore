@@ -74,6 +74,4 @@ class Thread2 implements Runnable {
         Thread1.increment();
 
     }
-
-
 }
