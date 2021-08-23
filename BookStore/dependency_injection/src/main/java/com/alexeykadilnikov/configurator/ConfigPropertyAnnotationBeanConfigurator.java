@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
@@ -51,7 +50,7 @@ public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurato
                     Class<?> type = annotation.type();
 
                     Class<?> contentClass = null;
-                    if(props.length > 1 && type != Class.class) {
+                    if(props.length > 1 && type == Class.class) {
                         if(field.getType().isArray()) {
                             type = field.getType().getComponentType();
                         } else {
@@ -137,6 +136,7 @@ public class ConfigPropertyAnnotationBeanConfigurator implements BeanConfigurato
                                 arr[i] = (String) values[i];
                             }
                             field.set(t, arr);
+
                         }
                     }
                 }
