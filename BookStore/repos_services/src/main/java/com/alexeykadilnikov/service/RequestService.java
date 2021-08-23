@@ -1,35 +1,22 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.OrderComparator;
-import com.alexeykadilnikov.RequestComparator;
-import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.repository.BookRepository;
-import com.alexeykadilnikov.repository.OrderRepository;
-import com.alexeykadilnikov.repository.RequestRepository;
+import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 
 import java.util.*;
 
+@Singleton
 public class RequestService implements IRequestService {
-    private static RequestService instance;
+    @InjectBean
+    private IBookRepository bookRepository;
+    @InjectBean
+    private IRequestRepository requestRepository;
 
-    private final BookRepository bookRepository;
-    private final RequestRepository requestRepository;
-
-    private RequestService(RequestRepository requestRepository, BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-        this.requestRepository = requestRepository;
-    }
-
-    public static RequestService getInstance() {
-        if(instance == null) {
-            instance = new RequestService(RequestRepository.getInstance(), BookRepository.getInstance());
-        }
-        return instance;
-    }
-
+    @Override
     public Set<Book> createRequest(String name, int count) {
         String[] words = name.split(" ");
         List<Book> books = bookRepository.findAll();
@@ -80,16 +67,24 @@ public class RequestService implements IRequestService {
         }
     }
 
+    @Override
     public List<Request> sort(Book book, Comparator<Request> comparator) {
         List<Request> requests = book.getCommonRequests();
         requests.sort(comparator);
         return requests;
     }
 
+    @Override
     public List<Request> getAll() {
         return requestRepository.findAll();
     }
 
+    @Override
+    public void saveAll(List<Request> requestList) {
+        requestRepository.saveAll(requestList);
+    }
+
+    @Override
     public Request getById(long id) {
         return requestRepository.getById(id);
     }

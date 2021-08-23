@@ -1,12 +1,12 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.OrderStatus;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.service.BookService;
-import com.alexeykadilnikov.service.OrderService;
-import com.alexeykadilnikov.service.UserService;
+import com.alexeykadilnikov.service.*;
 import com.alexeykadilnikov.utils.UserUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -23,26 +23,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Singleton
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    private static OrderController instance;
-
-    private final OrderService orderService;
-
-    private OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
-    public static OrderController getInstance() {
-        if(instance == null) {
-            instance = new OrderController(OrderService.getInstance());
-        }
-        return instance;
-    }
+    @InjectBean
+    private IOrderService orderService;
+    @InjectBean
+    private IUserService userService;
+    @InjectBean
+    private IBookService bookService;
 
     public void create(List<Integer> ids) {
-        BookService bookService = BookService.getInstance();
         List<Book> booksAtId = new ArrayList<>();
         for(int id : ids) {
             for(Book book : bookService.getAll()) {
@@ -61,6 +53,10 @@ public class OrderController {
 
     public List<Order> getAll() {
         return orderService.getAll();
+    }
+
+    public void saveAll(List<Order> orderList) {
+        orderService.saveAll(orderList);
     }
 
     public void showOne(int id) {
@@ -170,8 +166,6 @@ public class OrderController {
                     }
                 }
 
-                UserService userService = UserService.getInstance();
-                BookService bookService = BookService.getInstance();
                 User user = userService.getById(userId);
                 Order order = orderService.getById(orderId);
                 OrderStatus status;

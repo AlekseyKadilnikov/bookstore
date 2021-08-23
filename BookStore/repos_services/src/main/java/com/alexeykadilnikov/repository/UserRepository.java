@@ -1,22 +1,18 @@
 package com.alexeykadilnikov.repository;
 
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class UserRepository implements IRepository<User, Long>{
-    private static UserRepository instance;
-
+@Singleton
+public class UserRepository implements IUserRepository {
     private List<User> users = new ArrayList<>();
 
     {
         users.add(new User("admin"));
         users.add(new User("testUser"));
-    }
-
-    private UserRepository() {
     }
 
     @Override
@@ -45,21 +41,5 @@ public class UserRepository implements IRepository<User, Long>{
     @Override
     public void saveAll(List<User> all) {
         users = all;
-    }
-
-    public User getByIndex(int index) {
-        if(index >= users.size()) {
-            return null;
-        }
-        else {
-            return users.get(index);
-        }
-    }
-
-    public static UserRepository getInstance() {
-        if(instance == null) {
-            instance = new UserRepository();
-        }
-        return instance;
     }
 }

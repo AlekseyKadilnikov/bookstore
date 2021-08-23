@@ -1,10 +1,12 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.service.BookService;
-import com.alexeykadilnikov.service.RequestService;
+import com.alexeykadilnikov.service.IBookService;
+import com.alexeykadilnikov.service.IRequestService;
 import com.alexeykadilnikov.utils.StringUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -20,23 +22,15 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+@Singleton
 public class RequestController {
     private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
 
-    private static RequestController instance;
+    @InjectBean
+    private IRequestService requestService;
+    @InjectBean
+    private IBookService bookService;
 
-    private final RequestService requestService;
-
-    private RequestController(RequestService requestService) {
-        this.requestService = requestService;
-    }
-
-    public static RequestController getInstance() {
-        if(instance == null) {
-            instance = new RequestController(RequestService.getInstance());
-        }
-        return instance;
-    }
 
     public void search(String request) {
         Set<Book> foundBooks = requestService.createRequest(request, 1);
@@ -45,7 +39,6 @@ public class RequestController {
     }
 
     public void sort(int bookId, Comparator<Request> comparator) {
-        BookService bookService = BookService.getInstance();
         Book book = bookService.getById(bookId);
         List<Request> requests = requestService.sort(book, comparator);
         System.out.println(requests.toString());
@@ -55,13 +48,16 @@ public class RequestController {
         return requestService.getAll();
     }
 
+    public void saveAll(List<Request> requestList) {
+        requestService.saveAll(requestList);
+    }
+
     public void importRequests(String path) {
         int line = 1;
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(path));
                 CSVReader csvReader = new CSVReader(reader);
         ) {
-            BookService bookService = BookService.getInstance();
             String name = "";
             String status = "";
             int count = 0;
@@ -185,7 +181,6 @@ public class RequestController {
                 Writer writer = Files.newBufferedWriter(Paths.get(path));
                 CSVWriter csvWriter = new CSVWriter(writer);
         ) {
-            BookService bookService = BookService.getInstance();
             List<String[]> entries = new ArrayList<>();
             List<Book> books = bookService.getAll();
             Set<Request> requests = new HashSet<>();
