@@ -2,8 +2,10 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.repository.IAuthorRepository;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IRequestRepository;
 
@@ -15,6 +17,8 @@ public class RequestService implements IRequestService {
     private IBookRepository bookRepository;
     @InjectBean
     private IRequestRepository requestRepository;
+    @InjectBean
+    private IAuthorRepository authorRepository;
 
     @Override
     public Set<Book> createRequest(String name, int count) {
@@ -24,10 +28,11 @@ public class RequestService implements IRequestService {
         Set<Book> booksByName = new HashSet<>();
         for(String word : words) {
             for(Book book : books) {
+                String authors = getFullAuthorStringListForBook(book);
                 if(book.getName().toLowerCase().contains(word.toLowerCase())) {
                     booksByName.add(book);
                 }
-                else if(book.getAuthor().toLowerCase().contains(word.toLowerCase())) {
+                else if(authors.toLowerCase().contains(word.toLowerCase())) {
                     booksByAuthor.add(book);
                 }
             }
@@ -87,5 +92,18 @@ public class RequestService implements IRequestService {
     @Override
     public Request getById(long id) {
         return requestRepository.getById(id);
+    }
+
+    private String getFullAuthorStringListForBook(Book book) {
+        StringBuilder authors = new StringBuilder();
+        List<Long> authorsId = book.getAuthors();
+        for (int i = 0; i < authorsId.size(); i++) {
+            Author author = authorRepository.getById(authorsId.get(i));
+            authors.append(author.getFirstName()).append(" ").append(author.getLastName()).append(" ").append(author.getMiddleName());
+            if(i != authorsId.size() - 1) {
+                authors.append(", ");
+            }
+        }
+        return authors.toString();
     }
 }

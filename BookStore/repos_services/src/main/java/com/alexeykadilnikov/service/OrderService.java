@@ -75,8 +75,9 @@ public class OrderService implements IOrderService {
         for(Book book : order.getBooks()) {
             for(Request request : book.getOrderRequests()) {
                 if(request.getStatus() == RequestStatus.NEW) {
-                    logger.info("Order id = {} couldn't be completed: request for {} - {} not closed", order.getId(),
-                            book.getAuthor(), book.getName());
+                    logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
+                            order.getId(),
+                            book.getId());
                     return;
                 }
             }
@@ -117,11 +118,11 @@ public class OrderService implements IOrderService {
                 Request[] orderRequests = book.getOrderRequests();
                 orderRequests[0].setCount(orderRequests[0].getCount() + 1);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
-                logger.info("Order request for {} - {} created", book.getAuthor(), book.getName());
+                logger.info("Order request for book {} created", book.getId());
 
-                bookRepository.addRequest(new Request("Request for " + book.getAuthor() + " - " + book.getName(),
+                bookRepository.addRequest(new Request("Request for book " + book.getId(),
                         Collections.singleton(book.getId())), 1, book.getId());
-                logger.info("Common request for {} - {} created", book.getAuthor(), book.getName());
+                logger.info("Common request for book {} created", book.getId());
             }
             else {
                 book.setCount(book.getCount() - 1);

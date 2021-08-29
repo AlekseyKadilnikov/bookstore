@@ -12,17 +12,7 @@ import java.util.List;
 @Singleton
 public class BookRepository implements IBookRepository {
 
-    private List<Book> books = new ArrayList<>(Arrays.asList(
-            new Book("Идиот", "Федор Достоевский", "Наука", 1990, 350, 0),
-            new Book("Бесы", "Федор Достоевский", "Наука", 1988, 370, 0),
-            new Book("Война и мир", "Лев Толстой", "Наука", 2009, 400,0),
-            new Book("Палач", "Эдуард Лимонов", "Питер", 2019, 550, 0),
-            new Book("Черный обелиск", "Мария Ремарк", "Феникс", 1993, 310, 50),
-            new Book("Капитал", "Карл Маркс", "Питер", 2011, 660, 30),
-            new Book("Лолита", "Владимир Набоков", "Питер", 2000, 490, 8),
-            new Book("Сияние", "Стивен Кинг", "Питер", 2018, 500,11),
-            new Book("1984", "Джордж Оруэлл", "Питер", 2010, 550, 10))
-    );
+    private List<Book> books = new ArrayList<>();
 
     @Override
     public List<Book> findAll() {
