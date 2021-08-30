@@ -50,7 +50,11 @@ public class BookController {
 
     public void showDescription(int bookId) {
         Book book = bookService.getById(bookId);
-        System.out.println(book.getDescription());
+        if(book != null) {
+            System.out.println(book.getDescription());
+        } else {
+            System.out.println("Book with id = " + bookId + " does not exist!");
+        }
     }
 
     public void writeOff(int bookId) {

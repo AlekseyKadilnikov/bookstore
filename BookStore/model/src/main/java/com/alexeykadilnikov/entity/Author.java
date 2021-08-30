@@ -13,6 +13,10 @@ public class Author extends BaseEntity implements Serializable {
 
     private List<Long> books;
 
+    public Author() {
+        super(idCount);
+    }
+
     public Author(String firstName, String lastName, String middleName) {
         super(idCount++);
         this.firstName = firstName;

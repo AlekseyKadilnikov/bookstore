@@ -27,7 +27,7 @@ public class BookStore {
     private static final Logger logger = LoggerFactory.getLogger(BookStore.class);
 
     void start() {
-        loadState();
+//        loadState();
         menuController.run();
     }
 

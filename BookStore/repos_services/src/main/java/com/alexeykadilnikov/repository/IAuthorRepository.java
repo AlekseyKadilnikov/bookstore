@@ -1,6 +1,5 @@
 package com.alexeykadilnikov.repository;
 
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
 import java.util.List;
 

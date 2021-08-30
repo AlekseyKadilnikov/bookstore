@@ -18,6 +18,10 @@ public class Book extends BaseEntity implements Serializable {
     private final List<Request> commonRequests = new ArrayList<>();
     private final Request[] orderRequests = new Request[2];
 
+    public Book() {
+        super(idCount++);
+    }
+
     public Book(String name, List<Long> authors, String publisher, int publicationYear, int price, int count) {
         super(idCount++);
         this.name = name;
