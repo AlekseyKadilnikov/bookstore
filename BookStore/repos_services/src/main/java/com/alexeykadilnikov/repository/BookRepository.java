@@ -2,7 +2,6 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.utils.DBUtils;
@@ -18,6 +17,8 @@ import java.util.List;
 @Singleton
 public class BookRepository implements IBookRepository {
     private static final Logger logger = LoggerFactory.getLogger(BookRepository.class);
+    private static final String SQL_EX_MESSAGE = "SQL Exception";
+    private static final String IO_EX_MESSAGE = "IO Exception";
 
     @Override
     public List<Book> findAll() {
@@ -40,10 +41,9 @@ public class BookRepository implements IBookRepository {
                 book.setAuthors(authorsId);
             }
         } catch (SQLException e) {
-            logger.error("SQL Exception");
-            e.printStackTrace();
+            logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
-            logger.error("IO Exception");
+            logger.error(IO_EX_MESSAGE, e);
         }
         return books;
     }
@@ -53,7 +53,7 @@ public class BookRepository implements IBookRepository {
         Book book = new Book();
 
         try {
-            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM ook WHERE id = ?");
             prepStatement.setLong(1, id);
             ResultSet resultSet = prepStatement.executeQuery();
             if (!resultSet.next()) {
@@ -69,10 +69,11 @@ public class BookRepository implements IBookRepository {
             }
             book.setAuthors(authorsId);
 
+            logger.info("Get book with id = {} removed", book.getId());
         } catch (SQLException e) {
-            logger.error("SQL Exception");
+            logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
-            logger.error("IO Exception");
+            logger.error(IO_EX_MESSAGE, e);
         }
         return book;
     }
@@ -82,15 +83,24 @@ public class BookRepository implements IBookRepository {
         try {
             createAndExecuteQueryForSavingBook(book);
         } catch (SQLException e) {
-            logger.error("SQL Exception");
+            logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
-            logger.error("IO Exception");
+            logger.error(IO_EX_MESSAGE, e);
         }
     }
 
     @Override
     public void delete(Book book) {
-//        books.remove(book);
+        try {
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("DELETE FROM book WHERE id = ?");
+            prepStatement.setLong(1, book.getId());
+            prepStatement.executeUpdate();
+            logger.info("Book with id = {} removed", book.getId());
+        } catch (SQLException e) {
+            logger.error(SQL_EX_MESSAGE, e);
+        } catch (IOException e) {
+            logger.error(IO_EX_MESSAGE, e);
+        }
     }
 
     @Override
@@ -100,9 +110,9 @@ public class BookRepository implements IBookRepository {
                 createAndExecuteQueryForSavingBook(book);
             }
         } catch (SQLException e) {
-            logger.error("SQL Exception");
+            logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
-            logger.error("IO Exception");
+            logger.error(IO_EX_MESSAGE, e);
         }
     }
 
@@ -164,5 +174,7 @@ public class BookRepository implements IBookRepository {
             prepStatement.setLong(2, book.getId());
             prepStatement.executeUpdate();
         }
+
+        logger.info("Book with id = {} saved", book.getId());
     }
 }
