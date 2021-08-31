@@ -1,21 +1,15 @@
 package com.alexeykadilnikov.repository;
 
-import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.utils.DBUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Singleton
 public class AuthorRepository implements IAuthorRepository {
@@ -28,12 +22,17 @@ public class AuthorRepository implements IAuthorRepository {
         List<Author> authors = new ArrayList<>();
         try {
             Statement statement = DBUtils.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM author");
-            while (resultSet.next()) {
+            ResultSet resultSetAuthor = statement.executeQuery("SELECT * FROM author");
+            while (resultSetAuthor.next()) {
                 Author author = new Author();
-                setAuthorFieldsFromResultSet(author, resultSet);
+                setAuthorFieldsFromResultSet(author, resultSetAuthor);
                 authors.add(author);
             }
+
+            for(Author author : authors) {
+                setBooksForAuthor(author, statement);
+            }
+
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -54,6 +53,9 @@ public class AuthorRepository implements IAuthorRepository {
                 return null;
             }
             setAuthorFieldsFromResultSet(author, resultSet);
+
+            Statement statement = DBUtils.getConnection().createStatement();
+            setBooksForAuthor(author, statement);
 
             logger.info("Get author with id = {}", author.getId());
         } catch (SQLException e) {
@@ -119,6 +121,24 @@ public class AuthorRepository implements IAuthorRepository {
         prepStatement.setString(4, author.getMiddleName());
         prepStatement.executeUpdate();
 
-        logger.info("Author with id = {} saved", author.getId());
+        prepStatement = DBUtils.getConnection().prepareStatement(
+                "INSERT INTO author_book (author_id, book_id)" +
+                        "VALUES (?, ?)");
+        for(long bookId : author.getBooks()) {
+            prepStatement.setLong(1, author.getId());
+            prepStatement.setLong(2, bookId);
+            prepStatement.executeUpdate();
+        }
+
+        logger.info("Author with id = {} was saved", author.getId());
+    }
+
+    private void setBooksForAuthor(Author author, Statement statement) throws SQLException {
+        ResultSet resultSetBook = statement.executeQuery("SELECT * FROM author_book WHERE author_id = " + author.getId());
+        List<Long> booksId = new ArrayList<>();
+        while (resultSetBook.next()) {
+            booksId.add(resultSetBook.getLong("book_id"));
+        }
+        author.setBooks(booksId);
     }
 }

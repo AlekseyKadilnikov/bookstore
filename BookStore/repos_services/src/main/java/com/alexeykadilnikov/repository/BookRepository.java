@@ -161,16 +161,16 @@ public class BookRepository implements IBookRepository {
         prepStatement.setString(8, book.getDescription());
         prepStatement.executeUpdate();
 
+        prepStatement = DBUtils.getConnection().prepareStatement(
+                "INSERT INTO author_book (author_id, book_id)" +
+                        "VALUES (?, ?)");
         for(long authorId : book.getAuthors()) {
-            prepStatement = DBUtils.getConnection().prepareStatement(
-                    "INSERT INTO author_book (author_id, book_id)" +
-                            "VALUES (?, ?)");
             prepStatement.setLong(1, authorId);
             prepStatement.setLong(2, book.getId());
             prepStatement.executeUpdate();
         }
 
-        logger.info("Book with id = {} saved", book.getId());
+        logger.info("Book with id = {} was saved", book.getId());
     }
 
     private void setRequestsAndAuthorsForBook(Statement statement, Book book) throws SQLException {

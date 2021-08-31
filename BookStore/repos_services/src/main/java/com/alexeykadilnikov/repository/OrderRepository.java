@@ -2,6 +2,7 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.utils.DBUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,10 @@ public class OrderRepository implements IOrderRepository {
                 setOrderFieldsFromResultSet(order, resultSet);
                 orders.add(order);
             }
+
+            for(Order order : orders) {
+                setBooksForOrder(order, statement);
+            }
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -50,6 +55,9 @@ public class OrderRepository implements IOrderRepository {
                 return null;
             }
             setOrderFieldsFromResultSet(order, resultSet);
+
+            Statement statement = DBUtils.getConnection().createStatement();
+            setBooksForOrder(order, statement);
 
             logger.info("Get book with id = {}", order.getId());
         } catch (SQLException e) {
@@ -119,6 +127,34 @@ public class OrderRepository implements IOrderRepository {
         prepStatement.setInt(6, order.getStatus().getStatusCode());
         prepStatement.executeUpdate();
 
-        logger.info("Order with id = {} saved", order.getId());
+        prepStatement = DBUtils.getConnection().prepareStatement(
+                "INSERT INTO order_book (order_id, book_id)" +
+                        "VALUES (?, ?)");
+        for(Book book : order.getBooks()) {
+            prepStatement.setLong(1, order.getId());
+            prepStatement.setLong(2, book.getId());
+            prepStatement.executeUpdate();
+        }
+
+        logger.info("Order with id = {} was saved", order.getId());
+    }
+
+    private void setBooksForOrder(Order order, Statement statement) throws SQLException {
+        ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book AS b " +
+                "JOIN order_book AS o ON b.id = o.book_id WHERE o.order_id = " + order.getId());
+        List<Book> books = new ArrayList<>();
+        while (resultSetBook.next()) {
+            Book book = new Book();
+            book.setId(resultSetBook.getInt("id"));
+            book.setName(resultSetBook.getString("name"));
+            book.setPublisher(resultSetBook.getString("publisher"));
+            book.setPublicationYear(resultSetBook.getInt("year"));
+            book.setCount(resultSetBook.getInt("count"));
+            book.setPrice(resultSetBook.getInt("price"));
+            book.setDescription(resultSetBook.getString("description"));
+            book.setDateOfReceipt(LocalDate.parse(resultSetBook.getString("date_of_receipt")));
+            books.add(book);
+        }
+        order.setBooks(books);
     }
 }

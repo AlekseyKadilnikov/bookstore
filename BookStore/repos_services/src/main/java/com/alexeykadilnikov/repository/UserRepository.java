@@ -13,7 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class UserRepository implements IUserRepository {
@@ -32,6 +34,11 @@ public class UserRepository implements IUserRepository {
                 setUserFieldsFromResultSet(user, resultSet);
                 users.add(user);
             }
+
+            for(User user : users) {
+                setOrdersForUser(user, statement);
+            }
+
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -52,6 +59,9 @@ public class UserRepository implements IUserRepository {
                 return null;
             }
             setUserFieldsFromResultSet(user, resultSet);
+
+            Statement statement = DBUtils.getConnection().createStatement();
+            setOrdersForUser(user, statement);
 
             logger.info("Get author with id = {}", user.getId());
         } catch (SQLException e) {
@@ -112,6 +122,15 @@ public class UserRepository implements IUserRepository {
         prepStatement.setString(2, user.getUsername());
         prepStatement.executeUpdate();
 
-        logger.info("User with id = {} saved", user.getId());
+        logger.info("User with id = {} was saved", user.getId());
+    }
+
+    private void setOrdersForUser(User user, Statement statement) throws SQLException {
+        ResultSet resultSetOrder = statement.executeQuery("SELECT * FROM order_t WHERE user_id = " + user.getId());
+        Set<Long> ordersId = new HashSet<>();
+        while (resultSetOrder.next()) {
+            ordersId.add(resultSetOrder.getLong("id"));
+        }
+        user.setOrders(ordersId);
     }
 }
