@@ -2,9 +2,9 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.service.BookService;
 import com.alexeykadilnikov.utils.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +19,9 @@ import java.util.List;
 public class BookRepository implements IBookRepository {
     private static final Logger logger = LoggerFactory.getLogger(BookRepository.class);
 
-    private List<Book> books = new ArrayList<>();
-
     @Override
     public List<Book> findAll() {
+        List<Book> books = new ArrayList<>();
         try {
             Statement statement = DBUtils.getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM book");
@@ -72,7 +71,6 @@ public class BookRepository implements IBookRepository {
 
         } catch (SQLException e) {
             logger.error("SQL Exception");
-            e.printStackTrace();
         } catch (IOException e) {
             logger.error("IO Exception");
         }
@@ -81,17 +79,31 @@ public class BookRepository implements IBookRepository {
 
     @Override
     public void save(Book book) {
-        books.add(book);
+        try {
+            createAndExecuteQueryForSavingBook(book);
+        } catch (SQLException e) {
+            logger.error("SQL Exception");
+        } catch (IOException e) {
+            logger.error("IO Exception");
+        }
     }
 
     @Override
     public void delete(Book book) {
-        books.remove(book);
+//        books.remove(book);
     }
 
     @Override
     public void saveAll(List<Book> all) {
-        books = all;
+        try {
+            for (Book book : all) {
+                createAndExecuteQueryForSavingBook(book);
+            }
+        } catch (SQLException e) {
+            logger.error("SQL Exception");
+        } catch (IOException e) {
+            logger.error("IO Exception");
+        }
     }
 
     public void addRequest(Request request, int count, long id) {
@@ -128,5 +140,29 @@ public class BookRepository implements IBookRepository {
         book.setPrice(resultSet.getInt("price"));
         book.setDescription(resultSet.getString("description"));
         book.setDateOfReceipt(LocalDate.parse(resultSet.getString("date_of_receipt")));
+    }
+
+    private void createAndExecuteQueryForSavingBook(Book book) throws SQLException, IOException {
+        PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
+                "INSERT INTO book (id, name, publisher, year, price, count, date_of_receipt, description)" +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        prepStatement.setLong(1, book.getId());
+        prepStatement.setString(2, book.getName());
+        prepStatement.setString(3, book.getPublisher());
+        prepStatement.setInt(4, book.getPublicationYear());
+        prepStatement.setInt(5, book.getPrice());
+        prepStatement.setInt(6, book.getCount());
+        prepStatement.setDate(7, Date.valueOf(book.getDateOfReceipt()));
+        prepStatement.setString(8, book.getDescription());
+        prepStatement.executeUpdate();
+
+        for(long authorId : book.getAuthors()) {
+            prepStatement = DBUtils.getConnection().prepareStatement(
+                    "INSERT INTO author_book (author_id, book_id)" +
+                            "VALUES (?, ?)");
+            prepStatement.setLong(1, authorId);
+            prepStatement.setLong(2, book.getId());
+            prepStatement.executeUpdate();
+        }
     }
 }

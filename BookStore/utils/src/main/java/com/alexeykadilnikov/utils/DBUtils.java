@@ -25,7 +25,7 @@ public class DBUtils {
             String username = (String) properties.get("user");
             String password = (String) properties.get("password");
 
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/bookstore", "root", "1111");
+            conn = DriverManager.getConnection(url, username, password);
         }
         return conn;
     }
