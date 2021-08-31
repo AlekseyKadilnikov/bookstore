@@ -24,7 +24,8 @@ public class BookRepository implements IBookRepository {
     public List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         try {
-            Statement statement = DBUtils.getConnection().createStatement();
+            Connection connection = DBUtils.getConnection();
+            Statement statement = connection.createStatement();
             ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book");
             while (resultSetBook.next()) {
                 Book book = new Book();
@@ -45,7 +46,6 @@ public class BookRepository implements IBookRepository {
     @Override
     public Book getById(Long id) {
         Book book = new Book();
-
         try {
             PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
             prepStatement.setLong(1, id);
@@ -69,9 +69,20 @@ public class BookRepository implements IBookRepository {
 
     @Override
     public void save(Book book) {
+        Connection connection = null;
+        Savepoint savepoint = null;
         try {
+            connection = DBUtils.getConnection();
+            savepoint = connection.setSavepoint();
             createAndExecuteQueryForSavingBook(book);
         } catch (SQLException e) {
+            if(connection != null && savepoint != null) {
+                try {
+                    connection.rollback(savepoint);
+                } catch (SQLException ex) {
+                    logger.error(SQL_EX_MESSAGE, ex);
+                }
+            }
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
             logger.error(IO_EX_MESSAGE, e);
@@ -94,11 +105,22 @@ public class BookRepository implements IBookRepository {
 
     @Override
     public void saveAll(List<Book> all) {
+        Connection connection = null;
+        Savepoint savepoint = null;
         try {
+            connection = DBUtils.getConnection();
+            savepoint = connection.setSavepoint();
             for (Book book : all) {
                 createAndExecuteQueryForSavingBook(book);
             }
         } catch (SQLException e) {
+            if(connection != null && savepoint != null) {
+                try {
+                    connection.rollback(savepoint);
+                } catch (SQLException ex) {
+                    logger.error(SQL_EX_MESSAGE, ex);
+                }
+            }
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
             logger.error(IO_EX_MESSAGE, e);

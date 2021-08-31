@@ -1,9 +1,7 @@
 package com.alexeykadilnikov.utils;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,8 +22,9 @@ public class DBUtils {
             String url = (String) properties.get("url");
             String username = (String) properties.get("user");
             String password = (String) properties.get("password");
-
             conn = DriverManager.getConnection(url, username, password);
+
+            conn.setAutoCommit(false);
         }
         return conn;
     }

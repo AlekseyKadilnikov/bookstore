@@ -68,9 +68,20 @@ public class AuthorRepository implements IAuthorRepository {
 
     @Override
     public void save(Author author) {
+        Connection connection = null;
+        Savepoint savepoint = null;
         try {
+            connection = DBUtils.getConnection();
+            savepoint = connection.setSavepoint();
             createAndExecuteQueryForSavingAuthor(author);
         } catch (SQLException e) {
+            if(connection != null && savepoint != null) {
+                try {
+                    connection.rollback(savepoint);
+                } catch (SQLException ex) {
+                    logger.error(SQL_EX_MESSAGE, ex);
+                }
+            }
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
             logger.error(IO_EX_MESSAGE, e);
@@ -93,11 +104,22 @@ public class AuthorRepository implements IAuthorRepository {
 
     @Override
     public void saveAll(List<Author> all) {
+        Connection connection = null;
+        Savepoint savepoint = null;
         try {
+            connection = DBUtils.getConnection();
+            savepoint = connection.setSavepoint();
             for(Author author : all) {
                 createAndExecuteQueryForSavingAuthor(author);
             }
         } catch (SQLException e) {
+            if(connection != null && savepoint != null) {
+                try {
+                    connection.rollback(savepoint);
+                } catch (SQLException ex) {
+                    logger.error(SQL_EX_MESSAGE, ex);
+                }
+            }
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
             logger.error(IO_EX_MESSAGE, e);
