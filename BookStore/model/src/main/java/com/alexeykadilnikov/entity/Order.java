@@ -14,7 +14,11 @@ public class Order extends BaseEntity implements Serializable {
     private int totalPrice = 0;
     private OrderStatus status;
     private LocalDate executionDate;
-    private final Date initDate = new Date();
+    private LocalDate initDate;
+
+    public Order() {
+        super(idCount);
+    }
 
     public Order(List<Book> books, Long userId) {
         super(idCount++);
@@ -39,7 +43,7 @@ public class Order extends BaseEntity implements Serializable {
         this.books = books;
     }
 
-    public Date getInitDate() {
+    public LocalDate getInitDate() {
         return initDate;
     }
 
@@ -84,5 +88,9 @@ public class Order extends BaseEntity implements Serializable {
 
     public void setExecutionDate(LocalDate executionDate) {
         this.executionDate = executionDate;
+    }
+
+    public void setInitDate(LocalDate initDate) {
+        this.initDate = initDate;
     }
 }

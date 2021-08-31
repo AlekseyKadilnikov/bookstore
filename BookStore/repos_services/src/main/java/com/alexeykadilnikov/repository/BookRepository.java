@@ -53,7 +53,7 @@ public class BookRepository implements IBookRepository {
         Book book = new Book();
 
         try {
-            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM ook WHERE id = ?");
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
             prepStatement.setLong(1, id);
             ResultSet resultSet = prepStatement.executeQuery();
             if (!resultSet.next()) {
@@ -69,7 +69,7 @@ public class BookRepository implements IBookRepository {
             }
             book.setAuthors(authorsId);
 
-            logger.info("Get book with id = {} removed", book.getId());
+            logger.info("Get book with id = {}", book.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -116,6 +116,7 @@ public class BookRepository implements IBookRepository {
         }
     }
 
+    @Override
     public void addRequest(Request request, int count, long id) {
         Book book = getById(id);
         List<Request> commonRequests = book.getCommonRequests();
