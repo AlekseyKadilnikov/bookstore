@@ -45,7 +45,7 @@ public class RequestService implements IRequestService {
             }
             Request request = new Request(name, bookIdSet);
             for(Book book : booksByName) {
-                bookRepository.addRequest(request, count, book.getId());
+                bookRepository.addRequest(request, count, book);
             }
             return booksByName;
         }
@@ -55,7 +55,7 @@ public class RequestService implements IRequestService {
             }
             Request request = new Request(name, bookIdSet);
             for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book.getId());
+                bookRepository.addRequest(request, count, book);
             }
             return booksByAuthor;
         }
@@ -66,7 +66,7 @@ public class RequestService implements IRequestService {
             }
             Request request = new Request(name, bookIdSet);
             for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book.getId());
+                bookRepository.addRequest(request, count, book);
             }
             return booksByAuthor;
         }

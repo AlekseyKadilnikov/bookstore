@@ -25,20 +25,14 @@ public class BookRepository implements IBookRepository {
         List<Book> books = new ArrayList<>();
         try {
             Statement statement = DBUtils.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM book");
-            while (resultSet.next()) {
+            ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book");
+            while (resultSetBook.next()) {
                 Book book = new Book();
-                setBookFieldsFromResultSet(book, resultSet);
+                setBookFieldsFromResultSet(book, resultSetBook);
                 books.add(book);
             }
-
             for(Book book : books) {
-                resultSet = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
-                List<Long> authorsId = new ArrayList<>();
-                while (resultSet.next()) {
-                    authorsId.add(resultSet.getLong("author_id"));
-                }
-                book.setAuthors(authorsId);
+                setRequestsAndAuthorsForBook(statement, book);
             }
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
@@ -55,19 +49,14 @@ public class BookRepository implements IBookRepository {
         try {
             PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
             prepStatement.setLong(1, id);
-            ResultSet resultSet = prepStatement.executeQuery();
-            if (!resultSet.next()) {
+            ResultSet resultSetBook = prepStatement.executeQuery();
+            if (!resultSetBook.next()) {
                 return null;
             }
-            setBookFieldsFromResultSet(book, resultSet);
+            setBookFieldsFromResultSet(book, resultSetBook);
 
             Statement statement = DBUtils.getConnection().createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
-            List<Long> authorsId = new ArrayList<>();
-            while (resultSet.next()) {
-                authorsId.add(resultSet.getLong("author_id"));
-            }
-            book.setAuthors(authorsId);
+            setRequestsAndAuthorsForBook(statement, book);
 
             logger.info("Get book with id = {}", book.getId());
         } catch (SQLException e) {
@@ -117,8 +106,7 @@ public class BookRepository implements IBookRepository {
     }
 
     @Override
-    public void addRequest(Request request, int count, long id) {
-        Book book = getById(id);
+    public void addRequest(Request request, int count, Book book) {
         List<Request> commonRequests = book.getCommonRequests();
         Request[] orderRequests = book.getOrderRequests();
         if(request.getStatus() == RequestStatus.COMMON) {
@@ -133,7 +121,13 @@ public class BookRepository implements IBookRepository {
         }
         else {
             for(Request r : orderRequests) {
-                if(request.getName().equals(r.getName()) && request.getStatus() == r.getStatus()) {
+                if(r == null) {
+                    if(request.getStatus() == RequestStatus.NEW) {
+                        orderRequests[0] = request;
+                    } else {
+                        orderRequests[1] = request;
+                    }
+                } else if(request.getName().equals(r.getName()) && request.getStatus() == r.getStatus()) {
                     r.setCount(r.getCount() + count);
                     return;
                 }
@@ -177,5 +171,26 @@ public class BookRepository implements IBookRepository {
         }
 
         logger.info("Book with id = {} saved", book.getId());
+    }
+
+    private void setRequestsAndAuthorsForBook(Statement statement, Book book) throws SQLException {
+        ResultSet resultSetAuthor = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
+        List<Long> authorsId = new ArrayList<>();
+        while (resultSetAuthor.next()) {
+            authorsId.add(resultSetAuthor.getLong("author_id"));
+        }
+        book.setAuthors(authorsId);
+
+        ResultSet resultSetRequest = statement.executeQuery("SELECT * FROM request AS r " +
+                "JOIN book_request AS b ON b.request_id = r.id WHERE b.book_id = " + book.getId());
+        while (resultSetRequest.next()) {
+            Request request = new Request();
+            request.setId(resultSetRequest.getLong("id"));
+            request.setName(resultSetRequest.getString("name"));
+            request.setStatus(RequestStatus.values()[resultSetRequest.getInt("status_code")]);
+            request.setCount(resultSetRequest.getInt("count"));
+
+            addRequest(request, request.getCount(), book);
+        }
     }
 }

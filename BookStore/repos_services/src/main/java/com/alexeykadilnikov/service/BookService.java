@@ -38,12 +38,12 @@ public class BookService implements IBookService {
                     Request r = new Request(request.getName(), book.getId(), request.getOrdersId(), RequestStatus.SUCCESS);
                     int diff = bookCount - request.getCount();
                     if(diff >= 0) {
-                        bookRepository.addRequest(r, request.getCount(), book.getId());
+                        bookRepository.addRequest(r, request.getCount(), book);
                         request.setCount(0);
                         request.getOrdersId().clear();
                         book.setCount(diff);
                     } else {
-                        bookRepository.addRequest(r, bookCount, book.getId());
+                        bookRepository.addRequest(r, bookCount, book);
                         request.setCount(request.getCount() - bookCount);
                     }
                 }
@@ -80,7 +80,8 @@ public class BookService implements IBookService {
 
     @Override
     public void createRequest(Request request, int count, long id) {
-        bookRepository.addRequest(request, count, id);
+        Book book = bookRepository.getById(id);
+        bookRepository.addRequest(request, count, book);
     }
 
     @Override

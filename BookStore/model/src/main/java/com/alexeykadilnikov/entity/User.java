@@ -10,6 +10,10 @@ public class User extends BaseEntity implements Serializable {
     private String username;
     private Set<Long> ordersId = new HashSet<>();
 
+    public User() {
+        super(idCount++);
+    }
+
     public User(String username) {
         super(idCount++);
         this.username = username;

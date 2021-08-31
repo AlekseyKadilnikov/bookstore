@@ -50,7 +50,7 @@ public class OrderService implements IOrderService {
             for(Request request : orderRequests) {
                 if(request.getStatus() == RequestStatus.NEW) {
                     bookRepository.addRequest(new Request(request.getName(),
-                            book.getId(), request.getOrdersId(), RequestStatus.SUCCESS), 1, book.getId());
+                            book.getId(), request.getOrdersId(), RequestStatus.SUCCESS), 1, book);
                     if(request.getCount() > 0) {
                         request.setCount(request.getCount() - 1);
                     }
@@ -118,11 +118,11 @@ public class OrderService implements IOrderService {
                 Request[] orderRequests = book.getOrderRequests();
                 orderRequests[0].setCount(orderRequests[0].getCount() + 1);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
-                logger.info("Order request for book {} created", book.getId());
+                logger.info("Order request for book with id = {} created", book.getId());
 
-                bookRepository.addRequest(new Request("Request for book " + book.getId(),
-                        Collections.singleton(book.getId())), 1, book.getId());
-                logger.info("Common request for book {} created", book.getId());
+                bookRepository.addRequest(new Request("Request for book with id = " + book.getId(),
+                        Collections.singleton(book.getId())), 1, book);
+                logger.info("Common request for book with id = {} created", book.getId());
             }
             else {
                 book.setCount(book.getCount() - 1);
