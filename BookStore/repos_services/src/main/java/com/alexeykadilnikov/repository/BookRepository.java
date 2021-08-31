@@ -4,7 +4,12 @@ import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.service.BookService;
+import com.alexeykadilnikov.utils.DBUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,13 +17,14 @@ import java.util.List;
 
 @Singleton
 public class BookRepository implements IBookRepository {
+    private static final Logger logger = LoggerFactory.getLogger(BookRepository.class);
 
     private List<Book> books = new ArrayList<>();
 
     @Override
     public List<Book> findAll() {
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/bookstore", "root", "1111")) {
-            Statement statement = conn.createStatement();
+        try {
+            Statement statement = DBUtils.getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM book");
             while (resultSet.next()) {
                 Book book = new Book();
@@ -35,7 +41,10 @@ public class BookRepository implements IBookRepository {
                 book.setAuthors(authorsId);
             }
         } catch (SQLException e) {
+            logger.error("SQL Exception");
             e.printStackTrace();
+        } catch (IOException e) {
+            logger.error("IO Exception");
         }
         return books;
     }
@@ -44,17 +53,16 @@ public class BookRepository implements IBookRepository {
     public Book getById(Long id) {
         Book book = new Book();
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/bookstore", "root", "1111")) {
-            PreparedStatement prepStatement = conn.prepareStatement("SELECT * FROM book WHERE id = ?");
+        try {
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
             prepStatement.setLong(1, id);
             ResultSet resultSet = prepStatement.executeQuery();
-            resultSet.next();
             if (!resultSet.next()) {
                 return null;
             }
             setBookFieldsFromResultSet(book, resultSet);
 
-            Statement statement = conn.createStatement();
+            Statement statement = DBUtils.getConnection().createStatement();
             resultSet = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
             List<Long> authorsId = new ArrayList<>();
             while (resultSet.next()) {
@@ -63,7 +71,10 @@ public class BookRepository implements IBookRepository {
             book.setAuthors(authorsId);
 
         } catch (SQLException e) {
+            logger.error("SQL Exception");
             e.printStackTrace();
+        } catch (IOException e) {
+            logger.error("IO Exception");
         }
         return book;
     }
