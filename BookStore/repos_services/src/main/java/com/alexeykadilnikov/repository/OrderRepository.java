@@ -2,7 +2,6 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.utils.DBUtils;
 import org.slf4j.Logger;
@@ -78,7 +77,7 @@ public class OrderRepository implements IOrderRepository {
             PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("DELETE FROM order_t WHERE id = ?");
             prepStatement.setLong(1, order.getId());
             prepStatement.executeUpdate();
-            logger.info("Order with id = {} removed", order.getId());
+            logger.info("Order with id = {} was removed", order.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {

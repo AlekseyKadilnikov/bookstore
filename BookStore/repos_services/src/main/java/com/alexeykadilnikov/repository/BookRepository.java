@@ -95,7 +95,7 @@ public class BookRepository implements IBookRepository {
             PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("DELETE FROM book WHERE id = ?");
             prepStatement.setLong(1, book.getId());
             prepStatement.executeUpdate();
-            logger.info("Book with id = {} removed", book.getId());
+            logger.info("Book with id = {} was removed", book.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
