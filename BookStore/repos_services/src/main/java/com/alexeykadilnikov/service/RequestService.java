@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.InjectBean;
+import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
@@ -77,9 +78,17 @@ public class RequestService implements IRequestService {
 
     @Override
     public List<Request> sort(Book book, Comparator<Request> comparator) {
-        List<Request> requests = book.getCommonRequests();
-        requests.sort(comparator);
-        return requests;
+        List<Request> requests = requestRepository.findAll();
+        List<Request> commonRequests = requestRepository.findAll();
+        for(Request request : requests) {
+            for (Long bookId : request.getBooksId()) {
+                if(bookId == book.getId() && request.getStatus() == RequestStatus.COMMON) {
+                    commonRequests.add(request);
+                }
+            }
+        }
+        commonRequests.sort(comparator);
+        return commonRequests;
     }
 
     @Override
@@ -99,9 +108,9 @@ public class RequestService implements IRequestService {
 
     private String getFullAuthorStringListForBook(Book book) {
         StringBuilder authors = new StringBuilder();
-        List<Long> authorsId = book.getAuthors();
+        Set<Long> authorsId = book.getAuthors();
         for (int i = 0; i < authorsId.size(); i++) {
-            Author author = authorRepository.getById(authorsId.get(i));
+            Author author = authorRepository.getById(authorsId.iterator().next());
             authors.append(author.getFirstName()).append(" ").append(author.getLastName()).append(" ").append(author.getMiddleName());
             if(i != authorsId.size() - 1) {
                 authors.append(", ");

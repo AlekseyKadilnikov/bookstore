@@ -137,7 +137,21 @@ public class RequestRepository implements IRequestRepository {
 
     private void createAndExecuteQueryForSavingRequest(Request request) throws SQLException, IOException {
         Connection conn = DBUtils.getConnection();
-        PreparedStatement prepStatement = conn.prepareStatement(
+        PreparedStatement prepStatement = conn.prepareStatement("SELECT id FROM request WHERE name = ? AND status_code = ?");
+        prepStatement.setString(1, request.getName());
+        prepStatement.setInt(2, request.getStatus().getStatusCode());
+        ResultSet resultSet = prepStatement.executeQuery();
+        if(resultSet.next()) {
+            prepStatement = conn.prepareStatement("UPDATE request SET count = count + ? WHERE id = ?");
+            prepStatement.setInt(1, request.getCount());
+            prepStatement.setLong(2, resultSet.getLong("id"));
+            prepStatement.executeUpdate();
+            logger.info("Request count with name = \"{}\" was incremented", request.getName());
+            DBUtils.getConnection().commit();
+            return;
+        }
+
+        prepStatement = conn.prepareStatement(
                 "INSERT INTO request (name, status_code, count)" +
                         "VALUES (?, ?, ?)");
         prepStatement.setString(1, request.getName());
@@ -146,7 +160,7 @@ public class RequestRepository implements IRequestRepository {
         prepStatement.executeUpdate();
 
         prepStatement = conn.prepareStatement("SELECT LAST_INSERT_ID()");
-        ResultSet resultSet = prepStatement.executeQuery();
+        resultSet = prepStatement.executeQuery();
         resultSet.next();
         long lastInsertedRequestId = resultSet.getLong(1);
 
@@ -168,6 +182,7 @@ public class RequestRepository implements IRequestRepository {
             prepStatement.executeUpdate();
         }
 
+        request.setId(lastInsertedRequestId);
         logger.info("Request with id = {} was saved", lastInsertedRequestId);
         DBUtils.getConnection().commit();
     }

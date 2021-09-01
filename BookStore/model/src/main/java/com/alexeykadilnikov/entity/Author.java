@@ -1,35 +1,31 @@
 package com.alexeykadilnikov.entity;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 public class Author extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2032341091985408913L;
-    private static long idCount = 0;
 
     private String firstName;
     private String lastName;
     private String middleName;
 
-    private List<Long> books;
+    private Set<Long> booksId;
 
     public Author() {
-        super(idCount++);
     }
 
     public Author(String firstName, String lastName, String middleName) {
-        super(idCount++);
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
     }
 
-    public Author(String firstName, String lastName, String middleName, List<Long> books) {
-        super(idCount++);
+    public Author(String firstName, String lastName, String middleName, Set<Long> booksId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
-        this.books = books;
+        this.booksId = booksId;
     }
 
     public String getFirstName() {
@@ -56,11 +52,11 @@ public class Author extends BaseEntity implements Serializable {
         this.middleName = middleName;
     }
 
-    public List<Long> getBooks() {
-        return books;
+    public Set<Long> getBooksId() {
+        return booksId;
     }
 
-    public void setBooks(List<Long> books) {
-        this.books = books;
+    public void setBooksId(Set<Long> booksId) {
+        this.booksId = booksId;
     }
 }

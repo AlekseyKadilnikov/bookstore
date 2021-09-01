@@ -136,6 +136,8 @@ public enum ActionEnum implements IAction {
             case 2:
                 System.out.println(ControllerUtils.orderController.sortByStatus(OrderStatus.CANCELED).toString());
                 break;
+            default:
+                break;
         }
     }),
 

@@ -10,11 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Singleton
 public class OrderRepository implements IOrderRepository {
@@ -161,12 +159,12 @@ public class OrderRepository implements IOrderRepository {
         long lastInsertedOrderId = resultSet.getLong(1);
 
         prepStatement = conn.prepareStatement(
-                "INSERT INTO order_book (order_id, book_id)" +
-                        "VALUES (?, ?)");
-        Set<Book> books = new HashSet<>(order.getBooks());
-        for(Book book : books) {
+                "INSERT INTO order_book (order_id, book_id, book_count)" +
+                        "VALUES (?, ?, ?)");
+        for(Book book : order.getBooks().keySet()) {
             prepStatement.setLong(1, lastInsertedOrderId);
             prepStatement.setLong(2, book.getId());
+            prepStatement.setInt(3, order.getBooks().get(book));
             prepStatement.executeUpdate();
         }
 
@@ -175,10 +173,10 @@ public class OrderRepository implements IOrderRepository {
         logger.info("Order with id = {} was saved", lastInsertedOrderId);
     }
 
-    private void setBooksForOrder(Order order, Statement statement) throws SQLException, IOException {
+    private void setBooksForOrder(Order order, Statement statement) throws SQLException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book AS b " +
                 "JOIN order_book AS o ON b.id = o.book_id WHERE o.order_id = " + order.getId());
-        List<Book> books = new ArrayList<>();
+        Map<Book, Integer> books = new HashMap<>();
         while (resultSetBook.next()) {
             Book book = new Book();
             book.setId(resultSetBook.getInt("id"));
@@ -189,7 +187,7 @@ public class OrderRepository implements IOrderRepository {
             book.setPrice(resultSetBook.getInt("price"));
             book.setDescription(resultSetBook.getString("description"));
             book.setDateOfReceipt(LocalDate.parse(resultSetBook.getString("date_of_receipt")));
-            books.add(book);
+            books.put(book, resultSetBook.getInt("count"));
         }
         order.setBooks(books);
     }

@@ -9,28 +9,24 @@ import java.util.Set;
 
 public class Request extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4499720100063137694L;
-    private static long idCount = 0;
     private String name;
-    private int count = 1;
+    private int count;
     private RequestStatus status;
     private final Set<Long> ordersId = new HashSet<>();
     private Set<Long> booksId = new HashSet<>();
 
     public Request() {
-        super(idCount++);
     }
 
     public Request(String name, Set<Long> booksId) {
-        super(idCount++);
         this.name = name;
         this.booksId.addAll(booksId);
         this.status = RequestStatus.COMMON;
     }
 
-    public Request(String name, long bookId, Set<Long> ordersId, RequestStatus status) {
-        super(idCount++);
+    public Request(String name, Set<Long> booksId, Set<Long> ordersId, RequestStatus status) {
         this.name = name;
-        this.booksId.add(bookId);
+        this.booksId.addAll(booksId);
         this.ordersId.addAll(ordersId);
         this.status = status;
     }

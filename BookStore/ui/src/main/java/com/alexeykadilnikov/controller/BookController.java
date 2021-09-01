@@ -163,40 +163,40 @@ public class BookController {
     }
 
     public void exportBooks(String path, String bookIds) {
-        try (
-                Writer writer = Files.newBufferedWriter(Paths.get(path));
-                CSVWriter csvWriter = new CSVWriter(writer);
-        ) {
-            List<String[]> entries = new ArrayList<>();
-            List<Book> books = bookService.getAll();
-            if(bookIds.equals("-1")) {
-                for(Book book : books) {
-                    fillEntry(entries, book);
-                }
-            }
-            else {
-                String[] idsStr = bookIds.split(" ");
-                List<Long> ids = new ArrayList<>();
-                for(String idStr : idsStr) {
-                    ids.add(Long.parseLong(idStr));
-                }
-                for(long id : ids) {
-                    Book book = bookService.getById(id);
-                    if(book == null) {
-                        logger.error("Book with id = {} does not exist!", id);
-                        return;
-                    }
-                    fillEntry(entries, book);
-                }
-            }
-            csvWriter.writeAll(entries);
-        }
-        catch (IOException e) {
-            logger.error("File not found!");
-        }
-        catch (Exception e) {
-            logger.error("Unknown error!");
-        }
+//        try (
+//                Writer writer = Files.newBufferedWriter(Paths.get(path));
+//                CSVWriter csvWriter = new CSVWriter(writer);
+//        ) {
+//            List<String[]> entries = new ArrayList<>();
+//            List<Book> books = bookService.getAll();
+//            if(bookIds.equals("-1")) {
+//                for(Book book : books) {
+//                    fillEntry(entries, book);
+//                }
+//            }
+//            else {
+//                String[] idsStr = bookIds.split(" ");
+//                List<Long> ids = new ArrayList<>();
+//                for(String idStr : idsStr) {
+//                    ids.add(Long.parseLong(idStr));
+//                }
+//                for(long id : ids) {
+//                    Book book = bookService.getById(id);
+//                    if(book == null) {
+//                        logger.error("Book with id = {} does not exist!", id);
+//                        return;
+//                    }
+//                    fillEntry(entries, book);
+//                }
+//            }
+//            csvWriter.writeAll(entries);
+//        }
+//        catch (IOException e) {
+//            logger.error("File not found!");
+//        }
+//        catch (Exception e) {
+//            logger.error("Unknown error!");
+//        }
     }
 
     private void fillEntry(List<String[]> entries, Book book) {

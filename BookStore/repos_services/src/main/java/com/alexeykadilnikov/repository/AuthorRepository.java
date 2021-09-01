@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class AuthorRepository implements IAuthorRepository {
@@ -146,7 +148,7 @@ public class AuthorRepository implements IAuthorRepository {
         prepStatement = DBUtils.getConnection().prepareStatement(
                 "INSERT INTO author_book (author_id, book_id)" +
                         "VALUES (?, ?)");
-        for(long bookId : author.getBooks()) {
+        for(long bookId : author.getBooksId()) {
             prepStatement.setLong(1, author.getId());
             prepStatement.setLong(2, bookId);
             prepStatement.executeUpdate();
@@ -158,10 +160,10 @@ public class AuthorRepository implements IAuthorRepository {
 
     private void setBooksForAuthor(Author author, Statement statement) throws SQLException, IOException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM author_book WHERE author_id = " + author.getId());
-        List<Long> booksId = new ArrayList<>();
+        Set<Long> booksId = new HashSet<>();
         while (resultSetBook.next()) {
             booksId.add(resultSetBook.getLong("book_id"));
         }
-        author.setBooks(booksId);
+        author.setBooksId(booksId);
     }
 }

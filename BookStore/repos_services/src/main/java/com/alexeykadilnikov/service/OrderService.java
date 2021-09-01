@@ -30,14 +30,20 @@ public class OrderService implements IOrderService {
 
     @Override
     public void createOrder(List<Long> booksId, User user) {
-        List<Book> books = new ArrayList<>();
+        Map<Book, Integer> books = new HashMap<>();
         for(Long id : booksId) {
-            books.add(bookRepository.getById(id));
+            Book book = bookRepository.getById(id);
+            if(books.containsKey(book)) {
+                int val = books.get(book) + 1;
+                books.put(book, val);
+            } else {
+                books.put(book, 1);
+            }
         }
         Order order = new Order(books, user.getId());
-        checkBookAvailable(books, order.getId());
         order.setTotalPrice(calculatePrice(order));
         orderRepository.save(order);
+        checkBookAvailable(books, order.getId());
         user.addOrder(order.getId());
     }
 
@@ -49,13 +55,15 @@ public class OrderService implements IOrderService {
     @Override
     public void cancelOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Book book : order.getBooks()) {
+        for(Book book : order.getBooks().keySet()) {
             book.setCount(book.getCount() + 1);
             Request[] orderRequests = book.getOrderRequests();
             for(Request request : orderRequests) {
                 if(request.getStatus() == RequestStatus.NEW) {
+                    Set<Long> booksId = new HashSet<>();
+                    booksId.add(book.getId());
                     bookRepository.addRequest(new Request(request.getName(),
-                            book.getId(), request.getOrdersId(), RequestStatus.SUCCESS), 1, book);
+                            booksId, request.getOrdersId(), RequestStatus.SUCCESS), 1, book);
                     if(request.getCount() > 0) {
                         request.setCount(request.getCount() - 1);
                     }
@@ -77,7 +85,7 @@ public class OrderService implements IOrderService {
     @Override
     public void completeOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Book book : order.getBooks()) {
+        for(Book book : order.getBooks().keySet()) {
             for(Request request : book.getOrderRequests()) {
                 if(request.getStatus() == RequestStatus.NEW) {
                     logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
@@ -88,9 +96,7 @@ public class OrderService implements IOrderService {
             }
         }
         order.setStatus(OrderStatus.SUCCESS);
-        Random random = new Random();
         LocalDate date = LocalDate.now();
-        date = date.plusDays(random.nextInt(4));
         order.setExecutionDate(date);
         logger.info("Order id = {} completed", order.getId());
     }
@@ -117,8 +123,8 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void checkBookAvailable(List<Book> books, long orderId) {
-        for (Book book : books) {
+    public void checkBookAvailable(Map<Book, Integer> books, long orderId) {
+        for (Book book : books.keySet()) {
             if(book.getCount() == 0) {
                 Request[] orderRequests = book.getOrderRequests();
                 if (orderRequests[0] == null) {
@@ -126,19 +132,15 @@ public class OrderService implements IOrderService {
                     orderRequests[0].setName("Request for book with id = " + book.getId());
                     orderRequests[0].setStatus(RequestStatus.NEW);
                 }
-                if (orderRequests[1] == null) {
-                    orderRequests[1] = new Request();
-                    orderRequests[1].setName("Request for book with id = " + book.getId());
-                    orderRequests[1].setStatus(RequestStatus.SUCCESS);
-                }
-                orderRequests[0].setCount(orderRequests[0].getCount() + 1);
+                orderRequests[0].setCount(books.get(book));
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
                 requestRepository.save(orderRequests[0]);
 
                 Request request = new Request("Request for book with id = " + book.getId(),
                         Collections.singleton(book.getId()));
-                bookRepository.addRequest(request, 1, book);
+                request.setCount(books.get(book));
                 requestRepository.save(request);
+                bookRepository.addRequest(request, 1, book);
             }
             else {
                 book.setCount(book.getCount() - 1);
@@ -159,8 +161,8 @@ public class OrderService implements IOrderService {
     @Override
     public int calculatePrice(Order order) {
         int totalPrice = 0;
-        for (Book book : order.getBooks()) {
-            totalPrice += book.getPrice();
+        for (Book book : order.getBooks().keySet()) {
+            totalPrice += book.getPrice() * order.getBooks().get(book);
         }
         return totalPrice;
     }

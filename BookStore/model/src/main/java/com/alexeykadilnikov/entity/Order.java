@@ -8,8 +8,7 @@ import java.util.*;
 
 public class Order extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5713427368399553474L;
-    private static long idCount = 0;
-    private List<Book> books;
+    private Map<Book, Integer> books;
     private Long userId;
     private int totalPrice = 0;
     private OrderStatus status;
@@ -17,13 +16,11 @@ public class Order extends BaseEntity implements Serializable {
     private LocalDate initDate;
 
     public Order() {
-        super(idCount);
         initDate = LocalDate.now();
         executionDate = null;
     }
 
-    public Order(List<Book> books, Long userId) {
-        super(idCount++);
+    public Order(Map<Book, Integer> books, Long userId) {
         this.books = books;
         this.userId = userId;
         status = OrderStatus.NEW;
@@ -58,21 +55,16 @@ public class Order extends BaseEntity implements Serializable {
         return Objects.hash(books, userId, totalPrice, status, executionDate, initDate);
     }
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
-
     public LocalDate getInitDate() {
         return initDate;
     }
 
-    public List<Book> getBooks() {
+    public Map<Book, Integer> getBooks() {
         return books;
     }
 
-    public void setBook(Book book) {
-        books.add(book);
-        totalPrice += book.getPrice();
+    public void setBooks(Map<Book, Integer> books) {
+        this.books = books;
     }
 
     public Long getUserId() {

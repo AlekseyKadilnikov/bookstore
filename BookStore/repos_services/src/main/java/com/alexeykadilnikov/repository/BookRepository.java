@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class BookRepository implements IBookRepository {
@@ -197,7 +199,7 @@ public class BookRepository implements IBookRepository {
 
     private void setRequestsAndAuthorsForBook(Statement statement, Book book) throws SQLException, IOException {
         ResultSet resultSetAuthor = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
-        List<Long> authorsId = new ArrayList<>();
+        Set<Long> authorsId = new HashSet<>();
         while (resultSetAuthor.next()) {
             authorsId.add(resultSetAuthor.getLong("author_id"));
         }

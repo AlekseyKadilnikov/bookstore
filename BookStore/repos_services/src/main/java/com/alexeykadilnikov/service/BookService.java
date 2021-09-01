@@ -7,6 +7,7 @@ import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ public class BookService implements IBookService {
 
     @InjectBean
     private IBookRepository bookRepository;
+    @InjectBean
+    private IRequestRepository requestRepository;
 
     @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
     private boolean doSuccess;
@@ -35,7 +38,9 @@ public class BookService implements IBookService {
             Request[] requests = book.getOrderRequests();
             for(Request request : requests) {
                 if(request.getStatus() == RequestStatus.NEW) {
-                    Request r = new Request(request.getName(), book.getId(), request.getOrdersId(), RequestStatus.SUCCESS);
+                    Set<Long> booksId = new HashSet<>();
+                    booksId.add(book.getId());
+                    Request r = new Request(request.getName(), booksId, request.getOrdersId(), RequestStatus.SUCCESS);
                     int diff = bookCount - request.getCount();
                     if(diff >= 0) {
                         bookRepository.addRequest(r, request.getCount(), book);
