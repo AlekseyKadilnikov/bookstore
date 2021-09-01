@@ -164,9 +164,10 @@ public class RequestRepository implements IRequestRepository {
         }
 
         logger.info("Request with id = {} was saved", request.getId());
+        DBUtils.getConnection().commit();
     }
 
-    private void setBooksAndOrdersForRequest(Request request, Statement statement) throws SQLException {
+    private void setBooksAndOrdersForRequest(Request request, Statement statement) throws SQLException, IOException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book_request WHERE request_id = " + request.getId());
         Set<Long> booksId = new HashSet<>();
         while (resultSetBook.next()) {

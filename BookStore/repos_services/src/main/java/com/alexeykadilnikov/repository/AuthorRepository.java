@@ -152,10 +152,11 @@ public class AuthorRepository implements IAuthorRepository {
             prepStatement.executeUpdate();
         }
 
+        DBUtils.getConnection().commit();
         logger.info("Author with id = {} was saved", author.getId());
     }
 
-    private void setBooksForAuthor(Author author, Statement statement) throws SQLException {
+    private void setBooksForAuthor(Author author, Statement statement) throws SQLException, IOException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM author_book WHERE author_id = " + author.getId());
         List<Long> booksId = new ArrayList<>();
         while (resultSetBook.next()) {

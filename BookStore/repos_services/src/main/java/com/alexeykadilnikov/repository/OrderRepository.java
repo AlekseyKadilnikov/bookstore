@@ -157,11 +157,11 @@ public class OrderRepository implements IOrderRepository {
             prepStatement.setLong(2, book.getId());
             prepStatement.executeUpdate();
         }
-
+        DBUtils.getConnection().commit();
         logger.info("Order with id = {} was saved", order.getId());
     }
 
-    private void setBooksForOrder(Order order, Statement statement) throws SQLException {
+    private void setBooksForOrder(Order order, Statement statement) throws SQLException, IOException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book AS b " +
                 "JOIN order_book AS o ON b.id = o.book_id WHERE o.order_id = " + order.getId());
         List<Book> books = new ArrayList<>();

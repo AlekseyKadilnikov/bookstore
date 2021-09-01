@@ -117,15 +117,14 @@ public class UserRepository implements IUserRepository {
 
     private void createAndExecuteQueryForSavingUser(User user) throws SQLException, IOException {
         PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
-                "INSERT INTO user (id, name) VALUES (?, ?)");
-        prepStatement.setLong(1, user.getId());
-        prepStatement.setString(2, user.getUsername());
+                "INSERT INTO user (name) VALUES (?)");
+        prepStatement.setString(1, user.getUsername());
         prepStatement.executeUpdate();
-
-        logger.info("User with id = {} was saved", user.getId());
+        logger.info("User {} was saved", user.getUsername());
+        DBUtils.getConnection().commit();
     }
 
-    private void setOrdersForUser(User user, Statement statement) throws SQLException {
+    private void setOrdersForUser(User user, Statement statement) throws SQLException, IOException {
         ResultSet resultSetOrder = statement.executeQuery("SELECT * FROM order_t WHERE user_id = " + user.getId());
         Set<Long> ordersId = new HashSet<>();
         while (resultSetOrder.next()) {

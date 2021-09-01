@@ -191,11 +191,11 @@ public class BookRepository implements IBookRepository {
             prepStatement.setLong(2, book.getId());
             prepStatement.executeUpdate();
         }
-
+        DBUtils.getConnection().commit();
         logger.info("Book with id = {} was saved", book.getId());
     }
 
-    private void setRequestsAndAuthorsForBook(Statement statement, Book book) throws SQLException {
+    private void setRequestsAndAuthorsForBook(Statement statement, Book book) throws SQLException, IOException {
         ResultSet resultSetAuthor = statement.executeQuery("SELECT * FROM author_book WHERE book_id = " + book.getId());
         List<Long> authorsId = new ArrayList<>();
         while (resultSetAuthor.next()) {

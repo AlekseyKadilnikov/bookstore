@@ -23,7 +23,6 @@ public class DBUtils {
             String username = (String) properties.get("user");
             String password = (String) properties.get("password");
             conn = DriverManager.getConnection(url, username, password);
-
             conn.setAutoCommit(false);
         }
         return conn;
