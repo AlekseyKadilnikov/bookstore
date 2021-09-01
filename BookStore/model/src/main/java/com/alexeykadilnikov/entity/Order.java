@@ -18,6 +18,8 @@ public class Order extends BaseEntity implements Serializable {
 
     public Order() {
         super(idCount);
+        initDate = LocalDate.now();
+        executionDate = null;
     }
 
     public Order(List<Book> books, Long userId) {
@@ -25,6 +27,8 @@ public class Order extends BaseEntity implements Serializable {
         this.books = books;
         this.userId = userId;
         status = OrderStatus.NEW;
+        initDate = LocalDate.now();
+        executionDate = null;
     }
 
     @Override
@@ -37,6 +41,21 @@ public class Order extends BaseEntity implements Serializable {
                 ", executionDate=" + executionDate +
                 ", total price=" + totalPrice +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return totalPrice == order.totalPrice && books.equals(order.books)
+                && userId.equals(order.userId) && status == order.status
+                && executionDate.equals(order.executionDate) && initDate.equals(order.initDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(books, userId, totalPrice, status, executionDate, initDate);
     }
 
     public void setBooks(List<Book> books) {

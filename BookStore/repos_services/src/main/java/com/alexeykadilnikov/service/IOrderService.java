@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public interface IOrderService {
-    void createOrder(List<Book> books, User user);
+    void createOrder(List<Long> booksId, User user);
     String showOrder(long id);
     void cancelOrder(long id);
     void setStatus(long index, OrderStatus status);

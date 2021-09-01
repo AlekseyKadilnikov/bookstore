@@ -46,6 +46,24 @@ public class Book extends BaseEntity implements Serializable {
                 "}\n";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return publicationYear == book.publicationYear && price == book.price && count == book.count
+                && name.equals(book.name) && authors.equals(book.authors) && publisher.equals(book.publisher)
+                && dateOfReceipt.equals(book.dateOfReceipt) && description.equals(book.description)
+                && commonRequests.equals(book.commonRequests) && Arrays.equals(orderRequests, book.orderRequests);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(name, authors, publisher, publicationYear, price, count, dateOfReceipt, description, commonRequests);
+        result = 31 * result + Arrays.hashCode(orderRequests);
+        return result;
+    }
+
     public List<Request> getCommonRequests() {
         return commonRequests;
     }

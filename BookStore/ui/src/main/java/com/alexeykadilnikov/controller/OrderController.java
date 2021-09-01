@@ -34,17 +34,8 @@ public class OrderController {
     @InjectBean
     private IBookService bookService;
 
-    public void create(List<Integer> ids) {
-        List<Book> booksAtId = new ArrayList<>();
-        for(int id : ids) {
-            for(Book book : bookService.getAll()) {
-                if(book.getId() == id) {
-                    booksAtId.add(book);
-                }
-            }
-        }
-
-        orderService.createOrder(booksAtId, UserUtils.getCurrentUser());
+    public void create(List<Long> ids) {
+        orderService.createOrder(ids, UserUtils.getCurrentUser());
     }
 
     public void cancel(int id) {

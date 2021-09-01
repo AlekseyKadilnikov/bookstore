@@ -7,6 +7,7 @@ import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IOrderRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,16 +25,20 @@ public class OrderService implements IOrderService {
     private IUserRepository userRepository;
     @InjectBean
     private IBookRepository bookRepository;
+    @InjectBean
+    private IRequestRepository requestRepository;
 
     @Override
-    public void createOrder(List<Book> books, User user) {
+    public void createOrder(List<Long> booksId, User user) {
+        List<Book> books = new ArrayList<>();
+        for(Long id : booksId) {
+            books.add(bookRepository.getById(id));
+        }
         Order order = new Order(books, user.getId());
         checkBookAvailable(books, order.getId());
         order.setTotalPrice(calculatePrice(order));
         orderRepository.save(order);
         user.addOrder(order.getId());
-
-        logger.info("Order id = {} created", order.getId());
     }
 
     @Override
@@ -116,13 +121,24 @@ public class OrderService implements IOrderService {
         for (Book book : books) {
             if(book.getCount() == 0) {
                 Request[] orderRequests = book.getOrderRequests();
+                if (orderRequests[0] == null) {
+                    orderRequests[0] = new Request();
+                    orderRequests[0].setName("Request for book with id = " + book.getId());
+                    orderRequests[0].setStatus(RequestStatus.NEW);
+                }
+                if (orderRequests[1] == null) {
+                    orderRequests[1] = new Request();
+                    orderRequests[1].setName("Request for book with id = " + book.getId());
+                    orderRequests[1].setStatus(RequestStatus.SUCCESS);
+                }
                 orderRequests[0].setCount(orderRequests[0].getCount() + 1);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
-                logger.info("Order request for book with id = {} created", book.getId());
+                requestRepository.save(orderRequests[0]);
 
-                bookRepository.addRequest(new Request("Request for book with id = " + book.getId(),
-                        Collections.singleton(book.getId())), 1, book);
-                logger.info("Common request for book with id = {} created", book.getId());
+                Request request = new Request("Request for book with id = " + book.getId(),
+                        Collections.singleton(book.getId()));
+                bookRepository.addRequest(request, 1, book);
+                requestRepository.save(request);
             }
             else {
                 book.setCount(book.getCount() - 1);

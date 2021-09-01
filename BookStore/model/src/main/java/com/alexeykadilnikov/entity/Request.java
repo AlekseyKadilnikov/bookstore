@@ -4,6 +4,7 @@ import com.alexeykadilnikov.RequestStatus;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Request extends BaseEntity implements Serializable {
@@ -40,6 +41,20 @@ public class Request extends BaseEntity implements Serializable {
                 "name='" + name + '\'' +
                 ", count=" + count +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return count == request.count && name.equals(request.name) && status == request.status
+                && ordersId.equals(request.ordersId) && booksId.equals(request.booksId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, count, status, ordersId, booksId);
     }
 
     public Set<Long> getOrdersId() {

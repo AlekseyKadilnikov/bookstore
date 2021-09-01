@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class OrderRepository implements IOrderRepository {
@@ -138,27 +140,39 @@ public class OrderRepository implements IOrderRepository {
     }
 
     private void createAndExecuteQueryForSavingOrder(Order order) throws SQLException, IOException {
-        PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
-                "INSERT INTO order_t (id, user_id, total_price, init_date, exec_date, status_code)" +
-                        "VALUES (?, ?, ?, ?, ?, ?)");
-        prepStatement.setLong(1, order.getId());
-        prepStatement.setLong(2, order.getUserId());
-        prepStatement.setInt(3, order.getTotalPrice());
-        prepStatement.setDate(4, Date.valueOf(order.getInitDate()));
-        prepStatement.setDate(5, Date.valueOf(order.getExecutionDate()));
-        prepStatement.setInt(6, order.getStatus().getStatusCode());
+        Connection conn = DBUtils.getConnection();
+        PreparedStatement prepStatement = conn.prepareStatement(
+                "INSERT INTO order_t (user_id, total_price, init_date, exec_date, status_code)" +
+                        "VALUES (?, ?, ?, ?, ?)");
+        prepStatement.setLong(1, order.getUserId());
+        prepStatement.setInt(2, order.getTotalPrice());
+        prepStatement.setDate(3, Date.valueOf(order.getInitDate()));
+        if(order.getExecutionDate() != null) {
+            prepStatement.setDate(4, Date.valueOf(order.getExecutionDate()));
+        } else {
+            prepStatement.setNull(4, Types.DATE);
+        }
+        prepStatement.setInt(5, order.getStatus().getStatusCode());
         prepStatement.executeUpdate();
 
-        prepStatement = DBUtils.getConnection().prepareStatement(
+        prepStatement = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+        ResultSet resultSet = prepStatement.executeQuery();
+        resultSet.next();
+        long lastInsertedOrderId = resultSet.getLong(1);
+
+        prepStatement = conn.prepareStatement(
                 "INSERT INTO order_book (order_id, book_id)" +
                         "VALUES (?, ?)");
-        for(Book book : order.getBooks()) {
-            prepStatement.setLong(1, order.getId());
+        Set<Book> books = new HashSet<>(order.getBooks());
+        for(Book book : books) {
+            prepStatement.setLong(1, lastInsertedOrderId);
             prepStatement.setLong(2, book.getId());
             prepStatement.executeUpdate();
         }
-        DBUtils.getConnection().commit();
-        logger.info("Order with id = {} was saved", order.getId());
+
+        order.setId(lastInsertedOrderId);
+        conn.commit();
+        logger.info("Order with id = {} was saved", lastInsertedOrderId);
     }
 
     private void setBooksForOrder(Order order, Statement statement) throws SQLException, IOException {

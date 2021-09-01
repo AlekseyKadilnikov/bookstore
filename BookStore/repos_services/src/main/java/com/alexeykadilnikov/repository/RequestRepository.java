@@ -136,38 +136,43 @@ public class RequestRepository implements IRequestRepository {
     }
 
     private void createAndExecuteQueryForSavingRequest(Request request) throws SQLException, IOException {
-        PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
-                "INSERT INTO request (id, name, status_code, count)" +
-                        "VALUES (?, ?, ?, ?)");
-        prepStatement.setLong(1, request.getId());
-        prepStatement.setString(2, request.getName());
-        prepStatement.setInt(3, request.getStatus().getStatusCode());
-        prepStatement.setInt(4, request.getCount());
+        Connection conn = DBUtils.getConnection();
+        PreparedStatement prepStatement = conn.prepareStatement(
+                "INSERT INTO request (name, status_code, count)" +
+                        "VALUES (?, ?, ?)");
+        prepStatement.setString(1, request.getName());
+        prepStatement.setInt(2, request.getStatus().getStatusCode());
+        prepStatement.setInt(3, request.getCount());
         prepStatement.executeUpdate();
 
-        prepStatement = DBUtils.getConnection().prepareStatement(
+        prepStatement = conn.prepareStatement("SELECT LAST_INSERT_ID()");
+        ResultSet resultSet = prepStatement.executeQuery();
+        resultSet.next();
+        long lastInsertedRequestId = resultSet.getLong(1);
+
+        prepStatement = conn.prepareStatement(
                 "INSERT INTO book_request (book_id, request_id)" +
                         "VALUES (?, ?)");
         for(Long bookId : request.getBooksId()) {
             prepStatement.setLong(1, bookId);
-            prepStatement.setLong(2, request.getId());
+            prepStatement.setLong(2, lastInsertedRequestId);
             prepStatement.executeUpdate();
         }
 
-        prepStatement = DBUtils.getConnection().prepareStatement(
+        prepStatement = conn.prepareStatement(
                 "INSERT INTO order_request (order_id, request_id)" +
                         "VALUES (?, ?)");
         for(Long orderId : request.getOrdersId()) {
             prepStatement.setLong(1, orderId);
-            prepStatement.setLong(2, request.getId());
+            prepStatement.setLong(2, lastInsertedRequestId);
             prepStatement.executeUpdate();
         }
 
-        logger.info("Request with id = {} was saved", request.getId());
+        logger.info("Request with id = {} was saved", lastInsertedRequestId);
         DBUtils.getConnection().commit();
     }
 
-    private void setBooksAndOrdersForRequest(Request request, Statement statement) throws SQLException, IOException {
+    private void setBooksAndOrdersForRequest(Request request, Statement statement) throws SQLException {
         ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book_request WHERE request_id = " + request.getId());
         Set<Long> booksId = new HashSet<>();
         while (resultSetBook.next()) {

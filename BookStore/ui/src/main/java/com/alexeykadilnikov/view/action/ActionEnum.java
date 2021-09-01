@@ -213,12 +213,12 @@ public enum ActionEnum implements IAction {
 
         String bookIds = getStringInput("Enter book ids (example: 1 1 5)");
         String[] stringIds = bookIds.split(" ");
-        List<Integer> intIds = new ArrayList<>();
+        List<Long> longIds = new ArrayList<>();
         for(String id : stringIds) {
-            intIds.add(Integer.parseInt(id));
+            longIds.add(Long.parseLong(id));
         }
 
-        ControllerUtils.orderController.create(intIds);
+        ControllerUtils.orderController.create(longIds);
     }),
 
     GET_USER_ORDERS(() -> {
