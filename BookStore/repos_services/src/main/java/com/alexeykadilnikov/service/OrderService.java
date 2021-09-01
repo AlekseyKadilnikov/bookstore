@@ -12,7 +12,7 @@ import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Singleton
@@ -79,7 +79,13 @@ public class OrderService implements IOrderService {
 
     @Override
     public void setStatus(long id, OrderStatus status) {
-        orderRepository.getById(id).setStatus(status);
+        if(status == OrderStatus.SUCCESS) {
+            completeOrder(id);
+            return;
+        }
+        Order order = orderRepository.getById(id);
+        order.setStatus(status);
+        orderRepository.update(order);
     }
 
     @Override
@@ -87,7 +93,8 @@ public class OrderService implements IOrderService {
         Order order = orderRepository.getById(id);
         for(Book book : order.getBooks().keySet()) {
             for(Request request : book.getOrderRequests()) {
-                if(request.getStatus() == RequestStatus.NEW) {
+                if(request == null) continue;
+                if(request.getStatus() == RequestStatus.NEW && request.getCount() > 0) {
                     logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
                             order.getId(),
                             book.getId());
@@ -96,9 +103,8 @@ public class OrderService implements IOrderService {
             }
         }
         order.setStatus(OrderStatus.SUCCESS);
-        LocalDate date = LocalDate.now();
-        order.setExecutionDate(date);
-        logger.info("Order id = {} completed", order.getId());
+        order.setExecutionDate(LocalDateTime.now());
+        orderRepository.update(order);
     }
 
     @Override

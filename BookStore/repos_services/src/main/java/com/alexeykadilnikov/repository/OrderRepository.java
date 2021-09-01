@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Singleton
@@ -59,7 +61,7 @@ public class OrderRepository implements IOrderRepository {
             Statement statement = DBUtils.getConnection().createStatement();
             setBooksForOrder(order, statement);
 
-            logger.info("Get book with id = {}", order.getId());
+            logger.info("Get order with id = {}", order.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -128,12 +130,33 @@ public class OrderRepository implements IOrderRepository {
         }
     }
 
+    @Override
+    public void update(Order order) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("UPDATE order_t SET status_code = ?, exec_date = ? WHERE id = ?");
+            prepStatement.setInt(1, order.getStatus().getStatusCode());
+            prepStatement.setTimestamp(2, Timestamp.valueOf(order.getExecutionDate()));
+            prepStatement.setLong(3, order.getId());
+            prepStatement.executeUpdate();
+            connection.commit();
+            logger.info("Order with id = {} was completed", order.getId());
+        } catch (SQLException e) {
+            logger.error(SQL_EX_MESSAGE, e);
+        } catch (IOException e) {
+            logger.error(IO_EX_MESSAGE, e);
+        }
+    }
+
     private void setOrderFieldsFromResultSet(Order order, ResultSet resultSet) throws SQLException {
         order.setId(resultSet.getInt("id"));
         order.setUserId(resultSet.getLong("user_id"));
         order.setTotalPrice(resultSet.getInt("total_price"));
-        order.setInitDate(LocalDate.parse(resultSet.getString("init_date")));
-        order.setExecutionDate(LocalDate.parse(resultSet.getString("exec_date")));
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        order.setInitDate(LocalDateTime.parse(resultSet.getString("init_date"), dtf));
+        if(resultSet.getString("exec_date") != null) {
+            order.setExecutionDate(LocalDateTime.parse(resultSet.getString("exec_date"), dtf));
+        }
         order.setStatus(OrderStatus.values()[resultSet.getInt("status_code")]);
     }
 
@@ -144,9 +167,9 @@ public class OrderRepository implements IOrderRepository {
                         "VALUES (?, ?, ?, ?, ?)");
         prepStatement.setLong(1, order.getUserId());
         prepStatement.setInt(2, order.getTotalPrice());
-        prepStatement.setDate(3, Date.valueOf(order.getInitDate()));
+        prepStatement.setTimestamp(3, Timestamp.valueOf(order.getInitDate()));
         if(order.getExecutionDate() != null) {
-            prepStatement.setDate(4, Date.valueOf(order.getExecutionDate()));
+            prepStatement.setTimestamp(4, Timestamp.valueOf(order.getExecutionDate()));
         } else {
             prepStatement.setNull(4, Types.DATE);
         }

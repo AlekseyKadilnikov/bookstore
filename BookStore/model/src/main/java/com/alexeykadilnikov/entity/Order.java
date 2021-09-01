@@ -4,6 +4,7 @@ import com.alexeykadilnikov.OrderStatus;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Order extends BaseEntity implements Serializable {
@@ -12,11 +13,11 @@ public class Order extends BaseEntity implements Serializable {
     private Long userId;
     private int totalPrice = 0;
     private OrderStatus status;
-    private LocalDate executionDate;
-    private LocalDate initDate;
+    private LocalDateTime executionDate;
+    private LocalDateTime initDate;
 
     public Order() {
-        initDate = LocalDate.now();
+        initDate = LocalDateTime.now();
         executionDate = null;
     }
 
@@ -24,7 +25,7 @@ public class Order extends BaseEntity implements Serializable {
         this.books = books;
         this.userId = userId;
         status = OrderStatus.NEW;
-        initDate = LocalDate.now();
+        initDate = LocalDateTime.now();
         executionDate = null;
     }
 
@@ -55,7 +56,7 @@ public class Order extends BaseEntity implements Serializable {
         return Objects.hash(books, userId, totalPrice, status, executionDate, initDate);
     }
 
-    public LocalDate getInitDate() {
+    public LocalDateTime getInitDate() {
         return initDate;
     }
 
@@ -91,17 +92,17 @@ public class Order extends BaseEntity implements Serializable {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDate getExecutionDate() {
+    public LocalDateTime getExecutionDate() {
         if(executionDate == null)
             return null;
         return executionDate;
     }
 
-    public void setExecutionDate(LocalDate executionDate) {
+    public void setExecutionDate(LocalDateTime executionDate) {
         this.executionDate = executionDate;
     }
 
-    public void setInitDate(LocalDate initDate) {
+    public void setInitDate(LocalDateTime initDate) {
         this.initDate = initDate;
     }
 }

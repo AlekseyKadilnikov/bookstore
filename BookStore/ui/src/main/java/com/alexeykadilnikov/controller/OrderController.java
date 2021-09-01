@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -78,8 +79,8 @@ public class OrderController {
     }
 
     public void getCompletedOrdersForPeriod(Comparator<Order> comparator, String dateAfterS, String dateBeforeS) {
-        LocalDate dateAfter = LocalDate.parse(dateAfterS);
-        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
+        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
 
         List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
         List<Order> ordersBetweenDates = new ArrayList<>();
@@ -94,15 +95,13 @@ public class OrderController {
     }
 
     public void setStatus(int orderId, OrderStatus status) {
-        Order order = orderService.getByIndex(orderId);
-        order.setStatus(status);
-        System.out.println(order);
+        orderService.setStatus(orderId, status);
     }
 
     public void showEarnedMoneyForPeriod(String dateAfterS, String dateBeforeS) {
         int sum = 0;
-        LocalDate dateAfter = LocalDate.parse(dateAfterS);
-        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
+        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
         List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
         for(Order order : orders) {
             if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
@@ -114,8 +113,8 @@ public class OrderController {
 
     public void showCompletedOrdersCountForPeriod(String dateAfterS, String dateBeforeS) {
         int count = 0;
-        LocalDate dateAfter = LocalDate.parse(dateAfterS);
-        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
+        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
+        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
         List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
         for(Order order : orders) {
             if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
