@@ -18,4 +18,5 @@ public interface IBookService {
     void createBook(Book book);
     String getBookDescription(Book book);
     List<Book> getOldBooks(int monthsAmount);
+    void writeOff(long bookId);
 }

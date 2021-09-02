@@ -2,6 +2,7 @@ package com.alexeykadilnikov.repository;
 
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.utils.DBUtils;
 import org.slf4j.Logger;
@@ -97,6 +98,23 @@ public class RequestRepository implements IRequestRepository {
             prepStatement.setLong(1, request.getId());
             prepStatement.executeUpdate();
             logger.info("Request with id = {} was removed", request.getId());
+        } catch (SQLException e) {
+            logger.error(SQL_EX_MESSAGE, e);
+        } catch (IOException e) {
+            logger.error(IO_EX_MESSAGE, e);
+        }
+    }
+
+    @Override
+    public void update(Request request) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("UPDATE request SET count = ? WHERE id = ?");
+            prepStatement.setInt(1, request.getCount());
+            prepStatement.setLong(2, request.getId());
+            prepStatement.executeUpdate();
+            connection.commit();
+            logger.info("Request with id = {} was updated", request.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {

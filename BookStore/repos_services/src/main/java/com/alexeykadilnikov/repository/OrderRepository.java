@@ -183,9 +183,9 @@ public class OrderRepository implements IOrderRepository {
         prepStatement = conn.prepareStatement(
                 "INSERT INTO order_book (order_id, book_id, book_count)" +
                         "VALUES (?, ?, ?)");
-        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
+        for(Map.Entry<Long, Integer> entry : order.getBooks().entrySet()) {
             prepStatement.setLong(1, lastInsertedOrderId);
-            prepStatement.setLong(2, entry.getKey().getId());
+            prepStatement.setLong(2, entry.getKey());
             prepStatement.setInt(3, entry.getValue());
             prepStatement.executeUpdate();
         }
@@ -196,20 +196,12 @@ public class OrderRepository implements IOrderRepository {
     }
 
     private void setBooksForOrder(Order order, Statement statement) throws SQLException {
-        ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book AS b " +
+        ResultSet resultSetBook = statement.executeQuery("SELECT b.id, o.book_count FROM book AS b " +
                 "JOIN order_book AS o ON b.id = o.book_id WHERE o.order_id = " + order.getId());
-        Map<Book, Integer> books = new HashMap<>();
+        Map<Long, Integer> books = new HashMap<>();
         while (resultSetBook.next()) {
-            Book book = new Book();
-            book.setId(resultSetBook.getInt("id"));
-            book.setName(resultSetBook.getString("name"));
-            book.setPublisher(resultSetBook.getString("publisher"));
-            book.setPublicationYear(resultSetBook.getInt("year"));
-            book.setCount(resultSetBook.getInt("count"));
-            book.setPrice(resultSetBook.getInt("price"));
-            book.setDescription(resultSetBook.getString("description"));
-            book.setDateOfReceipt(LocalDate.parse(resultSetBook.getString("date_of_receipt")));
-            books.put(book, resultSetBook.getInt("count"));
+            long bookId = resultSetBook.getLong("id");
+            books.put(bookId, resultSetBook.getInt("book_count"));
         }
         order.setBooks(books);
     }

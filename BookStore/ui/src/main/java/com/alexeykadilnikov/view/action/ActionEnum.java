@@ -102,12 +102,12 @@ public enum ActionEnum implements IAction {
     }),
 
     WRITE_OFF_BOOK(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         ControllerUtils.bookController.writeOff(bookId);
     }),
 
     ADD_BOOK(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         int count = getNumber("Enter count of books:", Integer.MAX_VALUE);
         ControllerUtils.bookController.addBook(bookId, count);
     }),

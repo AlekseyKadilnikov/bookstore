@@ -30,14 +30,13 @@ public class OrderService implements IOrderService {
 
     @Override
     public void createOrder(List<Long> booksId, User user) {
-        Map<Book, Integer> books = new HashMap<>();
-        for(Long id : booksId) {
-            Book book = bookRepository.getById(id);
-            if(books.containsKey(book)) {
-                int val = books.get(book) + 1;
-                books.put(book, val);
+        Map<Long, Integer> books = new HashMap<>();
+        for(Long bookId : booksId) {
+            if(books.containsKey(bookId)) {
+                int val = books.get(bookId) + 1;
+                books.put(bookId, val);
             } else {
-                books.put(book, 1);
+                books.put(bookId, 1);
             }
         }
         Order order = new Order(books, user.getId());
@@ -55,15 +54,16 @@ public class OrderService implements IOrderService {
     @Override
     public void cancelOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
-            entry.getKey().setCount(entry.getKey().getCount() + 1);
-            Request[] orderRequests = entry.getKey().getOrderRequests();
+        for(Map.Entry<Long, Integer> entry : order.getBooks().entrySet()) {
+            Book book = bookRepository.getById(entry.getKey());
+            book.setCount(book.getCount() + 1);
+            Request[] orderRequests = book.getOrderRequests();
             for(Request request : orderRequests) {
                 if(request.getStatus() == RequestStatus.NEW) {
                     Set<Long> booksId = new HashSet<>();
-                    booksId.add(entry.getKey().getId());
+                    booksId.add(book.getId());
                     bookRepository.addRequest(new Request(request.getName(),
-                            booksId, request.getOrdersId(), RequestStatus.SUCCESS), 1, entry.getKey());
+                            booksId, request.getOrdersId(), RequestStatus.SUCCESS), 1, book);
                     if(request.getCount() > 0) {
                         request.setCount(request.getCount() - 1);
                     }
@@ -91,13 +91,14 @@ public class OrderService implements IOrderService {
     @Override
     public void completeOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
-            for(Request request : entry.getKey().getOrderRequests()) {
+        for(Map.Entry<Long, Integer> entry : order.getBooks().entrySet()) {
+            Book book = bookRepository.getById(entry.getKey());
+            for(Request request : book.getOrderRequests()) {
                 if(request == null) continue;
                 if(request.getStatus() == RequestStatus.NEW && request.getCount() > 0) {
                     logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
                             order.getId(),
-                            entry.getKey().getId());
+                            book.getId());
                     return;
                 }
             }
@@ -129,27 +130,32 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void checkBookAvailable(Map<Book, Integer> books, long orderId) {
-        for (Map.Entry<Book, Integer> entry : books.entrySet()) {
-            if(entry.getKey().getCount() == 0) {
-                Request[] orderRequests = entry.getKey().getOrderRequests();
+    public void checkBookAvailable(Map<Long, Integer> books, long orderId) {
+        for (Map.Entry<Long, Integer> entry : books.entrySet()) {
+            Book book = bookRepository.getById(entry.getKey());
+            int diff = entry.getValue() - book.getCount();
+            if(diff > 0) {
+                Request[] orderRequests = book.getOrderRequests();
                 if (orderRequests[0] == null) {
                     orderRequests[0] = new Request();
-                    orderRequests[0].setName("Request for book with id = " + entry.getKey().getId());
+                    orderRequests[0].setName("Request for book with id = " + book.getId());
                     orderRequests[0].setStatus(RequestStatus.NEW);
                 }
-                orderRequests[0].setCount(entry.getValue());
+                orderRequests[0].setCount(diff);
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
+                orderRequests[0].setBooksId(Collections.singleton(entry.getKey()));
                 requestRepository.save(orderRequests[0]);
 
-                Request request = new Request("Request for book with id = " + entry.getKey().getId(),
-                        Collections.singleton(entry.getKey().getId()));
-                request.setCount(entry.getValue());
+                Request request = new Request("Request for book with id = " + book.getId(),
+                        Collections.singleton(entry.getKey()));
+                request.setCount(diff);
                 requestRepository.save(request);
-                bookRepository.addRequest(request, 1, entry.getKey());
+                bookRepository.addRequest(request, 1, book);
+                book.setCount(0);
+                bookRepository.update(book);
             }
             else {
-                entry.getKey().setCount(entry.getKey().getCount() - 1);
+                book.setCount(book.getCount() - entry.getValue());
             }
         }
     }
@@ -167,8 +173,9 @@ public class OrderService implements IOrderService {
     @Override
     public int calculatePrice(Order order) {
         int totalPrice = 0;
-        for (Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
-            totalPrice += entry.getKey().getPrice() * entry.getValue();
+        for (Map.Entry<Long, Integer> entry : order.getBooks().entrySet()) {
+            Book book = bookRepository.getById(entry.getKey());
+            totalPrice += book.getPrice() * entry.getValue();
         }
         return totalPrice;
     }

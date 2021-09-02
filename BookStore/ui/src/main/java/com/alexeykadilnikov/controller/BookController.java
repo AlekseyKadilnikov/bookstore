@@ -57,16 +57,12 @@ public class BookController {
         }
     }
 
-    public void writeOff(int bookId) {
-        Book book = bookService.getById(bookId);
-        book.setCount(0);
-        System.out.println(book);
+    public void writeOff(long bookId) {
+        bookService.writeOff(bookId);
     }
 
-    public void addBook(int bookId, int count){
+    public void addBook(long bookId, int count){
         bookService.addBook(bookId, count);
-        Book book = bookService.getById(bookId);
-        System.out.println(book);
     }
 
     public void importBooks(String path) {

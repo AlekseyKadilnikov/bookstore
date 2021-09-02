@@ -21,7 +21,7 @@ public interface IOrderService {
 
     void saveAll(List<Order> orderList);
 
-    void checkBookAvailable(Map<Book, Integer> books, long orderId);
+    void checkBookAvailable(Map<Long, Integer> books, long orderId);
 
     Order getByIndex(long id);
 

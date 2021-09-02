@@ -92,6 +92,24 @@ public class BookRepository implements IBookRepository {
     }
 
     @Override
+    public void update(Book book) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("UPDATE book SET count = ?, price = ? WHERE id = ?");
+            prepStatement.setInt(1, book.getCount());
+            prepStatement.setInt(2, book.getPrice());
+            prepStatement.setLong(3, book.getId());
+            prepStatement.executeUpdate();
+            connection.commit();
+            logger.info("Book with id = {} was updated", book.getId());
+        } catch (SQLException e) {
+            logger.error(SQL_EX_MESSAGE, e);
+        } catch (IOException e) {
+            logger.error(IO_EX_MESSAGE, e);
+        }
+    }
+
+    @Override
     public void delete(Book book) {
         try {
             PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("DELETE FROM book WHERE id = ?");
