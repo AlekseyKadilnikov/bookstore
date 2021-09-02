@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost/bookstore</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">1111</property>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <mapping class="com.alexeykadilnikov.entity.Request" />
+        <mapping class="com.alexeykadilnikov.entity.Book" />
+        <mapping class="com.alexeykadilnikov.entity.Author" />
+        <mapping class="com.alexeykadilnikov.entity.Order" />
+        <mapping class="com.alexeykadilnikov.entity.User" />
+        <mapping class="com.alexeykadilnikov.entity.BaseEntity" />
+    </session-factory>
+</hibernate-configuration>
