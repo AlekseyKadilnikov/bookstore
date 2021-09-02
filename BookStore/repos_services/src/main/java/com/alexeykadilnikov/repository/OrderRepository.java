@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.*;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -140,7 +139,7 @@ public class OrderRepository implements IOrderRepository {
             prepStatement.setLong(3, order.getId());
             prepStatement.executeUpdate();
             connection.commit();
-            logger.info("Order with id = {} was completed", order.getId());
+            logger.info("Order with id = {} was updated", order.getId());
         } catch (SQLException e) {
             logger.error(SQL_EX_MESSAGE, e);
         } catch (IOException e) {
@@ -184,10 +183,10 @@ public class OrderRepository implements IOrderRepository {
         prepStatement = conn.prepareStatement(
                 "INSERT INTO order_book (order_id, book_id, book_count)" +
                         "VALUES (?, ?, ?)");
-        for(Book book : order.getBooks().keySet()) {
+        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
             prepStatement.setLong(1, lastInsertedOrderId);
-            prepStatement.setLong(2, book.getId());
-            prepStatement.setInt(3, order.getBooks().get(book));
+            prepStatement.setLong(2, entry.getKey().getId());
+            prepStatement.setInt(3, entry.getValue());
             prepStatement.executeUpdate();
         }
 

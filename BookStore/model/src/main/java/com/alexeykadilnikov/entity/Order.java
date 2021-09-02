@@ -3,7 +3,6 @@ package com.alexeykadilnikov.entity;
 import com.alexeykadilnikov.OrderStatus;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 

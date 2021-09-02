@@ -55,15 +55,15 @@ public class OrderService implements IOrderService {
     @Override
     public void cancelOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Book book : order.getBooks().keySet()) {
-            book.setCount(book.getCount() + 1);
-            Request[] orderRequests = book.getOrderRequests();
+        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
+            entry.getKey().setCount(entry.getKey().getCount() + 1);
+            Request[] orderRequests = entry.getKey().getOrderRequests();
             for(Request request : orderRequests) {
                 if(request.getStatus() == RequestStatus.NEW) {
                     Set<Long> booksId = new HashSet<>();
-                    booksId.add(book.getId());
+                    booksId.add(entry.getKey().getId());
                     bookRepository.addRequest(new Request(request.getName(),
-                            booksId, request.getOrdersId(), RequestStatus.SUCCESS), 1, book);
+                            booksId, request.getOrdersId(), RequestStatus.SUCCESS), 1, entry.getKey());
                     if(request.getCount() > 0) {
                         request.setCount(request.getCount() - 1);
                     }
@@ -91,13 +91,13 @@ public class OrderService implements IOrderService {
     @Override
     public void completeOrder(long id) {
         Order order = orderRepository.getById(id);
-        for(Book book : order.getBooks().keySet()) {
-            for(Request request : book.getOrderRequests()) {
+        for(Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
+            for(Request request : entry.getKey().getOrderRequests()) {
                 if(request == null) continue;
                 if(request.getStatus() == RequestStatus.NEW && request.getCount() > 0) {
                     logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
                             order.getId(),
-                            book.getId());
+                            entry.getKey().getId());
                     return;
                 }
             }
@@ -130,26 +130,26 @@ public class OrderService implements IOrderService {
 
     @Override
     public void checkBookAvailable(Map<Book, Integer> books, long orderId) {
-        for (Book book : books.keySet()) {
-            if(book.getCount() == 0) {
-                Request[] orderRequests = book.getOrderRequests();
+        for (Map.Entry<Book, Integer> entry : books.entrySet()) {
+            if(entry.getKey().getCount() == 0) {
+                Request[] orderRequests = entry.getKey().getOrderRequests();
                 if (orderRequests[0] == null) {
                     orderRequests[0] = new Request();
-                    orderRequests[0].setName("Request for book with id = " + book.getId());
+                    orderRequests[0].setName("Request for book with id = " + entry.getKey().getId());
                     orderRequests[0].setStatus(RequestStatus.NEW);
                 }
-                orderRequests[0].setCount(books.get(book));
+                orderRequests[0].setCount(entry.getValue());
                 orderRequests[0].setOrdersId(Collections.singleton(orderId));
                 requestRepository.save(orderRequests[0]);
 
-                Request request = new Request("Request for book with id = " + book.getId(),
-                        Collections.singleton(book.getId()));
-                request.setCount(books.get(book));
+                Request request = new Request("Request for book with id = " + entry.getKey().getId(),
+                        Collections.singleton(entry.getKey().getId()));
+                request.setCount(entry.getValue());
                 requestRepository.save(request);
-                bookRepository.addRequest(request, 1, book);
+                bookRepository.addRequest(request, 1, entry.getKey());
             }
             else {
-                book.setCount(book.getCount() - 1);
+                entry.getKey().setCount(entry.getKey().getCount() - 1);
             }
         }
     }
@@ -167,8 +167,8 @@ public class OrderService implements IOrderService {
     @Override
     public int calculatePrice(Order order) {
         int totalPrice = 0;
-        for (Book book : order.getBooks().keySet()) {
-            totalPrice += book.getPrice() * order.getBooks().get(book);
+        for (Map.Entry<Book, Integer> entry : order.getBooks().entrySet()) {
+            totalPrice += entry.getKey().getPrice() * entry.getValue();
         }
         return totalPrice;
     }
