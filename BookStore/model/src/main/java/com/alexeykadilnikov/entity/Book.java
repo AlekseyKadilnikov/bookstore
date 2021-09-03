@@ -1,28 +1,41 @@
 package com.alexeykadilnikov.entity;
 
-import com.alexeykadilnikov.RequestStatus;
-
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
+@Entity
+@Table(name = "book")
 public class Book extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2032341091985408913L;
+    @Column(name = "name")
     private String name;
-    private Set<Long> authors;
+    @ManyToMany(mappedBy = "books")
+    private Set<Author> authors;
+    @Column(name = "publisher")
     private String publisher;
+    @Column(name = "year")
     private int publicationYear;
+    @Column(name = "price")
     private int price;
+    @Column(name = "count")
     private int count;
-    private LocalDate dateOfReceipt = LocalDate.now();
-    private String description = "";
-    private List<Request> commonRequests = new ArrayList<>();
-    private Request[] orderRequests = new Request[2];
+    @Column(name = "date_of_receipt")
+    private LocalDate dateOfReceipt;
+    @Column(name = "description")
+    private String description;
+
+    @ManyToMany(mappedBy = "books")
+    private Set<Request> requests;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private Set<OrderBook> orders;
 
     public Book() {
     }
 
-    public Book(String name, Set<Long> authors, String publisher, int publicationYear, int price, int count) {
+    public Book(String name, Set<Author> authors, String publisher, int publicationYear, int price, int count) {
         this.name = name;
         this.authors = authors;
         this.publisher = publisher;
@@ -32,30 +45,21 @@ public class Book extends BaseEntity implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Book{" +
-                "id = " + getId() +
-                ", name='" + name + '\'' +
-                ", author='" + authors + '\'' +
-                ", publisher='" + publisher + '\'' +
-                ", price=" + price +
-                ", count=" + count +
-                ", dateOfReceipt=" + dateOfReceipt +
-                ", dateOfPublication=" + publicationYear +
-                "}\n";
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return publicationYear == book.publicationYear && price == book.price && count == book.count && name.equals(book.name) && authors.equals(book.authors) && publisher.equals(book.publisher) && dateOfReceipt.equals(book.dateOfReceipt) && description.equals(book.description);
+        return publicationYear == book.publicationYear && price == book.price &&
+                count == book.count && name.equals(book.name) && authors.equals(book.authors) &&
+                publisher.equals(book.publisher) && dateOfReceipt.equals(book.dateOfReceipt) &&
+                description.equals(book.description) && Objects.equals(requests, book.requests) &&
+                Objects.equals(orders, book.orders);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, authors, publisher, publicationYear, price, count, dateOfReceipt, description);
+        return Objects.hash(name, authors, publisher, publicationYear, price,
+                count, dateOfReceipt, description, requests, orders);
     }
 
     public String getDescription() {
@@ -82,11 +86,11 @@ public class Book extends BaseEntity implements Serializable {
         this.name = name;
     }
 
-    public Set<Long> getAuthors() {
+    public Set<Author> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<Long> authors) {
+    public void setAuthors(Set<Author> authors) {
         this.authors = authors;
     }
 
@@ -122,19 +126,19 @@ public class Book extends BaseEntity implements Serializable {
         this.publicationYear = publicationYear;
     }
 
-    public List<Request> getCommonRequests() {
-        return commonRequests;
+    public Set<Request> getRequests() {
+        return requests;
     }
 
-    public void setCommonRequests(List<Request> commonRequests) {
-        this.commonRequests = commonRequests;
+    public void setRequests(Set<Request> requests) {
+        this.requests = requests;
     }
 
-    public Request[] getOrderRequests() {
-        return orderRequests;
+    public Set<OrderBook> getOrders() {
+        return orders;
     }
 
-    public void setOrderRequests(Request[] orderRequests) {
-        this.orderRequests = orderRequests;
+    public void setOrders(Set<OrderBook> orders) {
+        this.orders = orders;
     }
 }

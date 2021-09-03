@@ -149,7 +149,7 @@ public class BookRepository implements IBookRepository {
 
     @Override
     public void addRequest(Request request, int count, Book book) {
-        List<Request> commonRequests = book.getCommonRequests();
+        List<Request> commonRequests = book.getRequests();
         Request[] orderRequests = book.getOrderRequests();
         if(request.getStatus() == RequestStatus.COMMON) {
             for(Request r : commonRequests) {

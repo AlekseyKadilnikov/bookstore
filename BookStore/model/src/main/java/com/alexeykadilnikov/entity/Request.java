@@ -2,32 +2,36 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(name = "request")
 public class Request extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4499720100063137694L;
+    @Column(name = "name")
     private String name;
+    @Column(name = "count")
     private int count;
+    @Enumerated(EnumType.ORDINAL)
     private RequestStatus status;
-    private final Set<Long> ordersId = new HashSet<>();
-    private Set<Long> booksId = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_request",
+            joinColumns = @JoinColumn(name="request_id"),
+            inverseJoinColumns = @JoinColumn(name="book_id")
+    )
+    private Set<Book> books;
 
     public Request() {
     }
 
-    public Request(String name, Set<Long> booksId) {
+    public Request(String name, Set<Book> books, RequestStatus status) {
         this.name = name;
-        this.booksId.addAll(booksId);
-        this.status = RequestStatus.COMMON;
-    }
-
-    public Request(String name, Set<Long> booksId, Set<Long> ordersId, RequestStatus status) {
-        this.name = name;
-        this.booksId.addAll(booksId);
-        this.ordersId.addAll(ordersId);
+        this.books = books;
         this.status = status;
     }
 
@@ -44,29 +48,21 @@ public class Request extends BaseEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Request request = (Request) o;
-        return count == request.count && name.equals(request.name) && status == request.status
-                && ordersId.equals(request.ordersId) && booksId.equals(request.booksId);
+        return count == request.count && name.equals(request.name) &&
+                status == request.status && books.equals(request.books);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, count, status, ordersId, booksId);
+        return Objects.hash(name, count, status, books);
     }
 
-    public Set<Long> getOrdersId() {
-        return ordersId;
+    public Set<Book> getBooks() {
+        return books;
     }
 
-    public void setOrdersId(Set<Long> ordersId) {
-        this.ordersId.addAll(ordersId);
-    }
-
-    public Set<Long> getBooksId() {
-        return booksId;
-    }
-
-    public void setBooksId(Set<Long> booksId) {
-        this.booksId = booksId;
+    public void setBooks(Set<Book> books) {
+        this.books = books;
     }
 
     public String getName() {
