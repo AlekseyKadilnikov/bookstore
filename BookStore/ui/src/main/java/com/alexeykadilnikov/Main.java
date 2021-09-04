@@ -13,8 +13,6 @@ public class Main {
     public static void main(String[] args) {
         ApplicationContext context = Application.run("com.alexeykadilnikov");
         BookStore bookStore = context.getBean(BookStore.class);
-//        OrderController orderController = context.getBean(OrderController.class);
-//        orderController.create(Arrays.asList(1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L));
         bookStore.start();
     }
 }

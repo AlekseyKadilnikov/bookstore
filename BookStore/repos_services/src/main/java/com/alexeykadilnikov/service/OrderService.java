@@ -54,7 +54,6 @@ public class OrderService implements IOrderService {
         order.setStatus(OrderStatus.NEW);
         orderRepository.save(order);
         checkBookAvailable(orderBooks);
-        //user.getOrders().add(order);
     }
 
     @Override
@@ -160,7 +159,6 @@ public class OrderService implements IOrderService {
                     newRequest.setStatus(RequestStatus.NEW);
                     newRequest.setBooks(Collections.singleton(book));
                     newRequest.setCount(newRequest.getCount() + diff);
-                    //newRequest.getBooks().add(book);
                     requestRepository.save(newRequest);
                 }
                 else {
@@ -179,8 +177,7 @@ public class OrderService implements IOrderService {
                     commonRequest.setName("Request for book with id = " + book.getId());
                     commonRequest.setStatus(RequestStatus.COMMON);
                     commonRequest.setBooks(Collections.singleton(book));
-                    newRequest.setCount(newRequest.getCount() + diff);
-                    //newRequest.getBooks().add(book);
+                    commonRequest.setCount(commonRequest.getCount() + diff);
                     requestRepository.save(commonRequest);
                 } else {
                     newRequest.setCount(newRequest.getCount() + diff);

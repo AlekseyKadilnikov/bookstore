@@ -23,6 +23,17 @@ public class RequestService implements IRequestService {
 
     @Override
     public Set<Book> createRequest(String name, int count) {
+        Request request = requestRepository.findAll()
+                .stream()
+                .filter(r -> r.getName().equals(name))
+                .findAny()
+                .orElse(null);
+        if(request != null) {
+            request.setCount(request.getCount() + 1);
+            requestRepository.update(request);
+            return request.getBooks();
+        }
+
         String[] words = name.split(" ");
         List<Book> books = bookRepository.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
@@ -71,29 +82,20 @@ public class RequestService implements IRequestService {
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
             bookSet.addAll(booksByName);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            for(Book book : booksByName) {
-                book.getRequests().add(request);
-                requestRepository.save(request);
-            }
+            requestRepository.save(request);
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            for(Book book : booksByAuthor) {
-                book.getRequests().add(request);
-                requestRepository.save(request);
-            }
+            requestRepository.save(request);
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            for(Book book : booksByAuthor) {
-                book.getRequests().add(request);
-                requestRepository.save(request);
-            }
+            requestRepository.save(request);
             return booksByAuthor;
         }
     }

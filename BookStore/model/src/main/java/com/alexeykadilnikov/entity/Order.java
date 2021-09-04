@@ -40,18 +40,30 @@ public class Order extends BaseEntity implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "Order{" +
+                "totalPrice=" + totalPrice +
+                ", status=" + status +
+                ", executionDate=" + executionDate +
+                ", initDate=" + initDate +
+                ", user=" + user +
+                ", orderBooks=" + orderBooks +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
         return totalPrice == order.totalPrice && status == order.status &&
                 executionDate.equals(order.executionDate) && initDate.equals(order.initDate)
-                && user.equals(order.user) && Objects.equals(orderBooks, order.orderBooks);
+                && user.equals(order.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(totalPrice, status, executionDate, initDate, user, orderBooks);
+        return Objects.hash(totalPrice, status, executionDate, initDate, user);
     }
 
     public LocalDateTime getInitDate() {

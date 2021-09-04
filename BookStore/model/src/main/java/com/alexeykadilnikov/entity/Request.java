@@ -20,7 +20,7 @@ public class Request extends BaseEntity implements Serializable {
     @Column(name = "status_code")
     private RequestStatus status;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_request",
             joinColumns = @JoinColumn(name="request_id"),
@@ -52,12 +52,12 @@ public class Request extends BaseEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Request request = (Request) o;
         return count == request.count && name.equals(request.name) &&
-                status == request.status && books.equals(request.books);
+                status == request.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, count, status, books);
+        return Objects.hash(name, count, status);
     }
 
     public Set<Book> getBooks() {

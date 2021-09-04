@@ -56,25 +56,27 @@ public class BookService implements IBookService {
                 if(successRequest == null) {
                     successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
                     requestRepository.save(successRequest);
-                    book.getRequests().add(successRequest);
+//                    book.getRequests().add(successRequest);
                 } else {
                     successRequest.setCount(successRequest.getCount() + newRequest.getCount());
                     requestRepository.update(successRequest);
                 }
                 requestRepository.delete(newRequest);
-                book.getRequests().remove(newRequest);
+//                book.getRequests().remove(newRequest);
                 book.setCount(diff);
                 bookRepository.update(book);
-            } else if (successRequest == null) {
+            } else {
+                if (successRequest == null) {
                     successRequest = new Request(newRequest.getName(), bookCount, RequestStatus.SUCCESS, books);
                     requestRepository.save(successRequest);
-                    book.getRequests().add(successRequest);
+//                    book.getRequests().add(successRequest);
                 } else {
                     successRequest.setCount(successRequest.getCount() + bookCount);
                     requestRepository.update(successRequest);
                 }
                 newRequest.setCount(newRequest.getCount() - bookCount);
                 requestRepository.update(newRequest);
+            }
         }
     }
 

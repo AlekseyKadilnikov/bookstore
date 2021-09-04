@@ -34,8 +34,7 @@ public class RequestController {
 
     public void search(String request) {
         Set<Book> foundBooks = requestService.createRequest(request, 1);
-        List<Book> books = new ArrayList<>(foundBooks);
-        System.out.println(books);
+        System.out.println(foundBooks);
     }
 
     public void sort(int bookId, Comparator<Request> comparator) {

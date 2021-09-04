@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -79,14 +80,15 @@ public class OrderController {
     }
 
     public void getCompletedOrdersForPeriod(Comparator<Order> comparator, String dateAfterS, String dateBeforeS) {
-        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
-        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
+        LocalDate dateAfter = LocalDate.parse(dateAfterS);
+        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
 
         List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
         List<Order> ordersBetweenDates = new ArrayList<>();
 
         for(Order order : orders) {
-            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
+            if(order.getExecutionDate().toLocalDate().isAfter(dateAfter)
+                    && order.getExecutionDate().toLocalDate().isBefore(dateBefore)) {
                 ordersBetweenDates.add(order);
             }
         }
