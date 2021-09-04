@@ -36,7 +36,8 @@ public class AuthorService implements IAuthorService {
 
     @Override
     public void saveAll(List<Author> all) {
-        authorRepository.saveAll(all);
+        for(Author author : all) {
+            authorRepository.save(author);
+        }
     }
-
 }

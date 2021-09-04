@@ -40,7 +40,9 @@ public class UserService implements IUserService {
 
     @Override
     public void saveAll(List<User> userList) {
-        userRepository.saveAll(userList);
+        for(User user : userList) {
+            userRepository.save(user);
+        }
     }
 
     @Override

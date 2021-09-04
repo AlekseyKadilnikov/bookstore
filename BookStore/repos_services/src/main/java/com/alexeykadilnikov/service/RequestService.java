@@ -39,56 +39,14 @@ public class RequestService implements IRequestService {
             }
         }
 
-        Set<Long> bookIdSet = new HashSet<>();
-        if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
-            for(Book book : booksByName) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByName) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
-            return booksByName;
-        }
-        else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
-            for(Book book : booksByAuthor) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
-            return booksByAuthor;
-        }
-        else {
-            booksByAuthor.retainAll(booksByName);
-            for(Book book : booksByAuthor) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
-            return booksByAuthor;
-        }
+        return getBooksByRequest(name, count, booksByAuthor, booksByName);
     }
 
     @Override
     public List<Request> sort(Book book, Comparator<Request> comparator) {
         List<Request> requests = requestRepository.findAll();
-        List<Request> commonRequests = requestRepository.findAll();
-        for(Request request : requests) {
-            for (Long bookId : request.getBooksId()) {
-                if(bookId == book.getId() && request.getStatus() == RequestStatus.COMMON) {
-                    commonRequests.add(request);
-                }
-            }
-        }
-        commonRequests.sort(comparator);
-        return commonRequests;
+        requests.sort(comparator);
+        return requests;
     }
 
     @Override
@@ -98,7 +56,9 @@ public class RequestService implements IRequestService {
 
     @Override
     public void saveAll(List<Request> requestList) {
-        requestRepository.saveAll(requestList);
+        for(Request request : requestList) {
+            requestRepository.save(request);
+        }
     }
 
     @Override
@@ -106,16 +66,50 @@ public class RequestService implements IRequestService {
         return requestRepository.getById(id);
     }
 
+    private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {
+        Set<Book> bookSet = new HashSet<>();
+        if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
+            bookSet.addAll(booksByName);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            for(Book book : booksByName) {
+                book.getRequests().add(request);
+                requestRepository.save(request);
+            }
+            return booksByName;
+        }
+        else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
+            bookSet.addAll(booksByAuthor);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            for(Book book : booksByAuthor) {
+                book.getRequests().add(request);
+                requestRepository.save(request);
+            }
+            return booksByAuthor;
+        }
+        else {
+            booksByAuthor.retainAll(booksByName);
+            bookSet.addAll(booksByAuthor);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            for(Book book : booksByAuthor) {
+                book.getRequests().add(request);
+                requestRepository.save(request);
+            }
+            return booksByAuthor;
+        }
+    }
+
     private String getFullAuthorStringListForBook(Book book) {
-        StringBuilder authors = new StringBuilder();
-        Set<Long> authorsId = book.getAuthors();
-        for (int i = 0; i < authorsId.size(); i++) {
-            Author author = authorRepository.getById(authorsId.iterator().next());
-            authors.append(author.getFirstName()).append(" ").append(author.getLastName()).append(" ").append(author.getMiddleName());
-            if(i != authorsId.size() - 1) {
-                authors.append(", ");
+        StringBuilder authorsStr = new StringBuilder();
+        Set<Author> authors = book.getAuthors();
+        for (int i = 0; i < authors.size(); i++) {
+            Author author = authors.iterator().next();
+            authorsStr.append(author.getFirstName())
+                    .append(" ").append(author.getLastName())
+                    .append(" ").append(author.getMiddleName());
+            if(i != authors.size() - 1) {
+                authorsStr.append(", ");
             }
         }
-        return authors.toString();
+        return authorsStr.toString();
     }
 }

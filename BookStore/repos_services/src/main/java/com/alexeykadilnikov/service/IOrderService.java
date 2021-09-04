@@ -1,13 +1,13 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.OrderStatus;
+import com.alexeykadilnikov.entity.OrderBook;
 import com.alexeykadilnikov.entity.User;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public interface IOrderService {
     void createOrder(List<Long> booksId, User user);
@@ -21,7 +21,7 @@ public interface IOrderService {
 
     void saveAll(List<Order> orderList);
 
-    void checkBookAvailable(Map<Long, Integer> books, long orderId);
+    void checkBookAvailable(Set<OrderBook> orderBooks);
 
     Order getByIndex(long id);
 

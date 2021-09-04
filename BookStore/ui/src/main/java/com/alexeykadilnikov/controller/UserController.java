@@ -2,6 +2,7 @@ package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.service.IOrderService;
 import com.alexeykadilnikov.service.IUserService;
@@ -40,8 +41,8 @@ public class UserController {
     }
 
     public void getOrders(User user) {
-        for(Long orderId : user.getOrders()) {
-            System.out.println(orderService.getById(orderId).toString());
+        for(Order order : user.getOrders()) {
+            System.out.println(order);
         }
     }
 

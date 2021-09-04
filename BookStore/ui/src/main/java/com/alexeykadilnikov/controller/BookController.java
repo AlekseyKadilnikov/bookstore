@@ -33,7 +33,7 @@ public class BookController {
 
     public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
         sortedBooks = bookService.sort(sortedBooks, comparator);
-        System.out.println(sortedBooks.toString());
+        System.out.println(sortedBooks);
     }
 
     public List<Book> getAll() {

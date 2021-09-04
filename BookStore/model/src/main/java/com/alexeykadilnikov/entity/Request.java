@@ -4,6 +4,7 @@ import com.alexeykadilnikov.RequestStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ public class Request extends BaseEntity implements Serializable {
     @Column(name = "count")
     private int count;
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status_code")
     private RequestStatus status;
 
     @ManyToMany
@@ -24,15 +26,16 @@ public class Request extends BaseEntity implements Serializable {
             joinColumns = @JoinColumn(name="request_id"),
             inverseJoinColumns = @JoinColumn(name="book_id")
     )
-    private Set<Book> books;
+    private Set<Book> books = new HashSet<>();
 
     public Request() {
     }
 
-    public Request(String name, Set<Book> books, RequestStatus status) {
+    public Request(String name, int count, RequestStatus status, Set<Book> books) {
         this.name = name;
-        this.books = books;
+        this.count = count;
         this.status = status;
+        this.books = books;
     }
 
     @Override

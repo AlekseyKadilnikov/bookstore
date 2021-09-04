@@ -1,26 +1,33 @@
 package com.alexeykadilnikov.utils;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.service.ServiceRegistry;
 
 public class HibernateUtil {
-    private static final SessionFactory sessionFactory;
-    static {
+    private static final SessionFactory sessionFactory = buildSessionFactory();
+
+    private HibernateUtil() {
+    }
+
+    private static SessionFactory buildSessionFactory() {
         try {
-            sessionFactory = new AnnotationConfiguration()
-                    .addPackage("com.alexeykadilnikov")
-                    .configure()
-                    .buildSessionFactory();
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()//
+                    .configure("hibernate.cfg.xml").build();
+
+            Metadata metadata = new MetadataSources(serviceRegistry).getMetadataBuilder().build();
+
+            return metadata.getSessionFactoryBuilder().build();
         } catch (Exception ex) {
-            // Log exception!
+
+            System.err.println("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
 
-    public static Session getSession()
-            throws HibernateException {
-        return sessionFactory.openSession();
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 }

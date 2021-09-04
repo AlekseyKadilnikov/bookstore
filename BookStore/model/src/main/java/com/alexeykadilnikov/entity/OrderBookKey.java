@@ -1,17 +1,22 @@
 package com.alexeykadilnikov.entity;
 
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class OrderBookPK implements Serializable {
+@Embeddable
+public class OrderBookKey implements Serializable {
+    @Column(name = "order_id")
     private Long orderId;
+    @Column(name = "book_id")
     private Long bookId;
 
-    public OrderBookPK() {
+    public OrderBookKey() {
     }
 
-    public OrderBookPK(Long orderId, Long bookId) {
+    public OrderBookKey(Long orderId, Long bookId) {
         this.orderId = orderId;
         this.bookId = bookId;
     }
@@ -20,7 +25,7 @@ public class OrderBookPK implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderBookPK that = (OrderBookPK) o;
+        OrderBookKey that = (OrderBookKey) o;
         return orderId.equals(that.orderId) && bookId.equals(that.bookId);
     }
 

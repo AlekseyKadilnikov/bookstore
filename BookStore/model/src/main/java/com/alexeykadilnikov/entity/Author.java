@@ -42,17 +42,26 @@ public class Author extends BaseEntity implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "Author{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Author author = (Author) o;
         return firstName.equals(author.firstName) && lastName.equals(author.lastName)
-                && Objects.equals(middleName, author.middleName) && Objects.equals(books, author.books);
+                && Objects.equals(middleName, author.middleName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, middleName, books);
+        return Objects.hash(firstName, lastName, middleName);
     }
 
     public String getFirstName() {

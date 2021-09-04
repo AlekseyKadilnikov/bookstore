@@ -1,5 +1,7 @@
 package com.alexeykadilnikov.repository;
 
+import com.alexeykadilnikov.entity.Book;
+
 import java.util.List;
 
 public interface IRepository<T, ID> {
@@ -7,5 +9,5 @@ public interface IRepository<T, ID> {
     T getById(ID id);
     void save(T entity);
     void delete(T entity);
-    void saveAll(List<T> all);
+    void update(T entity);
 }

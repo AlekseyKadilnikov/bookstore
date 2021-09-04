@@ -6,11 +6,20 @@
 <hibernate-configuration>
     <session-factory>
         <!-- Database connection settings -->
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost/bookstore</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">1111</property>
+
+        <property name="hibernate.id.new_generator_mappings">false</property>
+        <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
 
         <mapping class="com.alexeykadilnikov.entity.Request" />
         <mapping class="com.alexeykadilnikov.entity.Book" />
@@ -18,5 +27,6 @@
         <mapping class="com.alexeykadilnikov.entity.Order" />
         <mapping class="com.alexeykadilnikov.entity.User" />
         <mapping class="com.alexeykadilnikov.entity.BaseEntity" />
+        <mapping class="com.alexeykadilnikov.entity.OrderBook" />
     </session-factory>
 </hibernate-configuration>

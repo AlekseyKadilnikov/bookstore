@@ -14,7 +14,7 @@ public interface IBookService {
     List<Book> getAll();
     List<Book> sort(List<Book> books, Comparator<Book> comparator);
     Book getById(long id);
-    void createRequest(Request request, int count, long id);
+    void createRequest(Request request, long id);
     void createBook(Book book);
     String getBookDescription(Book book);
     List<Book> getOldBooks(int monthsAmount);

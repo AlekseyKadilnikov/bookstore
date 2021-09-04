@@ -14,6 +14,7 @@ public class Order extends BaseEntity implements Serializable {
     @Column(name = "total_price")
     private int totalPrice;
     @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status_code")
     private OrderStatus status;
     @Column(name = "exec_date")
     private LocalDateTime executionDate;
@@ -22,7 +23,7 @@ public class Order extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<OrderBook> orderBooks;
 
     public Order() {

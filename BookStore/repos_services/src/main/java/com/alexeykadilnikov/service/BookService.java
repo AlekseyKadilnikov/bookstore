@@ -28,39 +28,53 @@ public class BookService implements IBookService {
 
     @Override
     public void saveAll(List<Book> bookList) {
-        bookRepository.saveAll(bookList);
+        for(Book book : bookList) {
+            bookRepository.save(book);
+        }
     }
 
     @Override
     public void addBook(long id, int bookCount) {
         Book book = bookRepository.getById(id);
-        Request[] requests = book.getOrderRequests();
-
-        if(book.getCount() > 0 || (book.getCount() == 0 && requests[0] == null)) {
+        Request newRequest = book.getRequests().stream()
+                .filter(request -> request.getStatus() == RequestStatus.NEW)
+                .findFirst().orElse(null);
+        Request successRequest = book.getRequests().stream()
+                .filter(request -> request.getStatus() == RequestStatus.SUCCESS)
+                .findFirst().orElse(null);
+        if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
             book.setCount(book.getCount() + bookCount);
             bookRepository.update(book);
             return;
         }
 
         if(doSuccess) {
-            Set<Long> booksId = new HashSet<>();
-            booksId.add(book.getId());
-            Request successRequest = new Request(requests[0].getName(), booksId, requests[0].getOrdersId(), RequestStatus.SUCCESS);
-            int diff = bookCount - requests[0].getCount();
+            Set<Book> books = new HashSet<>();
+            books.add(book);
+            int diff = bookCount - newRequest.getCount();
             if(diff >= 0) {
-                bookRepository.addRequest(successRequest, requests[0].getCount(), book);
-                requestRepository.save(successRequest);
-                requests[0].setCount(0);
-                requests[0].getOrdersId().clear();
+                if(successRequest == null) {
+                    successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
+                    requestRepository.save(successRequest);
+                    book.getRequests().add(successRequest);
+                } else {
+                    successRequest.setCount(successRequest.getCount() + newRequest.getCount());
+                    requestRepository.update(successRequest);
+                }
+                requestRepository.delete(newRequest);
+                book.getRequests().remove(newRequest);
                 book.setCount(diff);
-                requestRepository.delete(requests[0]);
                 bookRepository.update(book);
-            } else {
-                bookRepository.addRequest(successRequest, bookCount, book);
-                requestRepository.save(successRequest);
-                requests[0].setCount(requests[0].getCount() - bookCount);
-                requestRepository.update(requests[0]);
-            }
+            } else if (successRequest == null) {
+                    successRequest = new Request(newRequest.getName(), bookCount, RequestStatus.SUCCESS, books);
+                    requestRepository.save(successRequest);
+                    book.getRequests().add(successRequest);
+                } else {
+                    successRequest.setCount(successRequest.getCount() + bookCount);
+                    requestRepository.update(successRequest);
+                }
+                newRequest.setCount(newRequest.getCount() - bookCount);
+                requestRepository.update(newRequest);
         }
     }
 
@@ -90,9 +104,10 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public void createRequest(Request request, int count, long id) {
+    public void createRequest(Request request, long id) {
         Book book = bookRepository.getById(id);
-        bookRepository.addRequest(request, count, book);
+        book.getRequests().add(request);
+        requestRepository.save(request);
     }
 
     @Override

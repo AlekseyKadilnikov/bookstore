@@ -11,7 +11,7 @@ public class Book extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2032341091985408913L;
     @Column(name = "name")
     private String name;
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private Set<Author> authors;
     @Column(name = "publisher")
     private String publisher;
@@ -26,11 +26,11 @@ public class Book extends BaseEntity implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private Set<Request> requests;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private Set<OrderBook> orders;
+    private Set<OrderBook> orderBooks;
 
     public Book() {
     }
@@ -45,21 +45,34 @@ public class Book extends BaseEntity implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "Book{" +
+                "name='" + name + '\'' +
+                ", authors=" + authors +
+                ", publisher='" + publisher + '\'' +
+                ", publicationYear=" + publicationYear +
+                ", price=" + price +
+                ", count=" + count +
+                ", dateOfReceipt=" + dateOfReceipt +
+                ", description='" + description + '\'' +
+                "}\n";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
         return publicationYear == book.publicationYear && price == book.price &&
-                count == book.count && name.equals(book.name) && authors.equals(book.authors) &&
+                count == book.count && name.equals(book.name) &&
                 publisher.equals(book.publisher) && dateOfReceipt.equals(book.dateOfReceipt) &&
-                description.equals(book.description) && Objects.equals(requests, book.requests) &&
-                Objects.equals(orders, book.orders);
+                description.equals(book.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, authors, publisher, publicationYear, price,
-                count, dateOfReceipt, description, requests, orders);
+        return Objects.hash(name, publisher, publicationYear, price,
+                count, dateOfReceipt, description);
     }
 
     public String getDescription() {
@@ -135,10 +148,10 @@ public class Book extends BaseEntity implements Serializable {
     }
 
     public Set<OrderBook> getOrders() {
-        return orders;
+        return orderBooks;
     }
 
-    public void setOrders(Set<OrderBook> orders) {
-        this.orders = orders;
+    public void setOrders(Set<OrderBook> orderBooks) {
+        this.orderBooks = orderBooks;
     }
 }
