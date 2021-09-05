@@ -4,5 +4,5 @@ import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Order;
 
 @Singleton
-public class OrderDAO extends HibernateAbstractDAO<Order, Long> {
+public class OrderDAO extends HibernateAbstractDAO<Order, Long> implements IOrderDAO {
 }

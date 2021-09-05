@@ -3,23 +3,23 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.dao.AuthorDAO;
-import com.alexeykadilnikov.dao.BookDAO;
-import com.alexeykadilnikov.dao.RequestDAO;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.dao.IAuthorDAO;
+import com.alexeykadilnikov.dao.IBookDAO;
+import com.alexeykadilnikov.dao.IRequestDAO;
 
 import java.util.*;
 
 @Singleton
 public class RequestService implements IRequestService {
     @InjectBean
-    private BookDAO bookDAO;
+    private IBookDAO bookDAO;
     @InjectBean
-    private RequestDAO requestDAO;
+    private IRequestDAO requestDAO;
     @InjectBean
-    private AuthorDAO authorDAO;
+    private IAuthorDAO authorDAO;
 
     @Override
     public Set<Book> createRequest(String name, int count) {

@@ -2,8 +2,8 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.dao.AuthorDAO;
 import com.alexeykadilnikov.entity.Author;
+import com.alexeykadilnikov.dao.IAuthorDAO;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 public class AuthorService implements IAuthorService {
 
     @InjectBean
-    private AuthorDAO authorDAO;
+    private IAuthorDAO authorDAO;
 
     @Override
     public List<Author> findAll() {

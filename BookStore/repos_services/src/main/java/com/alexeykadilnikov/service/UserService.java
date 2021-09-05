@@ -2,8 +2,8 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.dao.UserDAO;
 import com.alexeykadilnikov.entity.User;
+import com.alexeykadilnikov.dao.IUserDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @InjectBean
-    private UserDAO userDAO;
+    private IUserDAO userDAO;
 
     @Override
     public int addUser(String username) {

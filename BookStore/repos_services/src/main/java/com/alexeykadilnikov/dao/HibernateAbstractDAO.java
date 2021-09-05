@@ -11,7 +11,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class HibernateAbstractDAO <T, PK extends Serializable> implements IGenericDAO<T, PK> {
+public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
     private static final Logger logger = LoggerFactory.getLogger(HibernateAbstractDAO.class);
     private static final String MESSAGE = "Exception";
 

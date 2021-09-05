@@ -3,11 +3,11 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.ConfigProperty;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.dao.BookDAO;
-import com.alexeykadilnikov.dao.RequestDAO;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
+import com.alexeykadilnikov.dao.IBookDAO;
+import com.alexeykadilnikov.dao.IRequestDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +19,9 @@ public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @InjectBean
-    private BookDAO bookDAO;
+    private IBookDAO bookDAO;
     @InjectBean
-    private RequestDAO requestDAO;
+    private IRequestDAO requestDAO;
 
     @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
     private boolean doSuccess;

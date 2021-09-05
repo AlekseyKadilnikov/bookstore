@@ -4,5 +4,5 @@ import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 
 @Singleton
-public class BookDAO extends HibernateAbstractDAO<Book, Long> {
+public class BookDAO extends HibernateAbstractDAO<Book, Long> implements IBookDAO {
 }

@@ -4,11 +4,11 @@ import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.dao.BookDAO;
-import com.alexeykadilnikov.dao.OrderDAO;
-import com.alexeykadilnikov.dao.RequestDAO;
-import com.alexeykadilnikov.dao.UserDAO;
 import com.alexeykadilnikov.entity.*;
+import com.alexeykadilnikov.dao.IBookDAO;
+import com.alexeykadilnikov.dao.IOrderDAO;
+import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.dao.IUserDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +20,13 @@ public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @InjectBean
-    private OrderDAO orderDAO;
+    private IOrderDAO orderDAO;
     @InjectBean
-    private UserDAO userDAO;
+    private IUserDAO userDAO;
     @InjectBean
-    private BookDAO bookDAO;
+    private IBookDAO bookDAO;
     @InjectBean
-    private RequestDAO requestDAO;
+    private IRequestDAO requestDAO;
 
     @Override
     public void createOrder(List<Long> booksId, User user) {
