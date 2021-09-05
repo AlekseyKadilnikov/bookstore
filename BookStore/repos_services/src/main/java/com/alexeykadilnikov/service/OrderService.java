@@ -4,11 +4,11 @@ import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.dao.BookDAO;
+import com.alexeykadilnikov.dao.OrderDAO;
+import com.alexeykadilnikov.dao.RequestDAO;
+import com.alexeykadilnikov.dao.UserDAO;
 import com.alexeykadilnikov.entity.*;
-import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.repository.IOrderRepository;
-import com.alexeykadilnikov.repository.IRequestRepository;
-import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +20,13 @@ public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @InjectBean
-    private IOrderRepository orderRepository;
+    private OrderDAO orderDAO;
     @InjectBean
-    private IUserRepository userRepository;
+    private UserDAO userDAO;
     @InjectBean
-    private IBookRepository bookRepository;
+    private BookDAO bookDAO;
     @InjectBean
-    private IRequestRepository requestRepository;
+    private RequestDAO requestDAO;
 
     @Override
     public void createOrder(List<Long> booksId, User user) {
@@ -44,7 +44,7 @@ public class OrderService implements IOrderService {
         for(Map.Entry<Long, Integer> entry : books.entrySet()) {
             OrderBook orderBook = new OrderBook();
             orderBook.setOrder(order);
-            orderBook.setBook(bookRepository.getById(entry.getKey()));
+            orderBook.setBook(bookDAO.getById(entry.getKey()));
             orderBook.setBookCount(entry.getValue());
             orderBooks.add(orderBook);
         }
@@ -52,18 +52,18 @@ public class OrderService implements IOrderService {
         order.setUser(user);
         order.setTotalPrice(calculatePrice(order));
         order.setStatus(OrderStatus.NEW);
-        orderRepository.save(order);
+        orderDAO.save(order);
         checkBookAvailable(orderBooks);
     }
 
     @Override
     public String showOrder(long id) {
-        return orderRepository.getById(id).toString();
+        return orderDAO.getById(id).toString();
     }
 
     @Override
     public void cancelOrder(long id) {
-        Order order = orderRepository.getById(id);
+        Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Request newRequest = orderBook.getBook().getRequests()
                     .stream()
@@ -72,17 +72,17 @@ public class OrderService implements IOrderService {
                     .orElse(null);
             if(newRequest != null) {
                 if(newRequest.getCount() <= orderBook.getBookCount()) {
-                    requestRepository.delete(newRequest);
+                    requestDAO.delete(newRequest);
                 } else {
                     newRequest.setCount(newRequest.getCount() - orderBook.getBookCount());
                 }
             }
             Book book = orderBook.getBook();
             book.setCount(book.getCount() + orderBook.getBookCount());
-            bookRepository.update(book);
+            bookDAO.update(book);
         }
         order.setStatus(OrderStatus.CANCELED);
-        orderRepository.update(order);
+        orderDAO.update(order);
         logger.info("Order id = {} canceled", order.getId());
     }
 
@@ -92,14 +92,14 @@ public class OrderService implements IOrderService {
             completeOrder(id);
             return;
         }
-        Order order = orderRepository.getById(id);
+        Order order = orderDAO.getById(id);
         order.setStatus(status);
-        orderRepository.update(order);
+        orderDAO.update(order);
     }
 
     @Override
     public void completeOrder(long id) {
-        Order order = orderRepository.getById(id);
+        Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Book book = orderBook.getBook();
             Request newRequest = book.getRequests()
@@ -117,12 +117,12 @@ public class OrderService implements IOrderService {
         }
         order.setStatus(OrderStatus.SUCCESS);
         order.setExecutionDate(LocalDateTime.now());
-        orderRepository.update(order);
+        orderDAO.update(order);
     }
 
     @Override
     public List<Order> getAll() {
-        return orderRepository.findAll();
+        return orderDAO.findAll();
     }
 
     @Override
@@ -131,13 +131,13 @@ public class OrderService implements IOrderService {
             checkBookAvailable(order.getOrderBooks());
         }
         order.setTotalPrice(calculatePrice(order));
-        orderRepository.save(order);
+        orderDAO.save(order);
     }
 
     @Override
     public void saveAll(List<Order> orderList) {
         for(Order order : orderList) {
-            orderRepository.save(order);
+            orderDAO.save(order);
         }
     }
 
@@ -159,12 +159,12 @@ public class OrderService implements IOrderService {
                     newRequest.setStatus(RequestStatus.NEW);
                     newRequest.setBooks(Collections.singleton(book));
                     newRequest.setCount(newRequest.getCount() + diff);
-                    requestRepository.save(newRequest);
+                    requestDAO.save(newRequest);
                 }
                 else {
                     newRequest.setCount(newRequest.getCount() + diff);
                     newRequest.getBooks().add(book);
-                    requestRepository.update(newRequest);
+                    requestDAO.update(newRequest);
                 }
                 Request commonRequest = book.getRequests()
                         .stream()
@@ -178,29 +178,29 @@ public class OrderService implements IOrderService {
                     commonRequest.setStatus(RequestStatus.COMMON);
                     commonRequest.setBooks(Collections.singleton(book));
                     commonRequest.setCount(commonRequest.getCount() + diff);
-                    requestRepository.save(commonRequest);
+                    requestDAO.save(commonRequest);
                 } else {
                     newRequest.setCount(newRequest.getCount() + diff);
                     newRequest.getBooks().add(book);
-                    requestRepository.update(commonRequest);
+                    requestDAO.update(commonRequest);
                 }
                 book.setCount(0);
             }
             else {
                 book.setCount(book.getCount() - orderBook.getBookCount());
             }
-            bookRepository.update(book);
+            bookDAO.update(book);
         }
     }
 
     @Override
     public Order getByIndex(long id) {
-        return orderRepository.getById(id);
+        return orderDAO.getById(id);
     }
 
     @Override
     public Order getById(long id) {
-        return orderRepository.getById(id);
+        return orderDAO.getById(id);
     }
 
     @Override

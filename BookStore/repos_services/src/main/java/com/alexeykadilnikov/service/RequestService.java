@@ -3,39 +3,39 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.dao.AuthorDAO;
+import com.alexeykadilnikov.dao.BookDAO;
+import com.alexeykadilnikov.dao.RequestDAO;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.repository.IAuthorRepository;
-import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.repository.IRequestRepository;
 
 import java.util.*;
 
 @Singleton
 public class RequestService implements IRequestService {
     @InjectBean
-    private IBookRepository bookRepository;
+    private BookDAO bookDAO;
     @InjectBean
-    private IRequestRepository requestRepository;
+    private RequestDAO requestDAO;
     @InjectBean
-    private IAuthorRepository authorRepository;
+    private AuthorDAO authorDAO;
 
     @Override
     public Set<Book> createRequest(String name, int count) {
-        Request request = requestRepository.findAll()
+        Request request = requestDAO.findAll()
                 .stream()
                 .filter(r -> r.getName().equals(name))
                 .findAny()
                 .orElse(null);
         if(request != null) {
             request.setCount(request.getCount() + 1);
-            requestRepository.update(request);
+            requestDAO.update(request);
             return request.getBooks();
         }
 
         String[] words = name.split(" ");
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookDAO.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
         Set<Book> booksByName = new HashSet<>();
         for(String word : words) {
@@ -55,26 +55,26 @@ public class RequestService implements IRequestService {
 
     @Override
     public List<Request> sort(Book book, Comparator<Request> comparator) {
-        List<Request> requests = requestRepository.findAll();
+        List<Request> requests = requestDAO.findAll();
         requests.sort(comparator);
         return requests;
     }
 
     @Override
     public List<Request> getAll() {
-        return requestRepository.findAll();
+        return requestDAO.findAll();
     }
 
     @Override
     public void saveAll(List<Request> requestList) {
         for(Request request : requestList) {
-            requestRepository.save(request);
+            requestDAO.save(request);
         }
     }
 
     @Override
     public Request getById(long id) {
-        return requestRepository.getById(id);
+        return requestDAO.getById(id);
     }
 
     private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {
@@ -82,20 +82,20 @@ public class RequestService implements IRequestService {
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
             bookSet.addAll(booksByName);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestRepository.save(request);
+            requestDAO.save(request);
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestRepository.save(request);
+            requestDAO.save(request);
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestRepository.save(request);
+            requestDAO.save(request);
             return booksByAuthor;
         }
     }

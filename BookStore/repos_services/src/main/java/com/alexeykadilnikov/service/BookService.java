@@ -3,11 +3,11 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.ConfigProperty;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.dao.BookDAO;
+import com.alexeykadilnikov.dao.RequestDAO;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.repository.IRequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +19,9 @@ public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @InjectBean
-    private IBookRepository bookRepository;
+    private BookDAO bookDAO;
     @InjectBean
-    private IRequestRepository requestRepository;
+    private RequestDAO requestDAO;
 
     @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
     private boolean doSuccess;
@@ -29,13 +29,13 @@ public class BookService implements IBookService {
     @Override
     public void saveAll(List<Book> bookList) {
         for(Book book : bookList) {
-            bookRepository.save(book);
+            bookDAO.save(book);
         }
     }
 
     @Override
     public void addBook(long id, int bookCount) {
-        Book book = bookRepository.getById(id);
+        Book book = bookDAO.getById(id);
         Request newRequest = book.getRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.NEW)
                 .findFirst().orElse(null);
@@ -44,7 +44,7 @@ public class BookService implements IBookService {
                 .findFirst().orElse(null);
         if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
             book.setCount(book.getCount() + bookCount);
-            bookRepository.update(book);
+            bookDAO.update(book);
             return;
         }
 
@@ -55,44 +55,41 @@ public class BookService implements IBookService {
             if(diff >= 0) {
                 if(successRequest == null) {
                     successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
-                    requestRepository.save(successRequest);
-//                    book.getRequests().add(successRequest);
+                    requestDAO.save(successRequest);
                 } else {
                     successRequest.setCount(successRequest.getCount() + newRequest.getCount());
-                    requestRepository.update(successRequest);
+                    requestDAO.update(successRequest);
                 }
-                requestRepository.delete(newRequest);
-//                book.getRequests().remove(newRequest);
+                requestDAO.delete(newRequest);
                 book.setCount(diff);
-                bookRepository.update(book);
+                bookDAO.update(book);
             } else {
                 if (successRequest == null) {
                     successRequest = new Request(newRequest.getName(), bookCount, RequestStatus.SUCCESS, books);
-                    requestRepository.save(successRequest);
-//                    book.getRequests().add(successRequest);
+                    requestDAO.save(successRequest);
                 } else {
                     successRequest.setCount(successRequest.getCount() + bookCount);
-                    requestRepository.update(successRequest);
+                    requestDAO.update(successRequest);
                 }
                 newRequest.setCount(newRequest.getCount() - bookCount);
-                requestRepository.update(newRequest);
+                requestDAO.update(newRequest);
             }
         }
     }
 
     @Override
     public String showBook(long id) {
-        return bookRepository.getById(id).toString();
+        return bookDAO.getById(id).toString();
     }
 
     @Override
     public List<Book> getAll() {
-        return bookRepository.findAll();
+        return bookDAO.findAll();
     }
 
     @Override
     public void createBook(Book book) {
-        bookRepository.save(book);
+        bookDAO.save(book);
     }
 
     @Override
@@ -102,21 +99,21 @@ public class BookService implements IBookService {
 
     @Override
     public Book getById(long id) {
-        return bookRepository.getById(id);
+        return bookDAO.getById(id);
     }
 
     @Override
     public void createRequest(Request request, long id) {
-        Book book = bookRepository.getById(id);
+        Book book = bookDAO.getById(id);
         book.getRequests().add(request);
-        requestRepository.save(request);
+        requestDAO.save(request);
     }
 
     @Override
     public List<Book> getOldBooks(int monthsAmount) {
         LocalDate date = LocalDate.now().minusMonths(monthsAmount);
         List<Book> books = new ArrayList<>();
-        for(Book book : bookRepository.findAll()) {
+        for(Book book : bookDAO.findAll()) {
             if(book.getDateOfReceipt().isBefore(date)) {
                 books.add(book);
             }
@@ -126,9 +123,9 @@ public class BookService implements IBookService {
 
     @Override
     public void writeOff(long bookId) {
-        Book book = bookRepository.getById(bookId);
+        Book book = bookDAO.getById(bookId);
         book.setCount(0);
-        bookRepository.update(book);
+        bookDAO.update(book);
     }
 
     @Override
