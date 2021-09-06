@@ -77,6 +77,11 @@ public class RequestService implements IRequestService {
         return requestDAO.getById(id);
     }
 
+    @Override
+    public List<Request> sendSqlQuery(String hql) {
+        return requestDAO.findAll(hql);
+    }
+
     private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {
         Set<Book> bookSet = new HashSet<>();
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {

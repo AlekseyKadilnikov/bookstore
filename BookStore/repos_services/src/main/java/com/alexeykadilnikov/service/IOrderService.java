@@ -30,4 +30,6 @@ public interface IOrderService {
     int calculatePrice(Order order);
 
     List<Order> sort(List<Order> orders, Comparator<Order> comparator);
+
+    List<Order> sendSqlQuery(String hql);
 }

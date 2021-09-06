@@ -37,10 +37,12 @@ public class RequestController {
         System.out.println(foundBooks);
     }
 
-    public void sort(int bookId, Comparator<Request> comparator) {
-        Book book = bookService.getById(bookId);
-        List<Request> requests = requestService.sort(book, comparator);
-        System.out.println(requests.toString());
+    public void getRequestsForBookSortedByCount(long bookId, int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void getRequestsForBookSortedByName(long bookId, int mode) {
+        StringBuilder hql = new StringBuilder();
     }
 
     public List<Request> getAll() {

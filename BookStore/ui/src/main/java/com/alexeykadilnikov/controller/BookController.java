@@ -31,9 +31,32 @@ public class BookController {
     @ConfigProperty()
     private Integer[] months;
 
-    public void sort(List<Book> sortedBooks, Comparator<Book> comparator) {
-        sortedBooks = bookService.sort(sortedBooks, comparator);
-        System.out.println(sortedBooks);
+    public void sortByName(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByPrice(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByDate(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByCount(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void getStaleBooksByDate(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void getStaleBooksByPrice(int mode) {
+
+    }
+
+    public void writeOff(long bookId) {
+        bookService.writeOff(bookId);
     }
 
     public List<Book> getAll() {
@@ -44,10 +67,6 @@ public class BookController {
         bookService.saveAll(bookList);
     }
 
-    public List<Book> getStaleBooks() {
-        return bookService.getOldBooks(months[0]);
-    }
-
     public void showDescription(int bookId) {
         Book book = bookService.getById(bookId);
         if(book != null) {
@@ -55,10 +74,6 @@ public class BookController {
         } else {
             System.out.println("Book with id = " + bookId + " does not exist!");
         }
-    }
-
-    public void writeOff(long bookId) {
-        bookService.writeOff(bookId);
     }
 
     public void addBook(long bookId, int count){

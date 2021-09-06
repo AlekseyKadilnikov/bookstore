@@ -63,68 +63,40 @@ public class OrderController {
         }
     }
 
-    public void sort(List<Order> sortedOrders, Comparator<Order> comparator) {
-        sortedOrders = orderService.sort(sortedOrders, comparator);
-        System.out.println(sortedOrders.toString());
+    public void sortByPrice(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByExecDate(int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByExecDateForPeriodByDate(String dateA, String dateB, int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void sortByExecDateForPeriodByPrice(String dateA, String dateB, int mode) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void getEarnedMoneyForPeriod(String dateA, String dateB) {
+        StringBuilder hql = new StringBuilder();
+    }
+
+    public void getCountOfCompleteOrdersForPeriod(String dateA, String dateB) {
+        StringBuilder hql = new StringBuilder();
     }
 
     public List<Order> sortByStatus(OrderStatus status) {
-        List<Order> sortedOrders = new ArrayList<>();
-        for(Order order : orderService.getAll()) {
-            if(order.getStatus() == status) {
-                sortedOrders.add(order);
-            }
-        }
 
-        return sortedOrders;
-    }
 
-    public void getCompletedOrdersForPeriod(Comparator<Order> comparator, String dateAfterS, String dateBeforeS) {
-        LocalDate dateAfter = LocalDate.parse(dateAfterS);
-        LocalDate dateBefore = LocalDate.parse(dateBeforeS);
-
-        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
-        List<Order> ordersBetweenDates = new ArrayList<>();
-
-        for(Order order : orders) {
-            if(order.getExecutionDate().toLocalDate().isAfter(dateAfter)
-                    && order.getExecutionDate().toLocalDate().isBefore(dateBefore)) {
-                ordersBetweenDates.add(order);
-            }
-        }
-
-        sort(ordersBetweenDates, comparator);
+        return null;
     }
 
     public void setStatus(int orderId, OrderStatus status) {
         orderService.setStatus(orderId, status);
     }
 
-    public void showEarnedMoneyForPeriod(String dateAfterS, String dateBeforeS) {
-        int sum = 0;
-        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
-        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
-        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
-        for(Order order : orders) {
-            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
-                sum += order.getTotalPrice();
-            }
-        }
-        System.out.println("Sum = " + sum);
-    }
-
-    public void showCompletedOrdersCountForPeriod(String dateAfterS, String dateBeforeS) {
-        int count = 0;
-        LocalDateTime dateAfter = LocalDateTime.parse(dateAfterS);
-        LocalDateTime dateBefore = LocalDateTime.parse(dateBeforeS);
-        List<Order> orders = sortByStatus(OrderStatus.SUCCESS);
-        for(Order order : orders) {
-            if(order.getExecutionDate().isAfter(dateAfter) && order.getExecutionDate().isBefore(dateBefore)) {
-                count++;
-            }
-        }
-        System.out.println("Count = " + count);
-    }
 
     public void importOrders(String path) {
 //        int line = 1;

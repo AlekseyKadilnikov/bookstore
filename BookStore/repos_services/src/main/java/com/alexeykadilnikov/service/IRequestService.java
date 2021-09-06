@@ -18,5 +18,7 @@ public interface IRequestService {
     void saveAll(List<Request> requestList);
 
     Request getById(long id);
+
+    List<Request> sendSqlQuery(String hql);
 }
 

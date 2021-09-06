@@ -129,6 +129,11 @@ public class BookService implements IBookService {
     }
 
     @Override
+    public List<Book> sendSqlQuery(String hql) {
+        return bookDAO.findAll(hql);
+    }
+
+    @Override
     public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
         books.sort(comparator);
         return books;

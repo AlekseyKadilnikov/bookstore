@@ -19,4 +19,5 @@ public interface IBookService {
     String getBookDescription(Book book);
     List<Book> getOldBooks(int monthsAmount);
     void writeOff(long bookId);
+    List<Book> sendSqlQuery(String hql);
 }

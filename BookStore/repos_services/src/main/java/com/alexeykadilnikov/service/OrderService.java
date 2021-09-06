@@ -218,4 +218,9 @@ public class OrderService implements IOrderService {
         orders.sort(comparator);
         return orders;
     }
+
+    @Override
+    public List<Order> sendSqlQuery(String hql) {
+        return orderDAO.findAll(hql);
+    }
 }
