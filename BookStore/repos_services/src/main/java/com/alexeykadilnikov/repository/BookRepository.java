@@ -1,7 +1,9 @@
 package com.alexeykadilnikov.repository;
 
+import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.Singleton;
+import com.alexeykadilnikov.dao.IBookDao;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.utils.DBUtils;
@@ -22,18 +24,15 @@ public class BookRepository implements IBookRepository {
     private static final String SQL_EX_MESSAGE = "SQL Exception";
     private static final String IO_EX_MESSAGE = "IO Exception";
 
+    @InjectBean
+    private IBookDao bookDao;
+
     @Override
     public List<Book> findAll() {
-        List<Book> books = new ArrayList<>();
+        List<Book> books = bookDao.findAll();
         try {
             Connection connection = DBUtils.getConnection();
             Statement statement = connection.createStatement();
-            ResultSet resultSetBook = statement.executeQuery("SELECT * FROM book");
-            while (resultSetBook.next()) {
-                Book book = new Book();
-                setBookFieldsFromResultSet(book, resultSetBook);
-                books.add(book);
-            }
             for(Book book : books) {
                 setRequestsAndAuthorsForBook(statement, book);
             }
@@ -49,13 +48,7 @@ public class BookRepository implements IBookRepository {
     public Book getById(Long id) {
         Book book = new Book();
         try {
-            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("SELECT * FROM book WHERE id = ?");
-            prepStatement.setLong(1, id);
-            ResultSet resultSetBook = prepStatement.executeQuery();
-            if (!resultSetBook.next()) {
-                return null;
-            }
-            setBookFieldsFromResultSet(book, resultSetBook);
+            book = bookDao.getById(id);
 
             Statement statement = DBUtils.getConnection().createStatement();
             setRequestsAndAuthorsForBook(statement, book);
@@ -93,34 +86,12 @@ public class BookRepository implements IBookRepository {
 
     @Override
     public void update(Book book) {
-        try {
-            Connection connection = DBUtils.getConnection();
-            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("UPDATE book SET count = ?, price = ? WHERE id = ?");
-            prepStatement.setInt(1, book.getCount());
-            prepStatement.setInt(2, book.getPrice());
-            prepStatement.setLong(3, book.getId());
-            prepStatement.executeUpdate();
-            connection.commit();
-            logger.info("Book with id = {} was updated", book.getId());
-        } catch (SQLException e) {
-            logger.error(SQL_EX_MESSAGE, e);
-        } catch (IOException e) {
-            logger.error(IO_EX_MESSAGE, e);
-        }
+        bookDao.update(book);
     }
 
     @Override
     public void delete(Book book) {
-        try {
-            PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement("DELETE FROM book WHERE id = ?");
-            prepStatement.setLong(1, book.getId());
-            prepStatement.executeUpdate();
-            logger.info("Book with id = {} was removed", book.getId());
-        } catch (SQLException e) {
-            logger.error(SQL_EX_MESSAGE, e);
-        } catch (IOException e) {
-            logger.error(IO_EX_MESSAGE, e);
-        }
+        bookDao.delete(book.getId());
     }
 
     @Override
@@ -178,32 +149,10 @@ public class BookRepository implements IBookRepository {
         }
     }
 
-    private void setBookFieldsFromResultSet(Book book, ResultSet resultSet) throws SQLException {
-        book.setId(resultSet.getInt("id"));
-        book.setName(resultSet.getString("name"));
-        book.setPublisher(resultSet.getString("publisher"));
-        book.setPublicationYear(resultSet.getInt("year"));
-        book.setCount(resultSet.getInt("count"));
-        book.setPrice(resultSet.getInt("price"));
-        book.setDescription(resultSet.getString("description"));
-        book.setDateOfReceipt(LocalDate.parse(resultSet.getString("date_of_receipt")));
-    }
-
     private void createAndExecuteQueryForSavingBook(Book book) throws SQLException, IOException {
-        PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
-                "INSERT INTO book (id, name, publisher, year, price, count, date_of_receipt, description)" +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        prepStatement.setLong(1, book.getId());
-        prepStatement.setString(2, book.getName());
-        prepStatement.setString(3, book.getPublisher());
-        prepStatement.setInt(4, book.getPublicationYear());
-        prepStatement.setInt(5, book.getPrice());
-        prepStatement.setInt(6, book.getCount());
-        prepStatement.setDate(7, Date.valueOf(book.getDateOfReceipt()));
-        prepStatement.setString(8, book.getDescription());
-        prepStatement.executeUpdate();
+        bookDao.save(book);
 
-        prepStatement = DBUtils.getConnection().prepareStatement(
+        PreparedStatement prepStatement = DBUtils.getConnection().prepareStatement(
                 "INSERT INTO author_book (author_id, book_id)" +
                         "VALUES (?, ?)");
         for(long authorId : book.getAuthors()) {
