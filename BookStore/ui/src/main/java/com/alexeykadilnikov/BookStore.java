@@ -1,17 +1,15 @@
 package com.alexeykadilnikov;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.controller.ControllerUtils;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.utils.HibernateUtil;
 import com.alexeykadilnikov.view.menu.MenuController;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,12 +17,16 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Component
 public class BookStore {
-    @InjectBean
-    private ControllerUtils controllers;
-    @InjectBean
-    private MenuController menuController;
+    private final ControllerUtils controllers;
+    private final MenuController menuController;
+
+    @Autowired
+    public BookStore(ControllerUtils controllers, MenuController menuController) {
+        this.controllers = controllers;
+        this.menuController = menuController;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(BookStore.class);
 

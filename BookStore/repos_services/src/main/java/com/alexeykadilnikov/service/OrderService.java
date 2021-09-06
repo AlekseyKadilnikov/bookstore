@@ -2,8 +2,6 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IOrderDAO;
@@ -12,22 +10,26 @@ import com.alexeykadilnikov.dao.IUserDAO;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Singleton
+@Service
 public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
-    @InjectBean
-    private IOrderDAO orderDAO;
-    @InjectBean
-    private IUserDAO userDAO;
-    @InjectBean
-    private IBookDAO bookDAO;
-    @InjectBean
-    private IRequestDAO requestDAO;
+    private final IOrderDAO orderDAO;
+    private final IBookDAO bookDAO;
+    private final IRequestDAO requestDAO;
+
+    @Autowired
+    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO) {
+        this.orderDAO = orderDAO;
+        this.bookDAO = bookDAO;
+        this.requestDAO = requestDAO;
+    }
 
     public void createOrder(List<Long> booksId, User user) {
         Set<OrderBook> orderBooks = new HashSet<>();

@@ -1,24 +1,25 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.service.IBookService;
 import com.alexeykadilnikov.service.IRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import java.util.*;
 
-@Singleton
+@Controller
 public class RequestController {
     private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
 
-    @InjectBean
-    private IRequestService requestService;
-    @InjectBean
-    private IBookService bookService;
+    private final IRequestService requestService;
 
+    @Autowired
+    public RequestController(IRequestService requestService) {
+        this.requestService = requestService;
+    }
 
     public void search(String request) {
         Set<Book> foundBooks = requestService.createRequest(request, 1);

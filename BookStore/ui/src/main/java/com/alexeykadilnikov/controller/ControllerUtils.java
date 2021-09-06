@@ -1,16 +1,16 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ControllerUtils {
-    @InjectBean
+    @Autowired
     public static BookController bookController;
-    @InjectBean
+    @Autowired
     public static OrderController orderController;
-    @InjectBean
+    @Autowired
     public static UserController userController;
-    @InjectBean
+    @Autowired
     public static RequestController requestController;
 }

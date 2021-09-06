@@ -1,22 +1,24 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.service.IOrderService;
 import com.alexeykadilnikov.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import java.util.*;
 
-@Singleton
+@Controller
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @InjectBean
-    private IUserService userService;
-    @InjectBean
-    private IOrderService orderService;
+    private final IUserService userService;
+
+    @Autowired
+    public UserController(IUserService userService) {
+        this.userService = userService;
+    }
 
     public int create(String username) {
         if(userService.addUser(username) > 0) {
