@@ -9,6 +9,7 @@ import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.dao.IAuthorDAO;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.utils.QueryBuilder;
 
 import java.util.*;
 
@@ -21,7 +22,6 @@ public class RequestService implements IRequestService {
     @InjectBean
     private IAuthorDAO authorDAO;
 
-    @Override
     public Set<Book> createRequest(String name, int count) {
         Request request = requestDAO.findAll()
                 .stream()
@@ -53,33 +53,44 @@ public class RequestService implements IRequestService {
         return getBooksByRequest(name, count, booksByAuthor, booksByName);
     }
 
-    @Override
     public List<Request> sort(Book book, Comparator<Request> comparator) {
         List<Request> requests = requestDAO.findAll();
         requests.sort(comparator);
         return requests;
     }
 
-    @Override
     public List<Request> getAll() {
         return requestDAO.findAll();
     }
 
-    @Override
     public void saveAll(List<Request> requestList) {
         for(Request request : requestList) {
             requestDAO.save(request);
         }
     }
 
-    @Override
     public Request getById(long id) {
         return requestDAO.getById(id);
     }
 
-    @Override
     public List<Request> sendSqlQuery(String hql) {
         return requestDAO.findAll(hql);
+    }
+
+    public void getRequestsForBookSortedByCount(long bookId, int mode) {
+        String hql = QueryBuilder.getRequestsForBookSortedByCount(bookId, mode);
+
+        List<Request> requests = sendSqlQuery(hql);
+
+        System.out.println(requests);
+    }
+
+    public void getRequestsForBookSortedByName(long bookId, int mode) {
+        String hql = QueryBuilder.getRequestsForBookSortedByName(bookId, mode);
+
+        List<Request> requests = sendSqlQuery(hql);
+
+        System.out.println(requests);
     }
 
     private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {

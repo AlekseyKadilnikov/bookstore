@@ -9,6 +9,7 @@ import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IOrderDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.dao.IUserDAO;
+import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ public class OrderService implements IOrderService {
     @InjectBean
     private IRequestDAO requestDAO;
 
-    @Override
     public void createOrder(List<Long> booksId, User user) {
         Set<OrderBook> orderBooks = new HashSet<>();
         Map<Long, Integer> books = new HashMap<>();
@@ -56,12 +56,10 @@ public class OrderService implements IOrderService {
         checkBookAvailable(orderBooks);
     }
 
-    @Override
     public String showOrder(long id) {
         return orderDAO.getById(id).toString();
     }
 
-    @Override
     public void cancelOrder(long id) {
         Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
@@ -86,7 +84,6 @@ public class OrderService implements IOrderService {
         logger.info("Order id = {} canceled", order.getId());
     }
 
-    @Override
     public void setStatus(long id, OrderStatus status) {
         if(status == OrderStatus.SUCCESS) {
             completeOrder(id);
@@ -97,7 +94,6 @@ public class OrderService implements IOrderService {
         orderDAO.update(order);
     }
 
-    @Override
     public void completeOrder(long id) {
         Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
@@ -120,12 +116,10 @@ public class OrderService implements IOrderService {
         orderDAO.update(order);
     }
 
-    @Override
     public List<Order> getAll() {
         return orderDAO.findAll();
     }
 
-    @Override
     public void saveOrder(Order order) {
         if(order.getStatus() == OrderStatus.NEW) {
             checkBookAvailable(order.getOrderBooks());
@@ -134,14 +128,12 @@ public class OrderService implements IOrderService {
         orderDAO.save(order);
     }
 
-    @Override
     public void saveAll(List<Order> orderList) {
         for(Order order : orderList) {
             orderDAO.save(order);
         }
     }
 
-    @Override
     public void checkBookAvailable(Set<OrderBook> orderBooks) {
         for (OrderBook orderBook : orderBooks) {
             Book book = orderBook.getBook();
@@ -193,17 +185,14 @@ public class OrderService implements IOrderService {
         }
     }
 
-    @Override
     public Order getByIndex(long id) {
         return orderDAO.getById(id);
     }
 
-    @Override
     public Order getById(long id) {
         return orderDAO.getById(id);
     }
 
-    @Override
     public int calculatePrice(Order order) {
         int totalPrice = 0;
         for(OrderBook orderBook : order.getOrderBooks()) {
@@ -213,14 +202,66 @@ public class OrderService implements IOrderService {
         return totalPrice;
     }
 
-    @Override
     public List<Order> sort(List<Order> orders, Comparator<Order> comparator) {
         orders.sort(comparator);
         return orders;
     }
 
-    @Override
     public List<Order> sendSqlQuery(String hql) {
         return orderDAO.findAll(hql);
+    }
+
+    public void sortByPrice(int mode) {
+        String hql = QueryBuilder.sortOrdersByPrice(mode);
+
+        List<Order> orders = sendSqlQuery(hql);
+
+        System.out.println(orders);
+    }
+
+    public void sortByExecDate(int mode) {
+        String hql = QueryBuilder.sortOrdersByExecDate(mode);
+
+        List<Order> orders = sendSqlQuery(hql);
+
+        System.out.println(orders);
+    }
+
+    public void sortByExecDateForPeriodByDate(String startDate, String endDate, int mode) {
+        String hql = QueryBuilder.sortOrdersByExecDateForPeriodByDate(startDate, endDate, mode);
+
+        List<Order> orders = sendSqlQuery(hql);
+
+        System.out.println(orders);
+    }
+
+    public void sortByExecDateForPeriodByPrice(String startDate, String endDate, int mode) {
+        String hql = QueryBuilder.sortOrdersByExecDateForPeriodByPrice(startDate, endDate, mode);
+
+        List<Order> orders = sendSqlQuery(hql);
+
+        System.out.println(orders);
+    }
+
+    public void getEarnedMoneyForPeriod(String startDate, String endDate) {
+        String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
+
+        List<Order> orders = sendSqlQuery(hql);
+
+        int sum = 0;
+        for(Order order : orders) {
+            sum += order.getTotalPrice();
+        }
+
+        System.out.println(sum);
+    }
+
+    public void getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
+        String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
+        System.out.println(sendSqlQuery(hql).size());
+    }
+
+    public List<Order> sortByStatus(OrderStatus status) {
+        return sendSqlQuery(QueryBuilder.sortByStatus(status));
     }
 }
