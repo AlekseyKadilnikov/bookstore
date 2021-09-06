@@ -16,20 +16,19 @@ public interface IOrderService {
     void setStatus(long index, OrderStatus status);
     void completeOrder(long id);
     List<Order> getAll();
-
     void saveOrder(Order order);
-
     void saveAll(List<Order> orderList);
-
     void checkBookAvailable(Set<OrderBook> orderBooks);
-
     Order getByIndex(long id);
-
     Order getById(long id);
-
     int calculatePrice(Order order);
-
     List<Order> sort(List<Order> orders, Comparator<Order> comparator);
-
     List<Order> sendSqlQuery(String hql);
+    void sortByPrice(int mode);
+    void sortByExecDate(int mode);
+    void sortByExecDateForPeriodByDate(String startDate, String endDate, int mode);
+    void sortByExecDateForPeriodByPrice(String startDate, String endDate, int mode);
+    void getEarnedMoneyForPeriod(String startDate, String endDate);
+    void getCountOfCompleteOrdersForPeriod(String startDate, String endDate);
+    List<Order> sortByStatus(OrderStatus status);
 }

@@ -71,6 +71,8 @@ public enum ActionEnum implements IAction {
             case 2:
                 ControllerUtils.orderController.setStatus(orderId, OrderStatus.CANCELED);
                 break;
+            default:
+                break;
         }
     }),
 
@@ -219,12 +221,12 @@ public enum ActionEnum implements IAction {
     GET_ADMIN_ORDERS(ControllerUtils.orderController::showAll),
 
     CANCEL_ORDER(() -> {
-        int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
+        long orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
         ControllerUtils.orderController.cancel(orderId);
     }),
 
     SHOW_BOOK_DESCRIPTION(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         ControllerUtils.bookController.showDescription(bookId);
     }),
 
