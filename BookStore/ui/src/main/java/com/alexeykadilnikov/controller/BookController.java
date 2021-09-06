@@ -28,31 +28,97 @@ public class BookController {
     @InjectBean
     private IBookService bookService;
 
-    @ConfigProperty()
-    private Integer[] months;
+    @ConfigProperty(propertyName = "BookController.months")
+    private int months;
 
     public void sortByName(int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("from Book order by name ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
     public void sortByPrice(int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("from Book order by price ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
-    public void sortByDate(int mode) {
-        StringBuilder hql = new StringBuilder();
+    public void sortByPublicationYear(int mode) {
+        StringBuilder hql = new StringBuilder("from Book order by publicationYear ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
     public void sortByCount(int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("from Book b order by b.count ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
     public void getStaleBooksByDate(int mode) {
-        StringBuilder hql = new StringBuilder();
+        LocalDate date = LocalDate.now().minusMonths(months);
+        StringBuilder hql = new StringBuilder("from Book where dateOfReceipt < ");
+        hql.append(date);
+        hql.append(" order by dateOfReceipt ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
     public void getStaleBooksByPrice(int mode) {
+        LocalDate date = LocalDate.now().minusMonths(months);
+        StringBuilder hql = new StringBuilder("from Book where dateOfReceipt < ");
+        hql.append(date);
+        hql.append(" order by price ");
 
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Book> books = bookService.sendSqlQuery(hql.toString());
+
+        System.out.println(books);
     }
 
     public void writeOff(long bookId) {

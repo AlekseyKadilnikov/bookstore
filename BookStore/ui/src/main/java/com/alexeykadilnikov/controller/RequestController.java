@@ -38,11 +38,31 @@ public class RequestController {
     }
 
     public void getRequestsForBookSortedByCount(long bookId, int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("select distinct r from Book as b inner join b.requests as r on b.id = " + bookId + " order by r.count ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Request> requests = requestService.sendSqlQuery(hql.toString());
+
+        System.out.println(requests);
     }
 
     public void getRequestsForBookSortedByName(long bookId, int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("select distinct r from Book as b inner join b.requests as r on b.id = " + bookId + " order by r.name ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Request> requests = requestService.sendSqlQuery(hql.toString());
+
+        System.out.println(requests);
     }
 
     public List<Request> getAll() {

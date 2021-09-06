@@ -1,9 +1,6 @@
 package com.alexeykadilnikov.view.action;
 
-import com.alexeykadilnikov.BookComparator;
-import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.RequestComparator;
 import com.alexeykadilnikov.controller.*;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
@@ -197,10 +194,10 @@ public enum ActionEnum implements IAction {
         List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            ControllerUtils.bookController.sortByDate(0);
+            ControllerUtils.bookController.sortByPublicationYear(0);
         }
         else {
-            ControllerUtils.bookController.sortByDate(1);
+            ControllerUtils.bookController.sortByPublicationYear(1);
         }
     }),
 

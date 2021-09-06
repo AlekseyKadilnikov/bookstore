@@ -42,7 +42,7 @@ public class Request extends BaseEntity implements Serializable {
     public String toString() {
         return "Request{" +
                 "name='" + name + '\'' +
-                ", count=" + count +
+                ", count=" + count + ", status = " + status.name() +
                 "}\n";
     }
 

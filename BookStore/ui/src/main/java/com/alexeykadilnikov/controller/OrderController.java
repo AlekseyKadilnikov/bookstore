@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,33 +65,76 @@ public class OrderController {
     }
 
     public void sortByPrice(int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("from Order order by price ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Order> orders = orderService.sendSqlQuery(hql.toString());
+
+        System.out.println(orders);
     }
 
     public void sortByExecDate(int mode) {
-        StringBuilder hql = new StringBuilder();
+        StringBuilder hql = new StringBuilder("from Order order by executionDate ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Order> orders = orderService.sendSqlQuery(hql.toString());
+
+        System.out.println(orders);
     }
 
-    public void sortByExecDateForPeriodByDate(String dateA, String dateB, int mode) {
-        StringBuilder hql = new StringBuilder();
+    public void sortByExecDateForPeriodByDate(String startDate, String endDate, int mode) {
+        StringBuilder hql = new StringBuilder("from Order where executionDate >= '" + startDate + "' and executionDate <= '" + endDate + "' order by executionDate ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Order> orders = orderService.sendSqlQuery(hql.toString());
+        System.out.println(orders);
     }
 
-    public void sortByExecDateForPeriodByPrice(String dateA, String dateB, int mode) {
-        StringBuilder hql = new StringBuilder();
+    public void sortByExecDateForPeriodByPrice(String startDate, String endDate, int mode) {
+        StringBuilder hql = new StringBuilder("from Order where executionDate >= '" + startDate + "' and executionDate <= '" + endDate + "' order by price ");
+
+        if(mode == 0) {
+            hql.append("asc");
+        } else {
+            hql.append("desc");
+        }
+
+        List<Order> orders = orderService.sendSqlQuery(hql.toString());
+        System.out.println(orders);
     }
 
-    public void getEarnedMoneyForPeriod(String dateA, String dateB) {
-        StringBuilder hql = new StringBuilder();
+    public void getEarnedMoneyForPeriod(String startDate, String endDate) {
+        List<Order> orders = orderService.sendSqlQuery("from Order where executionDate >= '" + startDate + "' and executionDate <= '" + endDate + "'");
+
+        int sum = 0;
+        for(Order order : orders) {
+            sum += order.getTotalPrice();
+        }
+
+        System.out.println(sum);
     }
 
-    public void getCountOfCompleteOrdersForPeriod(String dateA, String dateB) {
-        StringBuilder hql = new StringBuilder();
+    public void getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
+        System.out.println(orderService.sendSqlQuery("from Order where executionDate >= '" + startDate + "' and executionDate <= '" + endDate + "'").size());
     }
 
     public List<Order> sortByStatus(OrderStatus status) {
-
-
-        return null;
+        return orderService.sendSqlQuery("from Order where status = " + status.getStatusCode());
     }
 
     public void setStatus(int orderId, OrderStatus status) {
