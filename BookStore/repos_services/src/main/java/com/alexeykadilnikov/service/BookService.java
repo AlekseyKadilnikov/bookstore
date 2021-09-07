@@ -28,10 +28,9 @@ public class BookService implements IBookService {
         this.requestDAO = requestDAO;
     }
 
-    @Value("${BookController.months}")
-    private boolean doSuccess;
-
     @Value("${BookService.doSuccess}")
+    private boolean doSuccess;
+    @Value("${BookService.months}")
     private int months;
 
     public void saveAll(List<Book> bookList) {

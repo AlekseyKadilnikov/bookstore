@@ -19,12 +19,10 @@ import java.util.List;
 
 @Component
 public class BookStore {
-    private final ControllerUtils controllers;
     private final MenuController menuController;
 
     @Autowired
-    public BookStore(ControllerUtils controllers, MenuController menuController) {
-        this.controllers = controllers;
+    public BookStore(MenuController menuController) {
         this.menuController = menuController;
     }
 
@@ -53,10 +51,10 @@ public class BookStore {
             fis = new FileInputStream("serialize\\requests.bin");
             in = new ObjectInputStream(fis);
             requestList = (ArrayList) in.readObject();
-            ControllerUtils.bookController.saveAll(bookList);
-            ControllerUtils.orderController.saveAll(orderList);
-            ControllerUtils.userController.saveAll(userList);
-            ControllerUtils.requestController.saveAll(requestList);
+            ControllerUtils.getBookController().saveAll(bookList);
+            ControllerUtils.getOrderController().saveAll(orderList);
+            ControllerUtils.getUserController().saveAll(userList);
+            ControllerUtils.getRequestController().saveAll(requestList);
             fis.close();
             in.close();
         } catch (IOException | ClassNotFoundException e) {
