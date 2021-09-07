@@ -6,12 +6,13 @@ import java.util.Set;
 
 public class User extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -1624659229198950104L;
-    private static long idCount = 0;
     private String username;
     private Set<Long> ordersId = new HashSet<>();
 
+    public User() {
+    }
+
     public User(String username) {
-        super(idCount++);
         this.username = username;
     }
 

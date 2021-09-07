@@ -3,24 +3,29 @@ package com.alexeykadilnikov.entity;
 import com.alexeykadilnikov.OrderStatus;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class Order extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5713427368399553474L;
-    private static long idCount = 0;
-    private List<Book> books;
+    private Map<Long, Integer> books;
     private Long userId;
     private int totalPrice = 0;
     private OrderStatus status;
-    private LocalDate executionDate;
-    private final Date initDate = new Date();
+    private LocalDateTime executionDate;
+    private LocalDateTime initDate;
 
-    public Order(List<Book> books, Long userId) {
-        super(idCount++);
+    public Order() {
+        initDate = LocalDateTime.now();
+        executionDate = null;
+    }
+
+    public Order(Map<Long, Integer> books, Long userId) {
         this.books = books;
         this.userId = userId;
         status = OrderStatus.NEW;
+        initDate = LocalDateTime.now();
+        executionDate = null;
     }
 
     @Override
@@ -35,21 +40,31 @@ public class Order extends BaseEntity implements Serializable {
                 "}\n";
     }
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return totalPrice == order.totalPrice && books.equals(order.books)
+                && userId.equals(order.userId) && status == order.status
+                && executionDate.equals(order.executionDate) && initDate.equals(order.initDate);
     }
 
-    public Date getInitDate() {
+    @Override
+    public int hashCode() {
+        return Objects.hash(books, userId, totalPrice, status, executionDate, initDate);
+    }
+
+    public LocalDateTime getInitDate() {
         return initDate;
     }
 
-    public List<Book> getBooks() {
+    public Map<Long, Integer> getBooks() {
         return books;
     }
 
-    public void setBook(Book book) {
-        books.add(book);
-        totalPrice += book.getPrice();
+    public void setBooks(Map<Long, Integer> books) {
+        this.books = books;
     }
 
     public Long getUserId() {
@@ -76,13 +91,17 @@ public class Order extends BaseEntity implements Serializable {
         this.totalPrice = totalPrice;
     }
 
-    public LocalDate getExecutionDate() {
+    public LocalDateTime getExecutionDate() {
         if(executionDate == null)
             return null;
         return executionDate;
     }
 
-    public void setExecutionDate(LocalDate executionDate) {
+    public void setExecutionDate(LocalDateTime executionDate) {
         this.executionDate = executionDate;
+    }
+
+    public void setInitDate(LocalDateTime initDate) {
+        this.initDate = initDate;
     }
 }

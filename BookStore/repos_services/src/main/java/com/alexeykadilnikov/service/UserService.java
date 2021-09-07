@@ -25,9 +25,6 @@ public class UserService implements IUserService {
         }
         User user = new User(username);
         userRepository.save(user);
-
-        System.out.println("User successfully created.");
-        logger.info("User with id = {} and username = {} created", user.getId(), user.getUsername());
         return 0;
     }
 

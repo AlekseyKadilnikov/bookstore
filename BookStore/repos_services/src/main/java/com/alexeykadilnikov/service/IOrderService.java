@@ -7,9 +7,10 @@ import com.alexeykadilnikov.entity.User;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public interface IOrderService {
-    void createOrder(List<Book> books, User user);
+    void createOrder(List<Long> booksId, User user);
     String showOrder(long id);
     void cancelOrder(long id);
     void setStatus(long index, OrderStatus status);
@@ -20,7 +21,7 @@ public interface IOrderService {
 
     void saveAll(List<Order> orderList);
 
-    void checkBookAvailable(List<Book> books, long orderId);
+    void checkBookAvailable(Map<Long, Integer> books, long orderId);
 
     Order getByIndex(long id);
 

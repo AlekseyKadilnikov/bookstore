@@ -6,8 +6,7 @@ public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = 4402678274096518315L;
     private long id;
 
-    protected BaseEntity(long id) {
-        this.id = id;
+    protected BaseEntity() {
     }
 
     public long getId() {

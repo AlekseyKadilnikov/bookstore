@@ -7,6 +7,7 @@ import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ public class BookService implements IBookService {
 
     @InjectBean
     private IBookRepository bookRepository;
+    @InjectBean
+    private IRequestRepository requestRepository;
 
     @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
     private boolean doSuccess;
@@ -31,25 +34,33 @@ public class BookService implements IBookService {
     @Override
     public void addBook(long id, int bookCount) {
         Book book = bookRepository.getById(id);
-        if(doSuccess) {
-            Request[] requests = book.getOrderRequests();
-            for(Request request : requests) {
-                if(request.getStatus() == RequestStatus.NEW) {
-                    Request r = new Request(request.getName(), book.getId(), request.getOrdersId(), RequestStatus.SUCCESS);
-                    int diff = bookCount - request.getCount();
-                    if(diff >= 0) {
-                        bookRepository.addRequest(r, request.getCount(), book.getId());
-                        request.setCount(0);
-                        request.getOrdersId().clear();
-                        book.setCount(diff);
-                    } else {
-                        bookRepository.addRequest(r, bookCount, book.getId());
-                        request.setCount(request.getCount() - bookCount);
-                    }
-                }
-            }
-        } else {
+        Request[] requests = book.getOrderRequests();
+
+        if(book.getCount() > 0 || (book.getCount() == 0 && requests[0] == null)) {
             book.setCount(book.getCount() + bookCount);
+            bookRepository.update(book);
+            return;
+        }
+
+        if(doSuccess) {
+            Set<Long> booksId = new HashSet<>();
+            booksId.add(book.getId());
+            Request successRequest = new Request(requests[0].getName(), booksId, requests[0].getOrdersId(), RequestStatus.SUCCESS);
+            int diff = bookCount - requests[0].getCount();
+            if(diff >= 0) {
+                bookRepository.addRequest(successRequest, requests[0].getCount(), book);
+                requestRepository.save(successRequest);
+                requests[0].setCount(0);
+                requests[0].getOrdersId().clear();
+                book.setCount(diff);
+                requestRepository.delete(requests[0]);
+                bookRepository.update(book);
+            } else {
+                bookRepository.addRequest(successRequest, bookCount, book);
+                requestRepository.save(successRequest);
+                requests[0].setCount(requests[0].getCount() - bookCount);
+                requestRepository.update(requests[0]);
+            }
         }
     }
 
@@ -80,7 +91,8 @@ public class BookService implements IBookService {
 
     @Override
     public void createRequest(Request request, int count, long id) {
-        bookRepository.addRequest(request, count, id);
+        Book book = bookRepository.getById(id);
+        bookRepository.addRequest(request, count, book);
     }
 
     @Override
@@ -93,6 +105,13 @@ public class BookService implements IBookService {
             }
         }
         return books;
+    }
+
+    @Override
+    public void writeOff(long bookId) {
+        Book book = bookRepository.getById(bookId);
+        book.setCount(0);
+        bookRepository.update(book);
     }
 
     @Override

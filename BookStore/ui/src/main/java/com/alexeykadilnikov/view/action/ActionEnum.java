@@ -102,12 +102,12 @@ public enum ActionEnum implements IAction {
     }),
 
     WRITE_OFF_BOOK(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         ControllerUtils.bookController.writeOff(bookId);
     }),
 
     ADD_BOOK(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         int count = getNumber("Enter count of books:", Integer.MAX_VALUE);
         ControllerUtils.bookController.addBook(bookId, count);
     }),
@@ -135,6 +135,8 @@ public enum ActionEnum implements IAction {
                 break;
             case 2:
                 System.out.println(ControllerUtils.orderController.sortByStatus(OrderStatus.CANCELED).toString());
+                break;
+            default:
                 break;
         }
     }),
@@ -213,12 +215,12 @@ public enum ActionEnum implements IAction {
 
         String bookIds = getStringInput("Enter book ids (example: 1 1 5)");
         String[] stringIds = bookIds.split(" ");
-        List<Integer> intIds = new ArrayList<>();
+        List<Long> longIds = new ArrayList<>();
         for(String id : stringIds) {
-            intIds.add(Integer.parseInt(id));
+            longIds.add(Long.parseLong(id));
         }
 
-        ControllerUtils.orderController.create(intIds);
+        ControllerUtils.orderController.create(longIds);
     }),
 
     GET_USER_ORDERS(() -> {

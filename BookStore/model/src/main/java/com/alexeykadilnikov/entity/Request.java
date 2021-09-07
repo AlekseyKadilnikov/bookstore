@@ -4,28 +4,29 @@ import com.alexeykadilnikov.RequestStatus;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Request extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4499720100063137694L;
-    private static long idCount = 0;
-    private final String name;
-    private int count = 1;
+    private String name;
+    private int count;
     private RequestStatus status;
     private final Set<Long> ordersId = new HashSet<>();
     private Set<Long> booksId = new HashSet<>();
 
+    public Request() {
+    }
+
     public Request(String name, Set<Long> booksId) {
-        super(idCount++);
         this.name = name;
         this.booksId.addAll(booksId);
         this.status = RequestStatus.COMMON;
     }
 
-    public Request(String name, long bookId, Set<Long> ordersId, RequestStatus status) {
-        super(idCount++);
+    public Request(String name, Set<Long> booksId, Set<Long> ordersId, RequestStatus status) {
         this.name = name;
-        this.booksId.add(bookId);
+        this.booksId.addAll(booksId);
         this.ordersId.addAll(ordersId);
         this.status = status;
     }
@@ -36,6 +37,20 @@ public class Request extends BaseEntity implements Serializable {
                 "name='" + name + '\'' +
                 ", count=" + count +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return count == request.count && name.equals(request.name) && status == request.status
+                && ordersId.equals(request.ordersId) && booksId.equals(request.booksId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, count, status, ordersId, booksId);
     }
 
     public Set<Long> getOrdersId() {
@@ -56,6 +71,10 @@ public class Request extends BaseEntity implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getCount() {
