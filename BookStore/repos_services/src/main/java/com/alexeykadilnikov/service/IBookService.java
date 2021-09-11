@@ -1,10 +1,7 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.utils.QueryBuilder;
 
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +19,7 @@ public interface IBookService {
     List<Book> getOldBooks(int monthsAmount);
     void writeOff(long bookId);
     List<Book> sendSqlQuery(String hql);
-    void sortByName(int mode);
+    List<Book> sortByName(int mode);
     void sortByPrice(int mode);
     void sortByPublicationYear(int mode);
     void sortByCount(int mode);

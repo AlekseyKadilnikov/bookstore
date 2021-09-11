@@ -143,12 +143,9 @@ public class BookService implements IBookService {
         books.sort(comparator);
         return books;
     }
-    public void sortByName(int mode) {
+    public List<Book> sortByName(int mode) {
         String hql = QueryBuilder.sortBooksByName(mode);
-
-        List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
+        return sendSqlQuery(hql);
     }
 
     public void sortByPrice(int mode) {
