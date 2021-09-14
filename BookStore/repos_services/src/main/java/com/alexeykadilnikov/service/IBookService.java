@@ -1,5 +1,6 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
 
@@ -19,7 +20,7 @@ public interface IBookService {
     List<Book> getOldBooks(int monthsAmount);
     void writeOff(long bookId);
     List<Book> sendSqlQuery(String hql);
-    List<Book> sortByName(int mode);
+    List<BookDto> sortByName(int mode);
     void sortByPrice(int mode);
     void sortByPublicationYear(int mode);
     void sortByCount(int mode);

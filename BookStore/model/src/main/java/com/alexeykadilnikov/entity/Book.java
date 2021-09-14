@@ -1,10 +1,17 @@
 package com.alexeykadilnikov.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "book")
 public class Book extends BaseEntity implements Serializable {
@@ -31,9 +38,6 @@ public class Book extends BaseEntity implements Serializable {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private Set<OrderBook> orderBooks;
-
-    public Book() {
-    }
 
     public Book(String name, Set<Author> authors, String publisher, int publicationYear, int price, int count) {
         this.name = name;
@@ -73,85 +77,5 @@ public class Book extends BaseEntity implements Serializable {
     public int hashCode() {
         return Objects.hash(name, publisher, publicationYear, price,
                 count, dateOfReceipt, description);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getDateOfReceipt() {
-        return dateOfReceipt;
-    }
-
-    public void setDateOfReceipt(LocalDate dateOfReceipt) {
-        this.dateOfReceipt = dateOfReceipt;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Author> getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(Set<Author> authors) {
-        this.authors = authors;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public int getPublicationYear() {
-        return publicationYear;
-    }
-
-    public void setPublicationYear(int publicationYear) {
-        this.publicationYear = publicationYear;
-    }
-
-    public Set<Request> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(Set<Request> requests) {
-        this.requests = requests;
-    }
-
-    public Set<OrderBook> getOrders() {
-        return orderBooks;
-    }
-
-    public void setOrders(Set<OrderBook> orderBooks) {
-        this.orderBooks = orderBooks;
     }
 }

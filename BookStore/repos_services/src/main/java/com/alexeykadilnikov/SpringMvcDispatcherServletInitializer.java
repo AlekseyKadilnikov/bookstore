@@ -1,5 +1,6 @@
-package com.alexeykadilnikov.config;
+package com.alexeykadilnikov;
 
+import com.alexeykadilnikov.config.SpringConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class SpringMvcDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {

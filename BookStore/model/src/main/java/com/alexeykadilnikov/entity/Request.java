@@ -1,6 +1,9 @@
 package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.RequestStatus;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,6 +11,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "request")
 public class Request extends BaseEntity implements Serializable {
@@ -27,9 +33,6 @@ public class Request extends BaseEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name="book_id")
     )
     private Set<Book> books = new HashSet<>();
-
-    public Request() {
-    }
 
     public Request(String name, int count, RequestStatus status, Set<Book> books) {
         this.name = name;
@@ -58,37 +61,5 @@ public class Request extends BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(name, count, status);
-    }
-
-    public Set<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(Set<Book> books) {
-        this.books = books;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public RequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RequestStatus status) {
-        this.status = status;
     }
 }
