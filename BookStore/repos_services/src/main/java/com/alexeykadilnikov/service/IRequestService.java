@@ -18,5 +18,11 @@ public interface IRequestService {
     void saveAll(List<Request> requestList);
 
     Request getById(long id);
+
+    List<Request> sendSqlQuery(String hql);
+
+    void getRequestsForBookSortedByCount(long bookId, int mode);
+
+    void getRequestsForBookSortedByName(long bookId, int mode);
 }
 

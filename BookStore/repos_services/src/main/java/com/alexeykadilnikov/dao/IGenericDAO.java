@@ -2,10 +2,11 @@ package com.alexeykadilnikov.dao;
 
 import java.util.List;
 
-public interface IGenericDao<T, PK> {
+public interface IGenericDAO<T, PK> {
     List<T> findAll();
+    List<T> findAll(String hql);
     T getById(PK id);
     void save(T entity);
-    void delete(PK id);
+    void delete(T entity);
     void update(T entity);
 }

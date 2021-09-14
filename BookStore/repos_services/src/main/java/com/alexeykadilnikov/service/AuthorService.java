@@ -3,8 +3,7 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
-import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.repository.IAuthorRepository;
+import com.alexeykadilnikov.dao.IAuthorDAO;
 
 import java.util.List;
 
@@ -12,31 +11,32 @@ import java.util.List;
 public class AuthorService implements IAuthorService {
 
     @InjectBean
-    private IAuthorRepository authorRepository;
+    private IAuthorDAO authorDAO;
 
     @Override
     public List<Author> findAll() {
-        return authorRepository.findAll();
+        return authorDAO.findAll();
     }
 
     @Override
     public Author getById(Long id) {
-        return authorRepository.getById(id);
+        return authorDAO.getById(id);
     }
 
     @Override
     public void save(Author author) {
-        authorRepository.save(author);
+        authorDAO.save(author);
     }
 
     @Override
     public void delete(Author author) {
-        authorRepository.delete(author);
+        authorDAO.delete(author);
     }
 
     @Override
     public void saveAll(List<Author> all) {
-        authorRepository.saveAll(all);
+        for(Author author : all) {
+            authorDAO.save(author);
+        }
     }
-
 }

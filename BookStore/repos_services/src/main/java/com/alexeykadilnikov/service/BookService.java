@@ -6,8 +6,9 @@ import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.repository.IRequestRepository;
+import com.alexeykadilnikov.dao.IBookDAO;
+import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,87 +20,105 @@ public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     @InjectBean
-    private IBookRepository bookRepository;
+    private IBookDAO bookDAO;
     @InjectBean
-    private IRequestRepository requestRepository;
+    private IRequestDAO requestDAO;
 
     @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
     private boolean doSuccess;
 
-    @Override
+    @ConfigProperty(propertyName = "BookController.months")
+    private int months;
+
     public void saveAll(List<Book> bookList) {
-        bookRepository.saveAll(bookList);
+        for(Book book : bookList) {
+            bookDAO.save(book);
+        }
     }
 
-    @Override
     public void addBook(long id, int bookCount) {
-        Book book = bookRepository.getById(id);
-        Request[] requests = book.getOrderRequests();
-
-        if(book.getCount() > 0 || (book.getCount() == 0 && requests[0] == null)) {
+        Book book = bookDAO.getById(id);
+        Request newRequest = book.getRequests().stream()
+                .filter(request -> request.getStatus() == RequestStatus.NEW)
+                .findFirst().orElse(null);
+        Request successRequest = book.getRequests().stream()
+                .filter(request -> request.getStatus() == RequestStatus.SUCCESS)
+                .findFirst().orElse(null);
+        if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
             book.setCount(book.getCount() + bookCount);
-            bookRepository.update(book);
+            bookDAO.update(book);
             return;
         }
 
         if(doSuccess) {
-            Set<Long> booksId = new HashSet<>();
-            booksId.add(book.getId());
-            Request successRequest = new Request(requests[0].getName(), booksId, requests[0].getOrdersId(), RequestStatus.SUCCESS);
-            int diff = bookCount - requests[0].getCount();
-            if(diff >= 0) {
-                bookRepository.addRequest(successRequest, requests[0].getCount(), book);
-                requestRepository.save(successRequest);
-                requests[0].setCount(0);
-                requests[0].getOrdersId().clear();
-                book.setCount(diff);
-                requestRepository.delete(requests[0]);
-                bookRepository.update(book);
-            } else {
-                bookRepository.addRequest(successRequest, bookCount, book);
-                requestRepository.save(successRequest);
-                requests[0].setCount(requests[0].getCount() - bookCount);
-                requestRepository.update(requests[0]);
-            }
+            createSuccessRequests(bookCount, book, newRequest, successRequest);
         }
     }
 
-    @Override
+    private void createSuccessRequests(int bookCount, Book book, Request newRequest, Request successRequest) {
+        Set<Book> books = new HashSet<>();
+        books.add(book);
+        int diff = bookCount - newRequest.getCount();
+        if(diff >= 0) {
+            if(successRequest == null) {
+                successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
+                requestDAO.save(successRequest);
+            } else {
+                successRequest.setCount(successRequest.getCount() + newRequest.getCount());
+                requestDAO.update(successRequest);
+            }
+            requestDAO.delete(newRequest);
+            book.setCount(diff);
+            bookDAO.update(book);
+        } else {
+            if (successRequest == null) {
+                successRequest = new Request(newRequest.getName(), bookCount, RequestStatus.SUCCESS, books);
+                requestDAO.save(successRequest);
+            } else {
+                successRequest.setCount(successRequest.getCount() + bookCount);
+                requestDAO.update(successRequest);
+            }
+            newRequest.setCount(newRequest.getCount() - bookCount);
+            requestDAO.update(newRequest);
+        }
+    }
+
     public String showBook(long id) {
-        return bookRepository.getById(id).toString();
+        return bookDAO.getById(id).toString();
     }
 
-    @Override
     public List<Book> getAll() {
-        return bookRepository.findAll();
+        return bookDAO.findAll();
     }
 
-    @Override
     public void createBook(Book book) {
-        bookRepository.save(book);
+        bookDAO.save(book);
     }
 
-    @Override
-    public String getBookDescription(Book book) {
+    public String getDescription(Long bookId) {
+        Book book = getById(bookId);
+        if(book != null) {
+            System.out.println(book.getDescription());
+        } else {
+            System.out.println("Book with id = " + bookId + " does not exist!");
+        }
         return book.getDescription();
     }
 
-    @Override
     public Book getById(long id) {
-        return bookRepository.getById(id);
+        return bookDAO.getById(id);
     }
 
-    @Override
-    public void createRequest(Request request, int count, long id) {
-        Book book = bookRepository.getById(id);
-        bookRepository.addRequest(request, count, book);
+    public void createRequest(Request request, long id) {
+        Book book = bookDAO.getById(id);
+        book.getRequests().add(request);
+        requestDAO.save(request);
     }
 
-    @Override
     public List<Book> getOldBooks(int monthsAmount) {
         LocalDate date = LocalDate.now().minusMonths(monthsAmount);
         List<Book> books = new ArrayList<>();
-        for(Book book : bookRepository.findAll()) {
+        for(Book book : bookDAO.findAll()) {
             if(book.getDateOfReceipt().isBefore(date)) {
                 books.add(book);
             }
@@ -107,16 +126,65 @@ public class BookService implements IBookService {
         return books;
     }
 
-    @Override
     public void writeOff(long bookId) {
-        Book book = bookRepository.getById(bookId);
+        Book book = bookDAO.getById(bookId);
         book.setCount(0);
-        bookRepository.update(book);
+        bookDAO.update(book);
     }
 
-    @Override
+    public List<Book> sendSqlQuery(String hql) {
+        return bookDAO.findAll(hql);
+    }
+
     public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
         books.sort(comparator);
         return books;
+    }
+    public void sortByName(int mode) {
+        String hql = QueryBuilder.sortBooksByName(mode);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
+    }
+
+    public void sortByPrice(int mode) {
+        String hql = QueryBuilder.sortBooksByPrice(mode);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
+    }
+
+    public void sortByPublicationYear(int mode) {
+        String hql = QueryBuilder.sortBooksByPublicationYear(mode);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
+    }
+
+    public void sortByCount(int mode) {
+        String hql = QueryBuilder.sortBooksByCount(mode);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
+    }
+
+    public void getStaleBooksByDate(int mode) {
+        String hql = QueryBuilder.getStaleBooksByDate(mode, months);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
+    }
+
+    public void getStaleBooksByPrice(int mode) {
+        String hql = QueryBuilder.getStaleBooksByPrice(mode, months);
+
+        List<Book> books = sendSqlQuery(hql);
+
+        System.out.println(books);
     }
 }

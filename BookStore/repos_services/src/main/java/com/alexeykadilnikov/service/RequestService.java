@@ -6,25 +6,36 @@ import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.repository.IAuthorRepository;
-import com.alexeykadilnikov.repository.IBookRepository;
-import com.alexeykadilnikov.repository.IRequestRepository;
+import com.alexeykadilnikov.dao.IAuthorDAO;
+import com.alexeykadilnikov.dao.IBookDAO;
+import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.utils.QueryBuilder;
 
 import java.util.*;
 
 @Singleton
 public class RequestService implements IRequestService {
     @InjectBean
-    private IBookRepository bookRepository;
+    private IBookDAO bookDAO;
     @InjectBean
-    private IRequestRepository requestRepository;
+    private IRequestDAO requestDAO;
     @InjectBean
-    private IAuthorRepository authorRepository;
+    private IAuthorDAO authorDAO;
 
-    @Override
     public Set<Book> createRequest(String name, int count) {
+        Request request = requestDAO.findAll()
+                .stream()
+                .filter(r -> r.getName().equals(name))
+                .findAny()
+                .orElse(null);
+        if(request != null) {
+            request.setCount(request.getCount() + 1);
+            requestDAO.update(request);
+            return request.getBooks();
+        }
+
         String[] words = name.split(" ");
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookDAO.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
         Set<Book> booksByName = new HashSet<>();
         for(String word : words) {
@@ -39,83 +50,84 @@ public class RequestService implements IRequestService {
             }
         }
 
-        Set<Long> bookIdSet = new HashSet<>();
+        return getBooksByRequest(name, count, booksByAuthor, booksByName);
+    }
+
+    public List<Request> sort(Book book, Comparator<Request> comparator) {
+        List<Request> requests = requestDAO.findAll();
+        requests.sort(comparator);
+        return requests;
+    }
+
+    public List<Request> getAll() {
+        return requestDAO.findAll();
+    }
+
+    public void saveAll(List<Request> requestList) {
+        for(Request request : requestList) {
+            requestDAO.save(request);
+        }
+    }
+
+    public Request getById(long id) {
+        return requestDAO.getById(id);
+    }
+
+    public List<Request> sendSqlQuery(String hql) {
+        return requestDAO.findAll(hql);
+    }
+
+    public void getRequestsForBookSortedByCount(long bookId, int mode) {
+        String hql = QueryBuilder.getRequestsForBookSortedByCount(bookId, mode);
+
+        List<Request> requests = sendSqlQuery(hql);
+
+        System.out.println(requests);
+    }
+
+    public void getRequestsForBookSortedByName(long bookId, int mode) {
+        String hql = QueryBuilder.getRequestsForBookSortedByName(bookId, mode);
+
+        List<Request> requests = sendSqlQuery(hql);
+
+        System.out.println(requests);
+    }
+
+    private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {
+        Set<Book> bookSet = new HashSet<>();
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
-            for(Book book : booksByName) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByName) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
+            bookSet.addAll(booksByName);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            requestDAO.save(request);
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
-            for(Book book : booksByAuthor) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
+            bookSet.addAll(booksByAuthor);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            requestDAO.save(request);
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
-            for(Book book : booksByAuthor) {
-                bookIdSet.add(book.getId());
-            }
-            Request request = new Request(name, bookIdSet);
-            for(Book book : booksByAuthor) {
-                bookRepository.addRequest(request, count, book);
-                requestRepository.save(request);
-            }
+            bookSet.addAll(booksByAuthor);
+            Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
+            requestDAO.save(request);
             return booksByAuthor;
         }
     }
 
-    @Override
-    public List<Request> sort(Book book, Comparator<Request> comparator) {
-        List<Request> requests = requestRepository.findAll();
-        List<Request> commonRequests = requestRepository.findAll();
-        for(Request request : requests) {
-            for (Long bookId : request.getBooksId()) {
-                if(bookId == book.getId() && request.getStatus() == RequestStatus.COMMON) {
-                    commonRequests.add(request);
-                }
-            }
-        }
-        commonRequests.sort(comparator);
-        return commonRequests;
-    }
-
-    @Override
-    public List<Request> getAll() {
-        return requestRepository.findAll();
-    }
-
-    @Override
-    public void saveAll(List<Request> requestList) {
-        requestRepository.saveAll(requestList);
-    }
-
-    @Override
-    public Request getById(long id) {
-        return requestRepository.getById(id);
-    }
-
     private String getFullAuthorStringListForBook(Book book) {
-        StringBuilder authors = new StringBuilder();
-        Set<Long> authorsId = book.getAuthors();
-        for (int i = 0; i < authorsId.size(); i++) {
-            Author author = authorRepository.getById(authorsId.iterator().next());
-            authors.append(author.getFirstName()).append(" ").append(author.getLastName()).append(" ").append(author.getMiddleName());
-            if(i != authorsId.size() - 1) {
-                authors.append(", ");
+        StringBuilder authorsStr = new StringBuilder();
+        Set<Author> authors = book.getAuthors();
+        for (int i = 0; i < authors.size(); i++) {
+            Author author = authors.iterator().next();
+            authorsStr.append(author.getFirstName())
+                    .append(" ").append(author.getLastName())
+                    .append(" ").append(author.getMiddleName());
+            if(i != authors.size() - 1) {
+                authorsStr.append(", ");
             }
         }
-        return authors.toString();
+        return authorsStr.toString();
     }
 }

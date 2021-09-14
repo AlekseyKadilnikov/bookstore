@@ -2,27 +2,38 @@ package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.OrderStatus;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Entity
+@Table(name = "order_t")
 public class Order extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5713427368399553474L;
-    private Map<Long, Integer> books;
-    private Long userId;
-    private int totalPrice = 0;
+    @Column(name = "total_price")
+    private int totalPrice;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status_code")
     private OrderStatus status;
+    @Column(name = "exec_date")
     private LocalDateTime executionDate;
+    @Column(name = "init_date")
     private LocalDateTime initDate;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<OrderBook> orderBooks;
 
     public Order() {
         initDate = LocalDateTime.now();
         executionDate = null;
     }
 
-    public Order(Map<Long, Integer> books, Long userId) {
-        this.books = books;
-        this.userId = userId;
+    public Order(Set<OrderBook> orderBooks, User user) {
+        this.orderBooks = orderBooks;
+        this.user = user;
         status = OrderStatus.NEW;
         initDate = LocalDateTime.now();
         executionDate = null;
@@ -31,13 +42,13 @@ public class Order extends BaseEntity implements Serializable {
     @Override
     public String toString() {
         return "Order{" +
-                "id = " + getId() +
-                ", books=\n" + books.toString() +
-                ", userId=" + userId +
+                "totalPrice=" + totalPrice +
                 ", status=" + status +
                 ", executionDate=" + executionDate +
-                ", total price=" + totalPrice +
-                "}\n";
+                ", initDate=" + initDate +
+                ", user=" + user +
+                ", orderBooks=" + orderBooks +
+                '}';
     }
 
     @Override
@@ -45,34 +56,34 @@ public class Order extends BaseEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return totalPrice == order.totalPrice && books.equals(order.books)
-                && userId.equals(order.userId) && status == order.status
-                && executionDate.equals(order.executionDate) && initDate.equals(order.initDate);
+        return totalPrice == order.totalPrice && status == order.status &&
+                executionDate.equals(order.executionDate) && initDate.equals(order.initDate)
+                && user.equals(order.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(books, userId, totalPrice, status, executionDate, initDate);
+        return Objects.hash(totalPrice, status, executionDate, initDate, user);
     }
 
     public LocalDateTime getInitDate() {
         return initDate;
     }
 
-    public Map<Long, Integer> getBooks() {
-        return books;
+    public Set<OrderBook> getOrderBooks() {
+        return orderBooks;
     }
 
-    public void setBooks(Map<Long, Integer> books) {
-        this.books = books;
+    public void setOrderBooks(Set<OrderBook> orderBooks) {
+        this.orderBooks = orderBooks;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public OrderStatus getStatus() {

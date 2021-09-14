@@ -1,9 +1,6 @@
 package com.alexeykadilnikov.view.action;
 
-import com.alexeykadilnikov.BookComparator;
-import com.alexeykadilnikov.OrderComparator;
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.RequestComparator;
 import com.alexeykadilnikov.controller.*;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
@@ -74,30 +71,30 @@ public enum ActionEnum implements IAction {
             case 2:
                 ControllerUtils.orderController.setStatus(orderId, OrderStatus.CANCELED);
                 break;
+            default:
+                break;
         }
     }),
 
     SORT_BOOKS_BY_NAME(() -> {
-        List<Book> books = ControllerUtils.bookController.getAll();
-
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(books, BookComparator.NameComparatorAscending);
+            ControllerUtils.bookController.sortByName(0);
         }
         else {
-            ControllerUtils.bookController.sort(books, BookComparator.NameComparatorDescending);
+            ControllerUtils.bookController.sortByName(1);
         }
     }),
 
     SORT_BOOKS_BY_PRICE(() -> {
-        List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
+
         if(sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorAscending);
+            ControllerUtils.bookController.sortByPrice(0);
         }
         else {
-            ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorDescending);
+            ControllerUtils.bookController.sortByPrice(1);
         }
     }),
 
@@ -114,12 +111,11 @@ public enum ActionEnum implements IAction {
 
     SORT_ORDERS_BY_PRICE(() -> {
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending:", 1);
-        List<Order> orders = ControllerUtils.orderController.getAll();
         if(sortTypeNum == 0) {
-            ControllerUtils.orderController.sort(orders, OrderComparator.PriceComparatorAscending);
+            ControllerUtils.orderController.sortByPrice(0);
         }
         else {
-            ControllerUtils.orderController.sort(orders, OrderComparator.PriceComparatorDescending);
+            ControllerUtils.orderController.sortByPrice(1);
         }
     }),
 
@@ -148,38 +144,37 @@ public enum ActionEnum implements IAction {
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorAscending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.sortByExecDateForPeriodByDate(dates.get(0), dates.get(1), 0);
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.DateComparatorDescending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.sortByExecDateForPeriodByDate(dates.get(0), dates.get(1), 1);
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorAscending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.sortByExecDateForPeriodByPrice(dates.get(0), dates.get(1), 0);
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            ControllerUtils.orderController.getCompletedOrdersForPeriod(OrderComparator.PriceComparatorDescending, dates.get(0), dates.get(1));
+            ControllerUtils.orderController.sortByExecDateForPeriodByPrice(dates.get(0), dates.get(1), 1);
         }
     }),
 
     SORT_BY_EXEC_DATE(() -> {
-        List<Order> orders = ControllerUtils.orderController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            ControllerUtils.orderController.sort(orders, OrderComparator.DateComparatorAscending);
+            ControllerUtils.orderController.sortByExecDate(0);
         }
         else {
-            ControllerUtils.orderController.sort(orders, OrderComparator.DateComparatorDescending);
+            ControllerUtils.orderController.sortByExecDate(1);
         }
     }),
 
     EARNED_MONEY(() -> {
         List<String> dates = getDateInput();
-        ControllerUtils.orderController.showEarnedMoneyForPeriod(dates.get(0), dates.get(1));
+        ControllerUtils.orderController.getEarnedMoneyForPeriod(dates.get(0), dates.get(1));
     }),
 
     COMPL_ORDERS_COUNT(() -> {
         List<String> dates = getDateInput();
-        ControllerUtils.orderController.showCompletedOrdersCountForPeriod(dates.get(0), dates.get(1));
+        ControllerUtils.orderController.getCountOfCompleteOrdersForPeriod(dates.get(0), dates.get(1));
     }),
 
     GET_ORDER_DETAIL(() -> {
@@ -188,13 +183,12 @@ public enum ActionEnum implements IAction {
     }),
 
     SORT_BY_COUNT(() -> {
-        List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(books, BookComparator.AvailableComparatorAscending);
+            ControllerUtils.bookController.sortByCount(0);
         }
         else {
-            ControllerUtils.bookController.sort(books, BookComparator.AvailableComparatorDescending);
+            ControllerUtils.bookController.sortByCount(1);
         }
     }),
 
@@ -202,17 +196,14 @@ public enum ActionEnum implements IAction {
         List<Book> books = ControllerUtils.bookController.getAll();
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(books, BookComparator.DateComparatorAscending);
+            ControllerUtils.bookController.sortByPublicationYear(0);
         }
         else {
-            ControllerUtils.bookController.sort(books, BookComparator.DateComparatorDescending);
+            ControllerUtils.bookController.sortByPublicationYear(1);
         }
     }),
 
     NEW_ORDER(() -> {
-        List<Book> books = ControllerUtils.bookController.getAll();
-        ControllerUtils.bookController.sort(books, BookComparator.PriceComparatorAscending);
-
         String bookIds = getStringInput("Enter book ids (example: 1 1 5)");
         String[] stringIds = bookIds.split(" ");
         List<Long> longIds = new ArrayList<>();
@@ -230,12 +221,12 @@ public enum ActionEnum implements IAction {
     GET_ADMIN_ORDERS(ControllerUtils.orderController::showAll),
 
     CANCEL_ORDER(() -> {
-        int orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
+        long orderId = getNumber("Enter order id:", Integer.MAX_VALUE);
         ControllerUtils.orderController.cancel(orderId);
     }),
 
     SHOW_BOOK_DESCRIPTION(() -> {
-        int bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
+        long bookId = getNumber("Enter book id:", Integer.MAX_VALUE);
         ControllerUtils.bookController.showDescription(bookId);
     }),
 
@@ -245,34 +236,33 @@ public enum ActionEnum implements IAction {
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
 
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            ControllerUtils.requestController.sort(bookId, RequestComparator.AmountComparatorAscending);
+            ControllerUtils.requestController.getRequestsForBookSortedByCount(bookId, 0);
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            ControllerUtils.requestController.sort(bookId, RequestComparator.AmountComparatorDescending);
+            ControllerUtils.requestController.getRequestsForBookSortedByCount(bookId, 1);
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            ControllerUtils.requestController.sort(bookId, RequestComparator.NameComparatorAscending);
+            ControllerUtils.requestController.getRequestsForBookSortedByName(bookId, 0);
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            ControllerUtils.requestController.sort(bookId, RequestComparator.NameComparatorDescending);
+            ControllerUtils.requestController.getRequestsForBookSortedByName(bookId, 1);
         }
     }),
 
     SHOW_STALE_BOOKS(() -> {
-        List<Book> staleBooks = ControllerUtils.bookController.getStaleBooks();
         int sortNameNum = getNumber("Enter sort type:\n0.By date of receipt\n1.By price", 1);
         int sortTypeNum = getNumber("Enter sort type:\n0.Ascending\n1.Descending", 1);
         if(sortNameNum == 0 && sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(staleBooks, BookComparator.ReceiptComparatorAscending);
+            ControllerUtils.bookController.getStaleBooksByDate(0);
         }
         else if(sortNameNum == 0 && sortTypeNum == 1){
-            ControllerUtils.bookController.sort(staleBooks, BookComparator.ReceiptComparatorDescending);
+            ControllerUtils.bookController.getStaleBooksByDate(1);
         }
         else if(sortNameNum == 1 && sortTypeNum == 0) {
-            ControllerUtils.bookController.sort(staleBooks, BookComparator.PriceComparatorAscending);
+            ControllerUtils.bookController.getStaleBooksByPrice(0);
         }
         else if(sortNameNum == 1 && sortTypeNum == 1) {
-            ControllerUtils.bookController.sort(staleBooks, BookComparator.PriceComparatorDescending);
+            ControllerUtils.bookController.getStaleBooksByPrice(1);
         }
     }),
 

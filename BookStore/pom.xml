@@ -15,7 +15,6 @@
         <module>ui</module>
         <module>utils</module>
         <module>dependency_injection</module>
-        <module>property_injection</module>
         <module>annotation</module>
     </modules>
 
@@ -58,7 +57,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.26</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.5.7.Final</version>
+        </dependency>
     </dependencies>
 
     <build>

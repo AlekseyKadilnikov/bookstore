@@ -2,5 +2,5 @@ package com.alexeykadilnikov.dao;
 
 import com.alexeykadilnikov.entity.Order;
 
-public interface IOrderDao extends IGenericDao<Order, Long> {
+public interface IOrderDAO extends IGenericDAO<Order, Long> {
 }

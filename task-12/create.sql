@@ -60,17 +60,6 @@ create table if not exists order_book
 	ON DELETE CASCADE ON UPDATE CASCADE
 ); 
 
-create table if not exists order_request
-(
-	order_id int not null,
-    request_id int not null,
-    primary key (order_id, request_id),
-    FOREIGN KEY (order_id) REFERENCES order_t(id)
-	ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (request_id) REFERENCES request(id)
-	ON DELETE CASCADE ON UPDATE CASCADE
-); 
-
 create table if not exists book_request
 (
 	book_id int not null,
