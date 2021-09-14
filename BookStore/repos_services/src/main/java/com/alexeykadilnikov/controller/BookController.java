@@ -1,19 +1,24 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.IBookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import java.util.*;
 
-@Singleton
+@Controller
 public class BookController {
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
-    @InjectBean
-    private IBookService bookService;
+    private final IBookService bookService;
+
+    @Autowired
+    public BookController(IBookService bookService) {
+        this.bookService = bookService;
+    }
 
     public void sortByName(int mode) {
         bookService.sortByName(mode);

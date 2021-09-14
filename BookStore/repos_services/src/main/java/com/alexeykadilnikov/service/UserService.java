@@ -1,21 +1,24 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.dao.IUserDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Singleton
+@Service
 public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @InjectBean
-    private IUserDAO userDAO;
+    private final IUserDAO userDAO;
+
+    @Autowired
+    public UserService(IUserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     public int addUser(String username) {
         for(User user : userDAO.findAll()) {

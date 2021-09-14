@@ -1,8 +1,5 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.ConfigProperty;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
@@ -11,23 +8,29 @@ import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
 
-@Singleton
+@Service
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
-    @InjectBean
-    private IBookDAO bookDAO;
-    @InjectBean
-    private IRequestDAO requestDAO;
+    private final IBookDAO bookDAO;
+    private final IRequestDAO requestDAO;
 
-    @ConfigProperty(configName = "properties\\bookstore.yml", propertyName = "BookService.doSuccess", type = boolean.class)
+    @Autowired
+    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO) {
+        this.bookDAO = bookDAO;
+        this.requestDAO = requestDAO;
+    }
+
+    @Value("${BookService.doSuccess}")
     private boolean doSuccess;
-
-    @ConfigProperty(propertyName = "BookController.months")
+    @Value("${BookService.months}")
     private int months;
 
     public void saveAll(List<Book> bookList) {

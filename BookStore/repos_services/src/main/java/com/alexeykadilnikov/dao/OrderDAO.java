@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.dao;
 
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Order;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class OrderDAO extends HibernateAbstractDAO<Order, Long> implements IOrderDAO {
 }

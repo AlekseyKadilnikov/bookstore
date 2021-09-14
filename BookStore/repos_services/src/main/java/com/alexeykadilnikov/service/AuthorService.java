@@ -1,17 +1,21 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.dao.IAuthorDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Singleton
+@Service
 public class AuthorService implements IAuthorService {
 
-    @InjectBean
-    private IAuthorDAO authorDAO;
+    private final IAuthorDAO authorDAO;
+
+    @Autowired
+    public AuthorService(IAuthorDAO authorDAO) {
+        this.authorDAO = authorDAO;
+    }
 
     @Override
     public List<Author> findAll() {

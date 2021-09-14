@@ -1,11 +1,11 @@
 package com.alexeykadilnikov.view.menu;
 
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.view.builder.Builder;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
-@Singleton
+@Component
 public class MenuController {
 
     public void run() {

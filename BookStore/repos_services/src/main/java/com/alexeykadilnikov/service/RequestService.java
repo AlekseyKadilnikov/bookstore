@@ -1,26 +1,27 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.InjectBean;
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.dao.IAuthorDAO;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.utils.QueryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Singleton
+@Service
 public class RequestService implements IRequestService {
-    @InjectBean
-    private IBookDAO bookDAO;
-    @InjectBean
-    private IRequestDAO requestDAO;
-    @InjectBean
-    private IAuthorDAO authorDAO;
+    private final IBookDAO bookDAO;
+    private final  IRequestDAO requestDAO;
+
+    @Autowired
+    public RequestService(IBookDAO bookDAO, IRequestDAO requestDAO) {
+        this.bookDAO = bookDAO;
+        this.requestDAO = requestDAO;
+    }
 
     public Set<Book> createRequest(String name, int count) {
         Request request = requestDAO.findAll()

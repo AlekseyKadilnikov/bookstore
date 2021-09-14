@@ -1,25 +1,26 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.InjectBean;
-import com.alexeykadilnikov.Singleton;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.service.*;
 import com.alexeykadilnikov.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
 import java.util.List;
 
-@Singleton
+@Controller
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    @InjectBean
-    private IOrderService orderService;
-    @InjectBean
-    private IUserService userService;
-    @InjectBean
-    private IBookService bookService;
+    private final IOrderService orderService;
+
+    @Autowired
+    public OrderController(IOrderService orderService) {
+        this.orderService = orderService;
+    }
 
     public void create(List<Long> ids) {
         orderService.createOrder(ids, UserUtils.getCurrentUser());
