@@ -1,10 +1,12 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.mapper.BookMapper;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +23,13 @@ public class BookService implements IBookService {
 
     private final IBookDAO bookDAO;
     private final IRequestDAO requestDAO;
+    private final BookMapper bookMapper;
 
     @Autowired
-    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO) {
+    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO, BookMapper bookMapper) {
         this.bookDAO = bookDAO;
         this.requestDAO = requestDAO;
+        this.bookMapper = bookMapper;
     }
 
     @Value("${BookService.doSuccess}")
@@ -143,9 +147,14 @@ public class BookService implements IBookService {
         books.sort(comparator);
         return books;
     }
-    public List<Book> sortByName(int mode) {
+    public List<BookDto> sortByName(int mode) {
         String hql = QueryBuilder.sortBooksByName(mode);
-        return sendSqlQuery(hql);
+        List<Book> books = sendSqlQuery(hql);
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
     }
 
     public void sortByPrice(int mode) {

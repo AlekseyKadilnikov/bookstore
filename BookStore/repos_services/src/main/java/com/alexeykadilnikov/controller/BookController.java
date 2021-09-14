@@ -1,15 +1,18 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.service.IBookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -23,8 +26,8 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/sort/name")
-    public List<Book> sortByName(int mode) {
+    @GetMapping(value = "/sort/name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BookDto> sortByName(@RequestParam("mode") int mode) {
         return bookService.sortByName(mode);
     }
 

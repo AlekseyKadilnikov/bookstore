@@ -1,25 +1,26 @@
 package com.alexeykadilnikov.entity;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Embeddable
 public class OrderBookKey implements Serializable {
     @Column(name = "order_id")
     private Long orderId;
     @Column(name = "book_id")
     private Long bookId;
-
-    public OrderBookKey() {
-    }
-
-    public OrderBookKey(Long orderId, Long bookId) {
-        this.orderId = orderId;
-        this.bookId = bookId;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -32,21 +33,5 @@ public class OrderBookKey implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(orderId, bookId);
-    }
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
-        this.bookId = bookId;
     }
 }

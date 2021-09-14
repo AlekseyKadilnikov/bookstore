@@ -1,12 +1,17 @@
 package com.alexeykadilnikov.entity;
 
 import com.alexeykadilnikov.OrderStatus;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "order_t")
 public class Order extends BaseEntity implements Serializable {
@@ -64,55 +69,5 @@ public class Order extends BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(totalPrice, status, executionDate, initDate, user);
-    }
-
-    public LocalDateTime getInitDate() {
-        return initDate;
-    }
-
-    public Set<OrderBook> getOrderBooks() {
-        return orderBooks;
-    }
-
-    public void setOrderBooks(Set<OrderBook> orderBooks) {
-        this.orderBooks = orderBooks;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public LocalDateTime getExecutionDate() {
-        if(executionDate == null)
-            return null;
-        return executionDate;
-    }
-
-    public void setExecutionDate(LocalDateTime executionDate) {
-        this.executionDate = executionDate;
-    }
-
-    public void setInitDate(LocalDateTime initDate) {
-        this.initDate = initDate;
     }
 }

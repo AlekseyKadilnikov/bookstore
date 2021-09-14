@@ -1,10 +1,17 @@
 package com.alexeykadilnikov.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "user")
 public class User extends BaseEntity implements Serializable {
@@ -14,6 +21,10 @@ public class User extends BaseEntity implements Serializable {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Order> orders;
+
+    public User(String username) {
+        this.username = username;
+    }
 
     @Override
     public String toString() {
@@ -33,28 +44,5 @@ public class User extends BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(username);
-    }
-
-    public User() {
-    }
-
-    public User(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Set<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Set<Order> orders) {
-        this.orders = orders;
     }
 }
