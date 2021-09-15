@@ -2,11 +2,13 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IOrderDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.dao.IUserDAO;
+import com.alexeykadilnikov.mapper.OrderMapper;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +25,14 @@ public class OrderService implements IOrderService {
     private final IOrderDAO orderDAO;
     private final IBookDAO bookDAO;
     private final IRequestDAO requestDAO;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO) {
+    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO, OrderMapper orderMapper) {
         this.orderDAO = orderDAO;
         this.bookDAO = bookDAO;
         this.requestDAO = requestDAO;
+        this.orderMapper = orderMapper;
     }
 
     public void createOrder(List<Long> booksId, User user) {
@@ -56,10 +60,6 @@ public class OrderService implements IOrderService {
         order.setStatus(OrderStatus.NEW);
         orderDAO.save(order);
         checkBookAvailable(orderBooks);
-    }
-
-    public String showOrder(long id) {
-        return orderDAO.getById(id).toString();
     }
 
     public void cancelOrder(long id) {
@@ -187,12 +187,8 @@ public class OrderService implements IOrderService {
         }
     }
 
-    public Order getByIndex(long id) {
-        return orderDAO.getById(id);
-    }
-
-    public Order getById(long id) {
-        return orderDAO.getById(id);
+    public OrderDto getById(long id) {
+        return orderMapper.toDto(orderDAO.getById(id));
     }
 
     public int calculatePrice(Order order) {

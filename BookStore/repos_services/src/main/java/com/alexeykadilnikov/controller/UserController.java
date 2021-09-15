@@ -1,33 +1,35 @@
 package com.alexeykadilnikov.controller;
 
+import com.alexeykadilnikov.dto.UserDto;
 import com.alexeykadilnikov.entity.User;
+import com.alexeykadilnikov.mapper.UserMapper;
 import com.alexeykadilnikov.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
-@Controller
+@RestController
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final IUserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(IUserService userService) {
+    public UserController(IUserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
-    public int create(String username) {
-        if(userService.addUser(username) > 0) {
-            return 1;
-        }
-        return 0;
+    public UserDto create(UserDto userDto) {
+        return userService.save(userDto);
     }
 
-    public User getOne(String username) {
+    public UserDto getOne(String username) {
         return userService.getByName(username);
     }
 
@@ -35,12 +37,8 @@ public class UserController {
         System.out.println(user.getOrders());
     }
 
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         return userService.getAll();
-    }
-
-    public void saveAll(List<User> userList) {
-        userService.saveAll(userList);
     }
 
     public void importUsers(String path) {}

@@ -18,12 +18,13 @@ public interface IBookService {
     void createBook(Book book);
     String getDescription(Long id);
     List<Book> getOldBooks(int monthsAmount);
-    void writeOff(long bookId);
+    BookDto writeOff(long bookId);
     List<Book> sendSqlQuery(String hql);
     List<BookDto> sortByName(int mode);
-    void sortByPrice(int mode);
+    List<BookDto> sortByPrice(int mode);
     void sortByPublicationYear(int mode);
     void sortByCount(int mode);
     void getStaleBooksByDate(int mode);
     void getStaleBooksByPrice(int mode);
+    List<BookDto> sortBy(String sortBy, int mode);
 }

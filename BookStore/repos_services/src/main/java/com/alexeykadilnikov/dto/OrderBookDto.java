@@ -11,7 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderBookDto {
     private OrderBookKeyDto id;
-    private OrderDto order;
-    private BookDto book;
     private int bookCount;
 }

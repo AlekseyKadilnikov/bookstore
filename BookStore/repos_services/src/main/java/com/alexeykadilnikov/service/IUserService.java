@@ -1,19 +1,19 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.dto.UserDto;
 import com.alexeykadilnikov.entity.User;
 
 import java.util.List;
 
 public interface IUserService {
-    int addUser(String username);
 
-    void addUser(User user);
+    UserDto addUser(UserDto user);
 
-    List<User> getAll();
+    List<UserDto> getAll();
 
-    void saveAll(List<User> userList);
+    UserDto getById(long id);
 
-    User getById(long id);
+    UserDto getByName(String name);
 
-    User getByName(String name);
+    UserDto save(UserDto user);
 }

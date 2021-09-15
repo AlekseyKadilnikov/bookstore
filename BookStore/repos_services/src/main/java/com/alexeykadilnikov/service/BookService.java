@@ -133,10 +133,11 @@ public class BookService implements IBookService {
         return books;
     }
 
-    public void writeOff(long bookId) {
+    public BookDto writeOff(long bookId) {
         Book book = bookDAO.getById(bookId);
         book.setCount(0);
         bookDAO.update(book);
+        return bookMapper.toDto(book);
     }
 
     public List<Book> sendSqlQuery(String hql) {
@@ -147,6 +148,33 @@ public class BookService implements IBookService {
         books.sort(comparator);
         return books;
     }
+
+    public List<BookDto> sortBy(String sortBy, int mode) {
+        String hql = "";
+        switch (sortBy) {
+            case "name":
+                hql = QueryBuilder.sortBooksByName(mode);
+                break;
+            case "price":
+                hql = QueryBuilder.sortBooksByPrice(mode);
+                break;
+            case "year":
+                hql = QueryBuilder.sortBooksByPublicationYear(mode);
+                break;
+            case "count":
+                hql = QueryBuilder.sortBooksByCount(mode);
+                break;
+            default:
+                return null;
+        }
+        List<Book> books = sendSqlQuery(hql);
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
+    }
+
     public List<BookDto> sortByName(int mode) {
         String hql = QueryBuilder.sortBooksByName(mode);
         List<Book> books = sendSqlQuery(hql);
@@ -157,12 +185,14 @@ public class BookService implements IBookService {
         return booksDto;
     }
 
-    public void sortByPrice(int mode) {
+    public List<BookDto> sortByPrice(int mode) {
         String hql = QueryBuilder.sortBooksByPrice(mode);
-
         List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
     }
 
     public void sortByPublicationYear(int mode) {
