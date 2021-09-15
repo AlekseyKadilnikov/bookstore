@@ -77,7 +77,7 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
         return entityList;
     }
 
-    public void save(T entity) {
+    public T save(T entity) {
         Session session = getCurrentSession();
         try {
             session.beginTransaction();
@@ -91,9 +91,10 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
         } finally {
             session.close();
         }
+        return entity;
     }
 
-    public void update(T entity) {
+    public T update(T entity) {
         Session session = getCurrentSession();
         try {
             session.beginTransaction();
@@ -107,6 +108,7 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
         } finally {
             session.close();
         }
+        return entity;
     }
 
     public void delete(T entity) {

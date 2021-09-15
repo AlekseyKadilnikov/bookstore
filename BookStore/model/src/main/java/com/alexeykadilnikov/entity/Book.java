@@ -36,7 +36,7 @@ public class Book extends BaseEntity implements Serializable {
     @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
     private Set<Request> requests;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<OrderBook> orderBooks;
 
     public Book(String name, Set<Author> authors, String publisher, int publicationYear, int price, int count) {

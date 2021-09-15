@@ -1,8 +1,6 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.dto.UserDto;
-import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.dao.IUserDAO;
 import com.alexeykadilnikov.mapper.UserMapper;
@@ -27,21 +25,12 @@ public class UserService implements IUserService {
         this.userMapper = userMapper;
     }
 
-    public UserDto addUser(UserDto user) {
-        return null;
-    }
-
-    public void addUser(User user) {
-        userDAO.save(user);
-    }
-
     public List<User> sendSqlQuery(String hql) {
         return userDAO.findAll(hql);
     }
 
     public List<UserDto> getAll() {
-        String hql = "";
-        List<User> users = sendSqlQuery(hql);
+        List<User> users = userDAO.findAll();
         List<UserDto> usersDto = new ArrayList<>();
         for(User user : users) {
             usersDto.add(userMapper.toDto(user));
@@ -53,18 +42,14 @@ public class UserService implements IUserService {
         return userMapper.toDto(userDAO.getById(id));
     }
 
-    public UserDto getByName(String name) {
-        User user = userDAO.findAll().stream()
-                .filter(u -> u.getUsername().equals(name))
-                .findAny()
-                .orElse(null);
-        return userMapper.toDto(user);
-    }
-
     public UserDto save(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user = userDAO.save(user);
         userDto = userMapper.toDto(user);
         return userDto;
+    }
+
+    public UserDto update(UserDto userDto) {
+        return userMapper.toDto(userDAO.update(userMapper.toEntity(userDto)));
     }
 }

@@ -18,4 +18,5 @@ public class BookDto extends BaseEntityDto {
     private int publicationYear;
     private int price;
     private String description;
+    private int count;
 }

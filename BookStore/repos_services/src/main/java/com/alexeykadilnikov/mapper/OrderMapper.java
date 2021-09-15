@@ -1,29 +1,30 @@
 package com.alexeykadilnikov.mapper;
 
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.dto.BookDto;
-import com.alexeykadilnikov.dto.OrderBookDto;
-import com.alexeykadilnikov.dto.OrderBookKeyDto;
+import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.OrderBook;
+import com.alexeykadilnikov.entity.OrderBookKey;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class OrderMapper implements IMapper<Order, OrderDto> {
 
     private final ModelMapper mapper;
+    private final IBookDAO bookDAO;
 
     @Autowired
-    public OrderMapper(ModelMapper mapper) {
+    public OrderMapper(ModelMapper mapper, IBookDAO bookDAO) {
         this.mapper = mapper;
+        this.bookDAO = bookDAO;
     }
 
     @Override
@@ -65,9 +66,28 @@ public class OrderMapper implements IMapper<Order, OrderDto> {
 
     private void mapSpecificFields(Order source, OrderDto destination) {
         destination.setOrderStatus(source.getStatus().name());
+        Set<OrderBook> orderBooks = source.getOrderBooks();
+        Map<Long, Integer> books = new HashMap<>();
+        for(OrderBook orderBook : orderBooks) {
+            books.put(orderBook.getBook().getId(), orderBook.getBookCount());
+        }
+        destination.setBooks(books);
     }
 
     private void mapSpecificFields(OrderDto source, Order destination) {
         destination.setStatus(OrderStatus.valueOf(source.getOrderStatus()));
+        Map<Long, Integer> books = source.getBooks();
+        Set<OrderBook> orderBooks = new HashSet<>();
+        for(Map.Entry<Long, Integer> entry : books.entrySet()) {
+            OrderBook orderBook = new OrderBook();
+            OrderBookKey orderBookKey = new OrderBookKey();
+            orderBook.setId(orderBookKey);
+            Book book = bookDAO.getById(entry.getKey());
+            orderBook.setBook(book);
+            orderBook.setOrder(destination);
+            orderBook.setBookCount(entry.getValue());
+            orderBooks.add(orderBook);
+        }
+        destination.setOrderBooks(orderBooks);
     }
 }

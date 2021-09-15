@@ -8,5 +8,5 @@ public interface IGenericDAO<T, PK> {
     T getById(PK id);
     T save(T entity);
     void delete(T entity);
-    void update(T entity);
+    T update(T entity);
 }

@@ -90,7 +90,7 @@ public class QueryBuilder {
     }
 
     public static String sortOrdersByPrice(int mode) {
-        StringBuilder hql = new StringBuilder("from Order order by price ");
+        StringBuilder hql = new StringBuilder("from Order order by totalPrice ");
 
         if(mode == 0) {
             hql.append("asc");

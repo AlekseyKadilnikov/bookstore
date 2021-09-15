@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class AuthorDto extends BaseEntityDto{
     private String firstName;
     private String lastName;
-    private String middleName;
 }

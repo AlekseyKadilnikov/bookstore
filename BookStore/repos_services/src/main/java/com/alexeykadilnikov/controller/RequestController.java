@@ -41,8 +41,4 @@ public class RequestController {
     public void saveAll(List<Request> requestList) {
         requestService.saveAll(requestList);
     }
-
-    public void importRequests(String path) {}
-
-    public void exportRequests(String path, String bookIds) {}
 }

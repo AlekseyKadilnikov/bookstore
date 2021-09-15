@@ -7,13 +7,11 @@ import java.util.List;
 
 public interface IUserService {
 
-    UserDto addUser(UserDto user);
-
     List<UserDto> getAll();
 
     UserDto getById(long id);
 
-    UserDto getByName(String name);
-
     UserDto save(UserDto user);
+
+    UserDto update(UserDto user);
 }
