@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -196,7 +197,11 @@ public class OrderService implements IOrderService {
     }
 
     public OrderDto getById(long id) {
-        return orderMapper.toDto(orderDAO.getById(id));
+        Order order = orderDAO.getById(id);
+        if(order == null) {
+            throw new NullPointerException("Order with id = " + id + " not found");
+        }
+        return orderMapper.toDto(order);
     }
 
     public int calculatePrice(Order order) {

@@ -63,16 +63,18 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
     public List<T> findAll(String hql) {
         List<T> entityList = new ArrayList<>();
 
-        Session session = getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
 
         try {
             session.beginTransaction();
             entityList = session.createQuery(hql).list();
-            session.getTransaction().commit();
+            session.flush();
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
-            session.close();
+            if(session.isOpen()) {
+                session.close();
+            }
         }
         return entityList;
     }
