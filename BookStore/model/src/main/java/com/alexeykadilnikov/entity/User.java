@@ -3,6 +3,8 @@ package com.alexeykadilnikov.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ public class User extends BaseEntity implements Serializable {
     private String username;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
     private Set<Order> orders;
 
     public User(String username) {

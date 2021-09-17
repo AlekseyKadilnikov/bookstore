@@ -1,6 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.dto.UserDto;
+import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.User;
 import com.alexeykadilnikov.dao.IUserDAO;
 import com.alexeykadilnikov.mapper.UserMapper;
@@ -39,7 +40,11 @@ public class UserService implements IUserService {
     }
 
     public UserDto getById(long id) {
-        return userMapper.toDto(userDAO.getById(id));
+        User user = userDAO.getById(id);
+        if(user == null) {
+            throw new NullPointerException("User with id = " + id + " not found");
+        }
+        return userMapper.toDto(user);
     }
 
     public UserDto save(UserDto userDto) {

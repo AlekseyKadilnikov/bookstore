@@ -3,6 +3,8 @@ package com.alexeykadilnikov.entity;
 import com.alexeykadilnikov.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +28,7 @@ public class Order extends BaseEntity implements Serializable {
     private LocalDateTime initDate;
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Fetch(FetchMode.SELECT)
     private User user;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<OrderBook> orderBooks;

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -86,10 +87,6 @@ public class BookService implements IBookService {
         }
     }
 
-    public String showBook(long id) {
-        return bookDAO.getById(id).toString();
-    }
-
     public List<BookDto> getAll() {
         List<Book> books = bookDAO.findAll();
         List<BookDto> booksDto = new ArrayList<>();
@@ -109,7 +106,11 @@ public class BookService implements IBookService {
     }
 
     public BookDto getById(long id) {
-        return bookMapper.toDto(bookDAO.getById(id));
+        Book book = bookDAO.getById(id);
+        if(book == null) {
+            throw new NullPointerException("Book with id = " + id + " not found");
+        }
+        return bookMapper.toDto(book);
     }
 
     public void createRequest(Request request, long id) {

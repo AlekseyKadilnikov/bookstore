@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.dto.RequestDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.entity.User;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,16 +13,14 @@ public interface IRequestService {
 
     List<Request> sort(Book book, Comparator<Request> comparator);
 
-    List<Request> getAll();
+    List<RequestDto> getAll();
 
-    void saveAll(List<Request> requestList);
+    RequestDto save(RequestDto requestDto);
 
-    Request getById(long id);
+    RequestDto getById(long id);
 
     List<Request> sendSqlQuery(String hql);
 
-    void getRequestsForBookSortedByCount(long bookId, int mode);
-
-    void getRequestsForBookSortedByName(long bookId, int mode);
+    List<RequestDto> getRequestsForBook(long bookId, String sortBy, int mode);
 }
 

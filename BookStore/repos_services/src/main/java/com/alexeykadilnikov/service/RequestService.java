@@ -1,11 +1,14 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.dto.RequestDto;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.mapper.RequestMapper;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +18,14 @@ import java.util.*;
 @Service
 public class RequestService implements IRequestService {
     private final IBookDAO bookDAO;
-    private final  IRequestDAO requestDAO;
+    private final IRequestDAO requestDAO;
+    private final RequestMapper requestMapper;
 
     @Autowired
-    public RequestService(IBookDAO bookDAO, IRequestDAO requestDAO) {
+    public RequestService(IBookDAO bookDAO, IRequestDAO requestDAO, RequestMapper requestMapper) {
         this.bookDAO = bookDAO;
         this.requestDAO = requestDAO;
+        this.requestMapper = requestMapper;
     }
 
     public Set<Book> createRequest(String name, int count) {
@@ -60,38 +65,56 @@ public class RequestService implements IRequestService {
         return requests;
     }
 
-    public List<Request> getAll() {
-        return requestDAO.findAll();
-    }
-
-    public void saveAll(List<Request> requestList) {
-        for(Request request : requestList) {
-            requestDAO.save(request);
+    public List<RequestDto> getAll() {
+        List<Request> requests = requestDAO.findAll();
+        List<RequestDto> requestsDto = new ArrayList<>();
+        for(Request request : requests) {
+            RequestDto requestDto = requestMapper.toDto(request);
+            requestsDto.add(requestDto);
         }
+        return requestsDto;
     }
 
-    public Request getById(long id) {
-        return requestDAO.getById(id);
+    public RequestDto save(RequestDto requestDto) {
+        Request request = requestMapper.toEntity(requestDto);
+        request.setCount(1);
+        createRequest(request.getName(), request.getCount());
+        return requestMapper.toDto(request);
+    }
+
+    public RequestDto getById(long id) {
+        Request request = requestDAO.getById(id);
+        if(request == null) {
+            throw new NullPointerException("Request with id = " + id + " not found");
+        }
+        return requestMapper.toDto(request);
     }
 
     public List<Request> sendSqlQuery(String hql) {
         return requestDAO.findAll(hql);
     }
 
-    public void getRequestsForBookSortedByCount(long bookId, int mode) {
-        String hql = QueryBuilder.getRequestsForBookSortedByCount(bookId, mode);
+    public List<RequestDto> getRequestsForBook(long bookId, String sortBy, int mode) {
+        String hql = "";
+        switch (sortBy) {
+            case "count":
+                hql = QueryBuilder.getRequestsForBookSortedByCount(bookId, mode);
+                break;
+            case "name":
+                hql = QueryBuilder.getRequestsForBookSortedByName(bookId, mode);
+                break;
+            default:
+                return new ArrayList<>();
+        }
 
         List<Request> requests = sendSqlQuery(hql);
+        List<RequestDto> requestsDto = new ArrayList<>();
+        for(Request request : requests) {
+            RequestDto requestDto = requestMapper.toDto(request);
+            requestsDto.add(requestDto);
+        }
 
-        System.out.println(requests);
-    }
-
-    public void getRequestsForBookSortedByName(long bookId, int mode) {
-        String hql = QueryBuilder.getRequestsForBookSortedByName(bookId, mode);
-
-        List<Request> requests = sendSqlQuery(hql);
-
-        System.out.println(requests);
+        return requestsDto;
     }
 
     private Set<Book> getBooksByRequest(String name, int count, Set<Book> booksByAuthor, Set<Book> booksByName) {
