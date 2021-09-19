@@ -1,9 +1,16 @@
 package com.alexeykadilnikov.entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "order_book")
 public class OrderBook implements Serializable {
@@ -40,33 +47,5 @@ public class OrderBook implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, order, book, bookCount);
-    }
-
-    public void setId(OrderBookKey id) {
-        this.id = id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public int getBookCount() {
-        return bookCount;
-    }
-
-    public void setBookCount(int count) {
-        this.bookCount = count;
     }
 }

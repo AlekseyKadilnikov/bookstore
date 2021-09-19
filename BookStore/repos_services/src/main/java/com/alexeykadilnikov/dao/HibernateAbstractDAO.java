@@ -63,21 +63,23 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
     public List<T> findAll(String hql) {
         List<T> entityList = new ArrayList<>();
 
-        Session session = getCurrentSession();
+        Session session = HibernateUtil.getSessionFactory().openSession();
 
         try {
             session.beginTransaction();
             entityList = session.createQuery(hql).list();
-            session.getTransaction().commit();
+            session.flush();
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
-            session.close();
+            if(session.isOpen()) {
+                session.close();
+            }
         }
         return entityList;
     }
 
-    public void save(T entity) {
+    public T save(T entity) {
         Session session = getCurrentSession();
         try {
             session.beginTransaction();
@@ -91,9 +93,10 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
         } finally {
             session.close();
         }
+        return entity;
     }
 
-    public void update(T entity) {
+    public T update(T entity) {
         Session session = getCurrentSession();
         try {
             session.beginTransaction();
@@ -107,6 +110,7 @@ public abstract class HibernateAbstractDAO <T, PK extends Serializable> {
         } finally {
             session.close();
         }
+        return entity;
     }
 
     public void delete(T entity) {

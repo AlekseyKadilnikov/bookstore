@@ -1,17 +1,17 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.OrderStatus;
+import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.service.*;
-import com.alexeykadilnikov.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("orders")
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
@@ -22,64 +22,53 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    public void create(List<Long> ids) {
-        orderService.createOrder(ids, UserUtils.getCurrentUser());
+    @PostMapping()
+    public OrderDto save(@RequestBody OrderDto orderDto) {
+        return orderService.save(orderDto);
     }
 
-    public void cancel(long id) {
-        orderService.cancelOrder(id);
-    }
-
-    public List<Order> getAll() {
+    @GetMapping()
+    public List<OrderDto> getAll() {
         return orderService.getAll();
     }
 
-    public void saveAll(List<Order> orderList) {
-        orderService.saveAll(orderList);
+    @GetMapping("{id}")
+    public OrderDto getById(@PathVariable("id") long id) {
+        return orderService.getById(id);
     }
 
-    public void showOne(int id) {
-        System.out.println(orderService.showOrder(id));
+    @PatchMapping("{id}/status")
+    public OrderDto setStatus(@PathVariable("id") int orderId,
+                              @RequestParam("status") int statusCode) {
+        return orderService.setStatus(orderId, statusCode);
     }
 
-    public void showAll() {
-        System.out.println(orderService.getAll());
+    @GetMapping("sort/status")
+    public List<OrderDto> sortByStatus(@RequestParam("status") int statusCode) {
+        return orderService.sortByStatus(statusCode);
     }
 
-    public void sortByPrice(int mode) {
-        orderService.sortByPrice(mode);
+    @GetMapping("sort/{sortBy}")
+    public List<OrderDto> sortBy(@PathVariable("sortBy") String sortBy,
+                                 @RequestParam("mode") int mode,
+                                 @RequestParam(value = "startDate", required = false) String startDate,
+                                 @RequestParam(value = "endDate", required = false) String endDate) {
+        if(startDate == null || endDate == null)
+            return orderService.sortBy(sortBy, mode);
+        else {
+            return orderService.sortForPeriod(sortBy, mode, startDate, endDate);
+        }
     }
 
-    public void sortByExecDate(int mode) {
-        orderService.sortByExecDate(mode);
+    @GetMapping("countComplete")
+    public int getCountOfCompleteOrdersForPeriod(@RequestParam(value = "startDate") String startDate,
+                                                  @RequestParam(value = "endDate") String endDate) {
+        return orderService.getCountOfCompleteOrdersForPeriod(startDate, endDate);
     }
 
-    public void sortByExecDateForPeriodByDate(String startDate, String endDate, int mode) {
-        orderService.sortByExecDateForPeriodByDate(startDate, endDate, mode);
+    @GetMapping("earnedMoney")
+    public int getEarnedMoneyForPeriod(@RequestParam(value = "startDate") String startDate,
+                                        @RequestParam(value = "endDate") String endDate) {
+        return orderService.getEarnedMoneyForPeriod(startDate, endDate);
     }
-
-    public void sortByExecDateForPeriodByPrice(String startDate, String endDate, int mode) {
-        orderService.sortByExecDateForPeriodByPrice(startDate, endDate, mode);
-    }
-
-    public void getEarnedMoneyForPeriod(String startDate, String endDate) {
-        orderService.getEarnedMoneyForPeriod(startDate, endDate);
-    }
-
-    public void getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
-        orderService.getCountOfCompleteOrdersForPeriod(startDate, endDate);
-    }
-
-    public List<Order> sortByStatus(OrderStatus status) {
-        return orderService.sortByStatus(status);
-    }
-
-    public void setStatus(int orderId, OrderStatus status) {
-        orderService.setStatus(orderId, status);
-    }
-
-
-    public void importOrders(String path) {}
-
-    public void exportOrders(String path, String orderIds) {}
 }

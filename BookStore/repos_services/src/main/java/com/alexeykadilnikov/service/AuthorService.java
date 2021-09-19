@@ -2,6 +2,7 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.dao.IAuthorDAO;
+import com.alexeykadilnikov.mapper.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +12,12 @@ import java.util.List;
 public class AuthorService implements IAuthorService {
 
     private final IAuthorDAO authorDAO;
+    private final BookMapper authorMapper;
 
     @Autowired
-    public AuthorService(IAuthorDAO authorDAO) {
+    public AuthorService(IAuthorDAO authorDAO, BookMapper authorMapper) {
         this.authorDAO = authorDAO;
+        this.authorMapper = authorMapper;
     }
 
     @Override

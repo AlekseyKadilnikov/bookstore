@@ -1,16 +1,19 @@
 package com.alexeykadilnikov.service;
 
+import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
+import com.alexeykadilnikov.mapper.BookMapper;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -21,11 +24,13 @@ public class BookService implements IBookService {
 
     private final IBookDAO bookDAO;
     private final IRequestDAO requestDAO;
+    private final BookMapper bookMapper;
 
     @Autowired
-    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO) {
+    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO, BookMapper bookMapper) {
         this.bookDAO = bookDAO;
         this.requestDAO = requestDAO;
+        this.bookMapper = bookMapper;
     }
 
     @Value("${BookService.doSuccess}")
@@ -33,13 +38,7 @@ public class BookService implements IBookService {
     @Value("${BookService.months}")
     private int months;
 
-    public void saveAll(List<Book> bookList) {
-        for(Book book : bookList) {
-            bookDAO.save(book);
-        }
-    }
-
-    public void addBook(long id, int bookCount) {
+    public BookDto addBook(long id, int bookCount) {
         Book book = bookDAO.getById(id);
         Request newRequest = book.getRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.NEW)
@@ -50,12 +49,14 @@ public class BookService implements IBookService {
         if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
             book.setCount(book.getCount() + bookCount);
             bookDAO.update(book);
-            return;
+            return bookMapper.toDto(book);
         }
 
         if(doSuccess) {
             createSuccessRequests(bookCount, book, newRequest, successRequest);
         }
+
+        return bookMapper.toDto(book);
     }
 
     private void createSuccessRequests(int bookCount, Book book, Request newRequest, Request successRequest) {
@@ -86,12 +87,13 @@ public class BookService implements IBookService {
         }
     }
 
-    public String showBook(long id) {
-        return bookDAO.getById(id).toString();
-    }
-
-    public List<Book> getAll() {
-        return bookDAO.findAll();
+    public List<BookDto> getAll() {
+        List<Book> books = bookDAO.findAll();
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
     }
 
     public void createBook(Book book) {
@@ -99,17 +101,16 @@ public class BookService implements IBookService {
     }
 
     public String getDescription(Long bookId) {
-        Book book = getById(bookId);
-        if(book != null) {
-            System.out.println(book.getDescription());
-        } else {
-            System.out.println("Book with id = " + bookId + " does not exist!");
-        }
+        BookDto book = getById(bookId);
         return book.getDescription();
     }
 
-    public Book getById(long id) {
-        return bookDAO.getById(id);
+    public BookDto getById(long id) {
+        Book book = bookDAO.getById(id);
+        if(book == null) {
+            throw new NullPointerException("Book with id = " + id + " not found");
+        }
+        return bookMapper.toDto(book);
     }
 
     public void createRequest(Request request, long id) {
@@ -129,10 +130,11 @@ public class BookService implements IBookService {
         return books;
     }
 
-    public void writeOff(long bookId) {
+    public BookDto writeOff(long bookId) {
         Book book = bookDAO.getById(bookId);
         book.setCount(0);
         bookDAO.update(book);
+        return bookMapper.toDto(book);
     }
 
     public List<Book> sendSqlQuery(String hql) {
@@ -143,51 +145,51 @@ public class BookService implements IBookService {
         books.sort(comparator);
         return books;
     }
-    public void sortByName(int mode) {
-        String hql = QueryBuilder.sortBooksByName(mode);
 
+    public List<BookDto> sortBy(String sortBy, int mode) {
+        String hql = "";
+        switch (sortBy) {
+            case "name":
+                hql = QueryBuilder.sortBooksByName(mode);
+                break;
+            case "price":
+                hql = QueryBuilder.sortBooksByPrice(mode);
+                break;
+            case "year":
+                hql = QueryBuilder.sortBooksByPublicationYear(mode);
+                break;
+            case "count":
+                hql = QueryBuilder.sortBooksByCount(mode);
+                break;
+            default:
+                return new ArrayList<>();
+        }
         List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
     }
 
-    public void sortByPrice(int mode) {
-        String hql = QueryBuilder.sortBooksByPrice(mode);
+    public List<BookDto> getStaleBooks(String sortBy, int mode) {
+        String hql = "";
+        switch (sortBy) {
+            case "name":
+                hql = QueryBuilder.getStaleBooksByDate(mode, months);
+                break;
+            case "price":
+                hql = QueryBuilder.getStaleBooksByPrice(mode, months);
+                break;
+            default:
+                return new ArrayList<>();
+        }
 
         List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
-    }
-
-    public void sortByPublicationYear(int mode) {
-        String hql = QueryBuilder.sortBooksByPublicationYear(mode);
-
-        List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
-    }
-
-    public void sortByCount(int mode) {
-        String hql = QueryBuilder.sortBooksByCount(mode);
-
-        List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
-    }
-
-    public void getStaleBooksByDate(int mode) {
-        String hql = QueryBuilder.getStaleBooksByDate(mode, months);
-
-        List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
-    }
-
-    public void getStaleBooksByPrice(int mode) {
-        String hql = QueryBuilder.getStaleBooksByPrice(mode, months);
-
-        List<Book> books = sendSqlQuery(hql);
-
-        System.out.println(books);
+        List<BookDto> booksDto = new ArrayList<>();
+        for(Book book : books) {
+            booksDto.add(bookMapper.toDto(book));
+        }
+        return booksDto;
     }
 }

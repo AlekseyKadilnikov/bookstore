@@ -2,16 +2,19 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
+import com.alexeykadilnikov.dao.IUserDAO;
+import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.*;
 import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dao.IOrderDAO;
 import com.alexeykadilnikov.dao.IRequestDAO;
-import com.alexeykadilnikov.dao.IUserDAO;
+import com.alexeykadilnikov.mapper.OrderMapper;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,15 +26,19 @@ public class OrderService implements IOrderService {
     private final IOrderDAO orderDAO;
     private final IBookDAO bookDAO;
     private final IRequestDAO requestDAO;
+    private final IUserDAO userDAO;
+    private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO) {
+    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO, IUserDAO userDAO, OrderMapper orderMapper) {
         this.orderDAO = orderDAO;
         this.bookDAO = bookDAO;
         this.requestDAO = requestDAO;
+        this.userDAO = userDAO;
+        this.orderMapper = orderMapper;
     }
 
-    public void createOrder(List<Long> booksId, User user) {
+    private OrderDto create(List<Long> booksId, User user) {
         Set<OrderBook> orderBooks = new HashSet<>();
         Map<Long, Integer> books = new HashMap<>();
         for(Long bookId : booksId) {
@@ -56,13 +63,10 @@ public class OrderService implements IOrderService {
         order.setStatus(OrderStatus.NEW);
         orderDAO.save(order);
         checkBookAvailable(orderBooks);
+        return orderMapper.toDto(order);
     }
 
-    public String showOrder(long id) {
-        return orderDAO.getById(id).toString();
-    }
-
-    public void cancelOrder(long id) {
+    private OrderDto cancel(long id) {
         Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Request newRequest = orderBook.getBook().getRequests()
@@ -84,19 +88,22 @@ public class OrderService implements IOrderService {
         order.setStatus(OrderStatus.CANCELED);
         orderDAO.update(order);
         logger.info("Order id = {} canceled", order.getId());
+        return orderMapper.toDto(order);
     }
 
-    public void setStatus(long id, OrderStatus status) {
-        if(status == OrderStatus.SUCCESS) {
-            completeOrder(id);
-            return;
+    public OrderDto setStatus(long id, int statusCode) {
+        if(statusCode == 1) {
+            return complete(id);
+        } else if(statusCode == 2) {
+            return cancel(id);
+        } else {
+            Order order = orderDAO.getById(id);
+            order.setStatus(OrderStatus.NEW);
+            return orderMapper.toDto(orderDAO.update(order));
         }
-        Order order = orderDAO.getById(id);
-        order.setStatus(status);
-        orderDAO.update(order);
     }
 
-    public void completeOrder(long id) {
+    private OrderDto complete(long id) {
         Order order = orderDAO.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Book book = orderBook.getBook();
@@ -110,33 +117,35 @@ public class OrderService implements IOrderService {
                 logger.info("Order id = {} couldn't be completed: request for book id = {} not closed",
                         order.getId(),
                         book.getId());
-                return;
+                return orderMapper.toDto(order);
             }
         }
         order.setStatus(OrderStatus.SUCCESS);
         order.setExecutionDate(LocalDateTime.now());
-        orderDAO.update(order);
+        return orderMapper.toDto(order);
     }
 
-    public List<Order> getAll() {
-        return orderDAO.findAll();
+    public List<OrderDto> getAll() {
+        List<Order> orders = orderDAO.findAll();
+        List<OrderDto> ordersDto = new ArrayList<>();
+        for(Order order : orders) {
+            OrderDto orderDto = orderMapper.toDto(order);
+            ordersDto.add(orderDto);
+        }
+        return ordersDto;
     }
 
-    public void saveOrder(Order order) {
+    public OrderDto save(OrderDto orderDto) {
+        Order order = orderMapper.toEntity(orderDto);
         if(order.getStatus() == OrderStatus.NEW) {
             checkBookAvailable(order.getOrderBooks());
         }
         order.setTotalPrice(calculatePrice(order));
-        orderDAO.save(order);
+        order = orderDAO.save(order);
+        return orderMapper.toDto(order);
     }
 
-    public void saveAll(List<Order> orderList) {
-        for(Order order : orderList) {
-            orderDAO.save(order);
-        }
-    }
-
-    public void checkBookAvailable(Set<OrderBook> orderBooks) {
+    private void checkBookAvailable(Set<OrderBook> orderBooks) {
         for (OrderBook orderBook : orderBooks) {
             Book book = orderBook.getBook();
             int diff = orderBook.getBookCount() - book.getCount();
@@ -187,12 +196,12 @@ public class OrderService implements IOrderService {
         }
     }
 
-    public Order getByIndex(long id) {
-        return orderDAO.getById(id);
-    }
-
-    public Order getById(long id) {
-        return orderDAO.getById(id);
+    public OrderDto getById(long id) {
+        Order order = orderDAO.getById(id);
+        if(order == null) {
+            throw new NullPointerException("Order with id = " + id + " not found");
+        }
+        return orderMapper.toDto(order);
     }
 
     public int calculatePrice(Order order) {
@@ -213,39 +222,60 @@ public class OrderService implements IOrderService {
         return orderDAO.findAll(hql);
     }
 
-    public void sortByPrice(int mode) {
-        String hql = QueryBuilder.sortOrdersByPrice(mode);
+    public List<OrderDto> sortBy(String sortBy, int mode) {
+        String hql = "";
+        switch (sortBy) {
+            case "price":
+                hql = QueryBuilder.sortOrdersByPrice(mode);
+                break;
+            case "execDate":
+                hql = QueryBuilder.sortOrdersByExecDate(mode);
+                break;
+            default:
+                return new ArrayList<>();
+        }
 
         List<Order> orders = sendSqlQuery(hql);
-
-        System.out.println(orders);
+        List<OrderDto> ordersDto = new ArrayList<>();
+        for(Order order : orders) {
+            OrderDto orderDto = orderMapper.toDto(order);
+            ordersDto.add(orderDto);
+        }
+        return ordersDto;
     }
 
-    public void sortByExecDate(int mode) {
-        String hql = QueryBuilder.sortOrdersByExecDate(mode);
+    public List<OrderDto> sortByStatus(int statusCode) {
+        List<Order> orders = sendSqlQuery(QueryBuilder.sortByStatus(OrderStatus.values()[statusCode]));
+        List<OrderDto> ordersDto = new ArrayList<>();
+        for(Order order : orders) {
+            OrderDto orderDto = orderMapper.toDto(order);
+            ordersDto.add(orderDto);
+        }
+        return ordersDto;
+    }
 
+    public List<OrderDto> sortForPeriod(String sortBy, int mode, String startDate, String endDate) {
+        String hql = "";
+        switch (sortBy) {
+            case "execDate":
+                hql = QueryBuilder.sortOrdersByExecDateForPeriodByDate(startDate, endDate, mode);
+                break;
+            case "price":
+                hql = QueryBuilder.sortOrdersByExecDateForPeriodByPrice(startDate, endDate, mode);
+                break;
+            default:
+                return new ArrayList<>();
+        }
         List<Order> orders = sendSqlQuery(hql);
-
-        System.out.println(orders);
+        List<OrderDto> ordersDto = new ArrayList<>();
+        for(Order order : orders) {
+            OrderDto orderDto = orderMapper.toDto(order);
+            ordersDto.add(orderDto);
+        }
+        return ordersDto;
     }
 
-    public void sortByExecDateForPeriodByDate(String startDate, String endDate, int mode) {
-        String hql = QueryBuilder.sortOrdersByExecDateForPeriodByDate(startDate, endDate, mode);
-
-        List<Order> orders = sendSqlQuery(hql);
-
-        System.out.println(orders);
-    }
-
-    public void sortByExecDateForPeriodByPrice(String startDate, String endDate, int mode) {
-        String hql = QueryBuilder.sortOrdersByExecDateForPeriodByPrice(startDate, endDate, mode);
-
-        List<Order> orders = sendSqlQuery(hql);
-
-        System.out.println(orders);
-    }
-
-    public void getEarnedMoneyForPeriod(String startDate, String endDate) {
+    public int getEarnedMoneyForPeriod(String startDate, String endDate) {
         String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
 
         List<Order> orders = sendSqlQuery(hql);
@@ -255,15 +285,11 @@ public class OrderService implements IOrderService {
             sum += order.getTotalPrice();
         }
 
-        System.out.println(sum);
+        return sum;
     }
 
-    public void getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
+    public int getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
         String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
-        System.out.println(sendSqlQuery(hql).size());
-    }
-
-    public List<Order> sortByStatus(OrderStatus status) {
-        return sendSqlQuery(QueryBuilder.sortByStatus(status));
+        return sendSqlQuery(hql).size();
     }
 }

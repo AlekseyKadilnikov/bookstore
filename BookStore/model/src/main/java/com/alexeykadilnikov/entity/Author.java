@@ -1,10 +1,16 @@
 package com.alexeykadilnikov.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "author")
 public class Author extends BaseEntity implements Serializable {
@@ -17,7 +23,7 @@ public class Author extends BaseEntity implements Serializable {
     @Column(name = "middle_name")
     private String middleName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "author_book",
             joinColumns = @JoinColumn(name="author_id"),
@@ -25,20 +31,10 @@ public class Author extends BaseEntity implements Serializable {
     )
     private Set<Book> books;
 
-    public Author() {
-    }
-
     public Author(String firstName, String lastName, String middleName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
-    }
-
-    public Author(String firstName, String lastName, String middleName, Set<Book> books) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.middleName = middleName;
-        this.books = books;
     }
 
     @Override
@@ -62,37 +58,5 @@ public class Author extends BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(firstName, lastName, middleName);
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public Set<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(Set<Book> books) {
-        this.books = books;
     }
 }

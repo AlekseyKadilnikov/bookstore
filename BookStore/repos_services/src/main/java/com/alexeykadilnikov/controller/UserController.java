@@ -1,18 +1,15 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.entity.User;
+import com.alexeykadilnikov.dto.UserDto;
 import com.alexeykadilnikov.service.IUserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Controller
+@RestController
+@RequestMapping("users")
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
     private final IUserService userService;
 
     @Autowired
@@ -20,30 +17,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    public int create(String username) {
-        if(userService.addUser(username) > 0) {
-            return 1;
-        }
-        return 0;
+    @PostMapping()
+    public UserDto save(@RequestBody UserDto userDto) {
+        return userService.save(userDto);
     }
 
-    public User getOne(String username) {
-        return userService.getByName(username);
+    @GetMapping("{id}")
+    public UserDto getById(@PathVariable("id") Long id) {
+        return userService.getById(id);
     }
 
-    public void getOrders(User user) {
-        System.out.println(user.getOrders());
-    }
-
-    public List<User> getAll() {
+    @GetMapping()
+    public List<UserDto> getAll() {
         return userService.getAll();
     }
-
-    public void saveAll(List<User> userList) {
-        userService.saveAll(userList);
-    }
-
-    public void importUsers(String path) {}
-
-    public void exportUsers(String path, String userIds) {}
 }

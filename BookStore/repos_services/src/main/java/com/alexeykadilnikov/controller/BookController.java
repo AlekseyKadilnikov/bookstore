@@ -1,15 +1,16 @@
 package com.alexeykadilnikov.controller;
 
-import com.alexeykadilnikov.entity.Book;
+import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.service.IBookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/books")
 public class BookController {
     private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
@@ -20,51 +21,36 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    public void sortByName(int mode) {
-        bookService.sortByName(mode);
+    @GetMapping(value = "/sort/{sortBy}")
+    public List<BookDto> sortBy(@PathVariable("sortBy") String sortBy,
+                                    @RequestParam("mode") int mode) {
+        return bookService.sortBy(sortBy, mode);
     }
 
-    public void sortByPrice(int mode) {
-        bookService.sortByPrice(mode);
+    @GetMapping(value = "/stale/{sortBy}")
+    public List<BookDto> getStaleBooks(@PathVariable("sortBy") String sortBy,
+                                    @RequestParam("mode") int mode) {
+        return bookService.getStaleBooks(sortBy, mode);
     }
 
-    public void sortByPublicationYear(int mode) {
-        bookService.sortByPublicationYear(mode);
+    @PatchMapping("writeOff/{id}")
+    public BookDto writeOff(@PathVariable("id") long bookId) {
+        return bookService.writeOff(bookId);
     }
 
-    public void sortByCount(int mode) {
-        bookService.sortByCount(mode);
-    }
-
-    public void getStaleBooksByDate(int mode) {
-        bookService.getStaleBooksByDate(mode);
-    }
-
-    public void getStaleBooksByPrice(int mode) {
-        bookService.getStaleBooksByPrice(mode);
-    }
-
-    public void writeOff(long bookId) {
-        bookService.writeOff(bookId);
-    }
-
-    public List<Book> getAll() {
+    @GetMapping()
+    public List<BookDto> getAll() {
         return bookService.getAll();
     }
 
-    public void saveAll(List<Book> bookList) {
-        bookService.saveAll(bookList);
+    @GetMapping("{id}/description")
+    public String getDescription(@PathVariable("id") Long bookId) {
+        return bookService.getDescription(bookId);
     }
 
-    public void showDescription(Long bookId) {
-        System.out.println(bookService.getDescription(bookId));
+    @PatchMapping("add/{id}")
+    public BookDto addBook(@PathVariable("id") long bookId,
+                        @RequestParam("count") int count) {
+        return bookService.addBook(bookId, count);
     }
-
-    public void addBook(long bookId, int count){
-        bookService.addBook(bookId, count);
-    }
-
-    public void importBooks(String path) {}
-
-    public void exportBooks(String path, String bookIds) {}
 }
