@@ -1,5 +1,6 @@
 package com.alexeykadilnikov.config;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -15,6 +17,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import javax.jms.ConnectionFactory;
 
 @Configuration
 @EnableTransactionManagement
@@ -65,5 +69,18 @@ public class SpringConfig implements WebMvcConfigurer {
                 .setSkipNullEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
         return mapper;
+    }
+
+    @Bean
+    public ConnectionFactory getConnectionFactory() {
+        return new ActiveMQConnectionFactory("tcp://localhost:61616");
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplate() {
+        JmsTemplate template = new JmsTemplate();
+        template.setConnectionFactory(getConnectionFactory());
+        template.setPubSubDomain(false); // false for a Queue, true for a Topic
+        return template;
     }
 }
