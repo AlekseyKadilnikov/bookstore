@@ -20,6 +20,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.jms.ConnectionFactory;
 
+
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({"com.alexeykadilnikov"})
