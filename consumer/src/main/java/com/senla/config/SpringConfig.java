@@ -6,13 +6,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.jms.ConnectionFactory;
 
 @Configuration
 @EnableJms
 @ComponentScan({"com.senla"})
-public class SpringConfig {
+public class SpringConfig implements WebMvcConfigurer {
 
     @Bean
     public ConnectionFactory getConnectionFactory() {

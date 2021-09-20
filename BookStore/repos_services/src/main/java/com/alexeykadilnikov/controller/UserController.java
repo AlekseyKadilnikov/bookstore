@@ -24,7 +24,7 @@ public class UserController {
     public UserDto save(@RequestBody UserDto userDto) {
         UserDto newUserDto = userService.save(userDto);
         jmsTemplate.convertAndSend("user", "saved: id = " + newUserDto.getId());
-        return userDto;
+        return newUserDto;
     }
 
     @GetMapping("{id}")
