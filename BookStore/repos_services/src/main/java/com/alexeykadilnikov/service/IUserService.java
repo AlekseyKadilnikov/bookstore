@@ -13,5 +13,5 @@ public interface IUserService {
 
     UserDto save(UserDto user);
 
-    UserDto update(UserDto user);
+    User findByUsername(String username);
 }

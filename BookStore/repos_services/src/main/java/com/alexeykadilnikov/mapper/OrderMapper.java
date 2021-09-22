@@ -1,12 +1,12 @@
 package com.alexeykadilnikov.mapper;
 
 import com.alexeykadilnikov.OrderStatus;
-import com.alexeykadilnikov.dao.IBookDAO;
 import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.OrderBook;
 import com.alexeykadilnikov.entity.OrderBookKey;
+import com.alexeykadilnikov.repository.IBookRepository;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ import java.util.*;
 public class OrderMapper implements IMapper<Order, OrderDto> {
 
     private final ModelMapper mapper;
-    private final IBookDAO bookDAO;
+    private final IBookRepository bookRepository;
 
     @Autowired
-    public OrderMapper(ModelMapper mapper, IBookDAO bookDAO) {
+    public OrderMapper(ModelMapper mapper, IBookRepository bookRepository) {
         this.mapper = mapper;
-        this.bookDAO = bookDAO;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class OrderMapper implements IMapper<Order, OrderDto> {
             OrderBook orderBook = new OrderBook();
             OrderBookKey orderBookKey = new OrderBookKey();
             orderBook.setId(orderBookKey);
-            Book book = bookDAO.getById(entry.getKey());
+            Book book = bookRepository.getById(entry.getKey());
             orderBook.setBook(book);
             orderBook.setOrder(destination);
             orderBook.setBookCount(entry.getValue());

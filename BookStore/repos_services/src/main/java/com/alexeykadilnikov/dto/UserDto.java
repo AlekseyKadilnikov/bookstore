@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto extends BaseEntityDto {
     private String username;
+    private String password;
 }

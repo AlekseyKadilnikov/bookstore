@@ -6,9 +6,9 @@ import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.dao.IBookDAO;
-import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.mapper.RequestMapper;
+import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,31 +17,31 @@ import java.util.*;
 
 @Service
 public class RequestService implements IRequestService {
-    private final IBookDAO bookDAO;
-    private final IRequestDAO requestDAO;
+    private final IBookRepository bookRepository;
+    private final IRequestRepository requestRepository;
     private final RequestMapper requestMapper;
 
     @Autowired
-    public RequestService(IBookDAO bookDAO, IRequestDAO requestDAO, RequestMapper requestMapper) {
-        this.bookDAO = bookDAO;
-        this.requestDAO = requestDAO;
+    public RequestService(IBookRepository bookRepository, IRequestRepository requestRepository, RequestMapper requestMapper) {
+        this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
     }
 
     public Set<Book> createRequest(String name, int count) {
-        Request request = requestDAO.findAll()
+        Request request = requestRepository.findAll()
                 .stream()
                 .filter(r -> r.getName().equals(name))
                 .findAny()
                 .orElse(null);
         if(request != null) {
             request.setCount(request.getCount() + 1);
-            requestDAO.update(request);
+            requestRepository.save(request);
             return request.getBooks();
         }
 
         String[] words = name.split(" ");
-        List<Book> books = bookDAO.findAll();
+        List<Book> books = bookRepository.findAll();
         Set<Book> booksByAuthor = new HashSet<>();
         Set<Book> booksByName = new HashSet<>();
         for(String word : words) {
@@ -60,13 +60,13 @@ public class RequestService implements IRequestService {
     }
 
     public List<Request> sort(Book book, Comparator<Request> comparator) {
-        List<Request> requests = requestDAO.findAll();
+        List<Request> requests = requestRepository.findAll();
         requests.sort(comparator);
         return requests;
     }
 
     public List<RequestDto> getAll() {
-        List<Request> requests = requestDAO.findAll();
+        List<Request> requests = requestRepository.findAll();
         List<RequestDto> requestsDto = new ArrayList<>();
         for(Request request : requests) {
             RequestDto requestDto = requestMapper.toDto(request);
@@ -83,7 +83,7 @@ public class RequestService implements IRequestService {
     }
 
     public RequestDto getById(long id) {
-        Request request = requestDAO.getById(id);
+        Request request = requestRepository.getById(id);
         if(request == null) {
             throw new NullPointerException("Request with id = " + id + " not found");
         }
@@ -91,7 +91,7 @@ public class RequestService implements IRequestService {
     }
 
     public List<Request> sendSqlQuery(String hql) {
-        return requestDAO.findAll(hql);
+        return requestRepository.findAll();
     }
 
     public List<RequestDto> getRequestsForBook(long bookId, String sortBy, int mode) {
@@ -122,20 +122,20 @@ public class RequestService implements IRequestService {
         if(booksByAuthor.isEmpty() && !booksByName.isEmpty()) {
             bookSet.addAll(booksByName);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestDAO.save(request);
+            requestRepository.save(request);
             return booksByName;
         }
         else if(!booksByAuthor.isEmpty() && booksByName.isEmpty()){
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestDAO.save(request);
+            requestRepository.save(request);
             return booksByAuthor;
         }
         else {
             booksByAuthor.retainAll(booksByName);
             bookSet.addAll(booksByAuthor);
             Request request = new Request(name, count, RequestStatus.COMMON, bookSet);
-            requestDAO.save(request);
+            requestRepository.save(request);
             return booksByAuthor;
         }
     }

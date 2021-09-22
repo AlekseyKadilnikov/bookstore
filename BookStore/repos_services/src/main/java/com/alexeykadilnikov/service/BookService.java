@@ -4,16 +4,15 @@ import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.entity.Request;
-import com.alexeykadilnikov.dao.IBookDAO;
-import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.mapper.BookMapper;
+import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -22,14 +21,14 @@ import java.util.*;
 public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
-    private final IBookDAO bookDAO;
-    private final IRequestDAO requestDAO;
+    private final IBookRepository bookRepository;
+    private final IRequestRepository requestRepository;
     private final BookMapper bookMapper;
 
     @Autowired
-    public BookService(IBookDAO bookDAO, IRequestDAO requestDAO, BookMapper bookMapper) {
-        this.bookDAO = bookDAO;
-        this.requestDAO = requestDAO;
+    public BookService(IBookRepository bookRepository, IRequestRepository requestRepository, BookMapper bookMapper) {
+        this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
         this.bookMapper = bookMapper;
     }
 
@@ -39,7 +38,7 @@ public class BookService implements IBookService {
     private int months;
 
     public BookDto addBook(long id, int bookCount) {
-        Book book = bookDAO.getById(id);
+        Book book = bookRepository.getById(id);
         Request newRequest = book.getRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.NEW)
                 .findFirst().orElse(null);
@@ -48,7 +47,7 @@ public class BookService implements IBookService {
                 .findFirst().orElse(null);
         if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
             book.setCount(book.getCount() + bookCount);
-            bookDAO.update(book);
+            bookRepository.save(book);
             return bookMapper.toDto(book);
         }
 
@@ -66,29 +65,28 @@ public class BookService implements IBookService {
         if(diff >= 0) {
             if(successRequest == null) {
                 successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
-                requestDAO.save(successRequest);
+                requestRepository.save(successRequest);
             } else {
                 successRequest.setCount(successRequest.getCount() + newRequest.getCount());
-                requestDAO.update(successRequest);
+                requestRepository.save(successRequest);
             }
-            requestDAO.delete(newRequest);
+            requestRepository.delete(newRequest);
             book.setCount(diff);
-            bookDAO.update(book);
+            bookRepository.save(book);
         } else {
             if (successRequest == null) {
                 successRequest = new Request(newRequest.getName(), bookCount, RequestStatus.SUCCESS, books);
-                requestDAO.save(successRequest);
             } else {
                 successRequest.setCount(successRequest.getCount() + bookCount);
-                requestDAO.update(successRequest);
             }
+            requestRepository.save(successRequest);
             newRequest.setCount(newRequest.getCount() - bookCount);
-            requestDAO.update(newRequest);
+            requestRepository.save(newRequest);
         }
     }
 
     public List<BookDto> getAll() {
-        List<Book> books = bookDAO.findAll();
+        List<Book> books = bookRepository.findAll();
         List<BookDto> booksDto = new ArrayList<>();
         for(Book book : books) {
             booksDto.add(bookMapper.toDto(book));
@@ -97,7 +95,7 @@ public class BookService implements IBookService {
     }
 
     public void createBook(Book book) {
-        bookDAO.save(book);
+        bookRepository.save(book);
     }
 
     public String getDescription(Long bookId) {
@@ -106,7 +104,7 @@ public class BookService implements IBookService {
     }
 
     public BookDto getById(long id) {
-        Book book = bookDAO.getById(id);
+        Book book = bookRepository.getById(id);
         if(book == null) {
             throw new NullPointerException("Book with id = " + id + " not found");
         }
@@ -114,15 +112,15 @@ public class BookService implements IBookService {
     }
 
     public void createRequest(Request request, long id) {
-        Book book = bookDAO.getById(id);
+        Book book = bookRepository.getById(id);
         book.getRequests().add(request);
-        requestDAO.save(request);
+        requestRepository.save(request);
     }
 
     public List<Book> getOldBooks(int monthsAmount) {
         LocalDate date = LocalDate.now().minusMonths(monthsAmount);
         List<Book> books = new ArrayList<>();
-        for(Book book : bookDAO.findAll()) {
+        for(Book book : bookRepository.findAll()) {
             if(book.getDateOfReceipt().isBefore(date)) {
                 books.add(book);
             }
@@ -131,14 +129,14 @@ public class BookService implements IBookService {
     }
 
     public BookDto writeOff(long bookId) {
-        Book book = bookDAO.getById(bookId);
+        Book book = bookRepository.getById(bookId);
         book.setCount(0);
-        bookDAO.update(book);
+        bookRepository.save(book);
         return bookMapper.toDto(book);
     }
 
     public List<Book> sendSqlQuery(String hql) {
-        return bookDAO.findAll(hql);
+        return bookRepository.findAll();
     }
 
     public List<Book> sort(List<Book> books, Comparator<Book> comparator) {

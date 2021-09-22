@@ -1,12 +1,10 @@
 package com.alexeykadilnikov.mapper;
 
-import com.alexeykadilnikov.dao.IBookDAO;
-import com.alexeykadilnikov.dao.IOrderDAO;
+import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.dto.OrderBookDto;
 import com.alexeykadilnikov.dto.OrderBookKeyDto;
-import com.alexeykadilnikov.dto.OrderDto;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.OrderBook;
+import com.alexeykadilnikov.repository.IOrderRepository;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,14 @@ import java.util.Objects;
 public class OrderBookMapper implements IMapper<OrderBook, OrderBookDto> {
 
     private final ModelMapper mapper;
-    private final IOrderDAO orderDAO;
-    private final IBookDAO bookDAO;
+    private final IOrderRepository orderRepository;
+    private final IBookRepository bookRepository;
 
     @Autowired
-    public OrderBookMapper(ModelMapper mapper, IOrderDAO orderDAO, IBookDAO bookDAO) {
+    public OrderBookMapper(ModelMapper mapper, IOrderRepository orderRepository, IBookRepository bookRepository) {
         this.mapper = mapper;
-        this.orderDAO = orderDAO;
-        this.bookDAO = bookDAO;
+        this.orderRepository = orderRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -75,7 +73,7 @@ public class OrderBookMapper implements IMapper<OrderBook, OrderBookDto> {
     }
 
     private void mapSpecificFields(OrderBookDto source, OrderBook destination) {
-        destination.setBook(bookDAO.getById(source.getId().getBookId()));
-        destination.setOrder(orderDAO.getById(source.getId().getOrderId()));
+        destination.setBook(bookRepository.getById(source.getId().getBookId()));
+        destination.setOrder(orderRepository.getById(source.getId().getOrderId()));
     }
 }
