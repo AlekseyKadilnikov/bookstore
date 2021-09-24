@@ -29,7 +29,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 import javax.jms.ConnectionFactory;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.beans.PropertyVetoException;
 
 
 @Configuration

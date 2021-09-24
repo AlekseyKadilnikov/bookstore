@@ -4,6 +4,7 @@ import com.alexeykadilnikov.dto.UserDto;
 import com.alexeykadilnikov.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -33,6 +34,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('users:read')")
     public List<UserDto> getAll() {
         return userService.getAll();
     }

@@ -5,6 +5,8 @@ import com.alexeykadilnikov.service.IBookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +35,9 @@ public class BookController {
         return bookService.getStaleBooks(sortBy, mode);
     }
 
+    @Transactional
     @PatchMapping("writeOff/{id}")
+    @PreAuthorize("hasAuthority('books:update')")
     public BookDto writeOff(@PathVariable("id") long bookId) {
         return bookService.writeOff(bookId);
     }
