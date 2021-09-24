@@ -7,12 +7,13 @@ import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.mapper.BookMapper;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IRequestRepository;
-import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -37,6 +38,7 @@ public class BookService implements IBookService {
     @Value("${BookService.months}")
     private int months;
 
+    @Transactional
     public BookDto addBook(long id, int bookCount) {
         Book book = bookRepository.getById(id);
         Request newRequest = book.getRequests().stream()
@@ -58,18 +60,18 @@ public class BookService implements IBookService {
         return bookMapper.toDto(book);
     }
 
-    private void createSuccessRequests(int bookCount, Book book, Request newRequest, Request successRequest) {
+    @Transactional
+    public void createSuccessRequests(int bookCount, Book book, Request newRequest, Request successRequest) {
         Set<Book> books = new HashSet<>();
         books.add(book);
         int diff = bookCount - newRequest.getCount();
         if(diff >= 0) {
             if(successRequest == null) {
                 successRequest = new Request(newRequest.getName(), newRequest.getCount(), RequestStatus.SUCCESS, books);
-                requestRepository.save(successRequest);
             } else {
                 successRequest.setCount(successRequest.getCount() + newRequest.getCount());
-                requestRepository.save(successRequest);
             }
+            requestRepository.save(successRequest);
             requestRepository.delete(newRequest);
             book.setCount(diff);
             bookRepository.save(book);
@@ -98,19 +100,21 @@ public class BookService implements IBookService {
         bookRepository.save(book);
     }
 
+
     public String getDescription(Long bookId) {
         BookDto book = getById(bookId);
         return book.getDescription();
     }
 
     public BookDto getById(long id) {
-        Book book = bookRepository.getById(id);
-        if(book == null) {
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isEmpty()) {
             throw new NullPointerException("Book with id = " + id + " not found");
         }
-        return bookMapper.toDto(book);
+        return bookMapper.toDto(book.get());
     }
 
+    @Transactional
     public void createRequest(Request request, long id) {
         Book book = bookRepository.getById(id);
         book.getRequests().add(request);
@@ -128,6 +132,7 @@ public class BookService implements IBookService {
         return books;
     }
 
+    @Transactional
     public BookDto writeOff(long bookId) {
         Book book = bookRepository.getById(bookId);
         book.setCount(0);
@@ -135,57 +140,77 @@ public class BookService implements IBookService {
         return bookMapper.toDto(book);
     }
 
-    public List<Book> sendSqlQuery(String hql) {
-        return bookRepository.findAll();
-    }
-
     public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
         books.sort(comparator);
         return books;
     }
 
-    public List<BookDto> sortBy(String sortBy, int mode) {
-        String hql = "";
+    public List<BookDto> sortBy(String sortBy, String direction) {
+        List<Book> sorted;
         switch (sortBy) {
             case "name":
-                hql = QueryBuilder.sortBooksByName(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+                } else {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "name"));
+                }
                 break;
             case "price":
-                hql = QueryBuilder.sortBooksByPrice(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+                } else {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "price"));
+                }
                 break;
             case "year":
-                hql = QueryBuilder.sortBooksByPublicationYear(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.ASC, "publicationYear"));
+                } else {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "publicationYear"));
+                }
                 break;
             case "count":
-                hql = QueryBuilder.sortBooksByCount(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.ASC, "count"));
+                } else {
+                    sorted = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "count"));
+                }
                 break;
             default:
                 return new ArrayList<>();
         }
-        List<Book> books = sendSqlQuery(hql);
+
         List<BookDto> booksDto = new ArrayList<>();
-        for(Book book : books) {
+        for(Book book : sorted) {
             booksDto.add(bookMapper.toDto(book));
         }
         return booksDto;
     }
 
-    public List<BookDto> getStaleBooks(String sortBy, int mode) {
-        String hql = "";
+    public List<BookDto> getStaleBooks(String sortBy, String direction) {
+        List<Book> sorted;
+        LocalDate thresholdDate = LocalDate.now().minusMonths(months);
         switch (sortBy) {
             case "name":
-                hql = QueryBuilder.getStaleBooksByDate(mode, months);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.getStateBooksOrderByNameAsc(thresholdDate);
+                } else {
+                    sorted = bookRepository.getStateBooksOrderByNameDesc(thresholdDate);
+                }
                 break;
             case "price":
-                hql = QueryBuilder.getStaleBooksByPrice(mode, months);
+                if(direction.equalsIgnoreCase("asc")) {
+                    sorted = bookRepository.getStateBooksOrderByPriceAsc(thresholdDate);
+                } else {
+                    sorted = bookRepository.getStateBooksOrderByPriceDesc(thresholdDate);
+                }
                 break;
             default:
                 return new ArrayList<>();
         }
 
-        List<Book> books = sendSqlQuery(hql);
         List<BookDto> booksDto = new ArrayList<>();
-        for(Book book : books) {
+        for(Book book : sorted) {
             booksDto.add(bookMapper.toDto(book));
         }
         return booksDto;

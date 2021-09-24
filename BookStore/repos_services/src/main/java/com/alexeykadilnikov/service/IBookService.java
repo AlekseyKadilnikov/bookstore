@@ -17,7 +17,6 @@ public interface IBookService {
     String getDescription(Long id);
     List<Book> getOldBooks(int monthsAmount);
     BookDto writeOff(long bookId);
-    List<Book> sendSqlQuery(String hql);
-    List<BookDto> getStaleBooks(String sortBy, int mode);
-    List<BookDto> sortBy(String sortBy, int mode);
+    List<BookDto> getStaleBooks(String sortBy, String direction);
+    List<BookDto> sortBy(String sortBy, String direction);
 }

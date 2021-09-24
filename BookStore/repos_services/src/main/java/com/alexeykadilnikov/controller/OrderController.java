@@ -1,8 +1,8 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.dto.OrderDto;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.service.*;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@NoArgsConstructor
 @RequestMapping("orders")
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    private final IOrderService orderService;
+    private IOrderService orderService;
 
     @Autowired
     public OrderController(IOrderService orderService) {

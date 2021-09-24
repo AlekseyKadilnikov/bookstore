@@ -1,9 +1,7 @@
 package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.dto.UserDto;
-import com.alexeykadilnikov.entity.Role;
 import com.alexeykadilnikov.entity.User;
-import com.alexeykadilnikov.repository.IRoleRepository;
 import com.alexeykadilnikov.mapper.UserMapper;
 import com.alexeykadilnikov.repository.IUserRepository;
 import org.slf4j.Logger;
@@ -13,26 +11,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserService(IUserRepository userRepository,
-                       IRoleRepository roleRepository,
                        UserMapper userMapper,
                        BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -59,17 +52,13 @@ public class UserService implements IUserService {
     }
 
     public UserDto save(UserDto userDto) {
-        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        User user = userMapper.toEntity(userDto);
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.getById(1L));
-        user.setRoles(roles);
-        user = userRepository.save(user);
-        userDto = userMapper.toDto(user);
+//        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+//        User user = userMapper.toEntity(userDto);
+//        Set<Role> roles = new HashSet<>();
+//        roles.add(roleRepository.getById(1L));
+//        user.setRoles(roles);
+//        user = userRepository.save(user);
+//        userDto = userMapper.toDto(user);
         return userDto;
-    }
-
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 }
