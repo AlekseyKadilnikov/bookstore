@@ -23,13 +23,18 @@ public class BookService implements IBookService {
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
     private final IBookRepository bookRepository;
-    private final IRequestRepository requestRepository;
-    private final BookMapper bookMapper;
+    private IRequestRepository requestRepository;
+    private BookMapper bookMapper;
 
     @Autowired
     public BookService(IBookRepository bookRepository, IRequestRepository requestRepository, BookMapper bookMapper) {
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
+        this.bookMapper = bookMapper;
+    }
+
+    public BookService(IBookRepository bookRepository, BookMapper bookMapper) {
+        this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
     }
 
@@ -40,24 +45,27 @@ public class BookService implements IBookService {
 
     @Transactional
     public BookDto addBook(long id, int bookCount) {
-        Book book = bookRepository.getById(id);
-        Request newRequest = book.getRequests().stream()
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isEmpty()) {
+            throw new NullPointerException("Book with id = " + id + " not found");
+        }
+        Request newRequest = book.get().getRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.NEW)
                 .findFirst().orElse(null);
-        Request successRequest = book.getRequests().stream()
+        Request successRequest = book.get().getRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.SUCCESS)
                 .findFirst().orElse(null);
-        if(book.getCount() > 0 || (book.getCount() == 0 && newRequest == null) || newRequest == null) {
-            book.setCount(book.getCount() + bookCount);
-            bookRepository.save(book);
-            return bookMapper.toDto(book);
+        if(book.get().getCount() > 0 || (book.get().getCount() == 0 && newRequest == null) || newRequest == null) {
+            book.get().setCount(book.get().getCount() + bookCount);
+            bookRepository.save(book.get());
+            return bookMapper.toDto(book.get());
         }
 
         if(doSuccess) {
-            createSuccessRequests(bookCount, book, newRequest, successRequest);
+            createSuccessRequests(bookCount, book.get(), newRequest, successRequest);
         }
 
-        return bookMapper.toDto(book);
+        return bookMapper.toDto(book.get());
     }
 
     @Transactional
@@ -96,14 +104,12 @@ public class BookService implements IBookService {
         return booksDto;
     }
 
-    public void createBook(Book book) {
-        bookRepository.save(book);
-    }
-
-
-    public String getDescription(Long bookId) {
-        BookDto book = getById(bookId);
-        return book.getDescription();
+    public String getDescription(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isEmpty()) {
+            throw new NullPointerException("Book with id = " + id + " not found");
+        }
+        return book.get().getDescription();
     }
 
     public BookDto getById(long id) {
@@ -115,34 +121,14 @@ public class BookService implements IBookService {
     }
 
     @Transactional
-    public void createRequest(Request request, long id) {
-        Book book = bookRepository.getById(id);
-        book.getRequests().add(request);
-        requestRepository.save(request);
-    }
-
-    public List<Book> getOldBooks(int monthsAmount) {
-        LocalDate date = LocalDate.now().minusMonths(monthsAmount);
-        List<Book> books = new ArrayList<>();
-        for(Book book : bookRepository.findAll()) {
-            if(book.getDateOfReceipt().isBefore(date)) {
-                books.add(book);
-            }
+    public BookDto writeOff(long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isEmpty()) {
+            throw new NullPointerException("Book with id = " + id + " not found");
         }
-        return books;
-    }
-
-    @Transactional
-    public BookDto writeOff(long bookId) {
-        Book book = bookRepository.getById(bookId);
-        book.setCount(0);
-        bookRepository.save(book);
-        return bookMapper.toDto(book);
-    }
-
-    public List<Book> sort(List<Book> books, Comparator<Book> comparator) {
-        books.sort(comparator);
-        return books;
+        book.get().setCount(0);
+        bookRepository.save(book.get());
+        return bookMapper.toDto(book.get());
     }
 
     public List<BookDto> sortBy(String sortBy, String direction) {
