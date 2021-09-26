@@ -12,22 +12,23 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.*;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(classes = TestConfig.class, loader = AnnotationConfigContextLoader.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class BookServiceTest {
 
     private IBookService bookService;
 
-    @Mock
+    @MockBean
     private IBookRepository bookRepository;
 
     long bookId = 1L;
@@ -52,7 +53,7 @@ class BookServiceTest {
         testBooksDto.add(new BookDto("book2", 2016, 530, 30, "d2"));
         testBooksDto.add(new BookDto("book3", 2012, 540, 25, "d3"));
 
-        when(bookRepository.findAll()).thenReturn(testBooks);
+        given(bookRepository.findAll()).willReturn(testBooks);
 
         List<BookDto> result = bookService.getAll();
 
@@ -64,7 +65,7 @@ class BookServiceTest {
         Book book = new Book("book2", 2016, 530, 10, "d2", new HashSet<>());
         book.setId(bookId);
 
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
 
         BookDto bookDto = bookService.getById(bookId);
 
@@ -76,7 +77,7 @@ class BookServiceTest {
         Book book = new Book("book2", 2016, 530, 10, "d2", new HashSet<>());
         book.setId(bookId);
 
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
 
         String description = bookService.getDescription(bookId);
 
@@ -88,7 +89,7 @@ class BookServiceTest {
         Book book = new Book("book2", 2016, 530, 10, "d2", new HashSet<>());
         book.setId(bookId);
 
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
 
         BookDto bookDto = bookService.writeOff(bookId);
 
@@ -100,8 +101,8 @@ class BookServiceTest {
         Book book = new Book("book2", 2016, 530, 0, "d2", new HashSet<>());
         book.setId(bookId);
 
-        when(bookRepository.save(any(Book.class))).thenReturn(book);
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        given(bookRepository.save(any(Book.class))).willReturn(book);
+        given(bookRepository.findById(1L)).willReturn(Optional.of(book));
 
         BookDto bookDto = bookService.addBook(bookId, 10);
 
