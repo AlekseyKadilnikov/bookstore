@@ -3,7 +3,6 @@ package com.alexeykadilnikov.service;
 import com.alexeykadilnikov.config.TestConfig;
 import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.mapper.BookMapper;
 import com.alexeykadilnikov.repository.IBookRepository;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +19,6 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -36,7 +34,6 @@ class BookServiceTest {
 
     @BeforeAll
     void init(){
-        initMocks(this);
 
         BookMapper bookMapper = new BookMapper(new ModelMapper());
 
