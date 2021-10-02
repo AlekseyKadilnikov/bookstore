@@ -9,7 +9,8 @@ import org.testcontainers.containers.MySQLContainer;
 @UtilityClass
 public class MySql {
 
-    public static final MySQLContainer<?> container = new MySQLContainer<>("mysql:8.0.26");
+    public static final MySQLContainer<?> container = new MySQLContainer<>("mysql:8.0.26")
+            .withInitScript("sql/db_schema_test.sql");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
