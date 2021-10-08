@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
@@ -30,10 +31,6 @@ public class UserService implements IUserService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public List<User> sendSqlQuery(String hql) {
-        return userRepository.findAll();
-    }
-
     public List<UserDto> getAll() {
         List<User> users = userRepository.findAll();
         List<UserDto> usersDto = new ArrayList<>();
@@ -44,11 +41,11 @@ public class UserService implements IUserService {
     }
 
     public UserDto getById(long id) {
-        User user = userRepository.getById(id);
-        if(user == null) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
             throw new NullPointerException("User with id = " + id + " not found");
         }
-        return userMapper.toDto(user);
+        return userMapper.toDto(user.get());
     }
 
     public UserDto save(UserDto userDto) {
