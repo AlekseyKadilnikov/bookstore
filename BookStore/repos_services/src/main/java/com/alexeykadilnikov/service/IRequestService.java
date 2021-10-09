@@ -21,6 +21,6 @@ public interface IRequestService {
 
     List<Request> sendSqlQuery(String hql);
 
-    List<RequestDto> getRequestsForBook(long bookId, String sortBy, int mode);
+    List<RequestDto> getRequestsForBook(long bookId, String sortBy, String direction);
 }
 

@@ -1,6 +1,5 @@
 package com.alexeykadilnikov.service;
 
-import com.alexeykadilnikov.config.TestConfig;
 import com.alexeykadilnikov.dto.BookDto;
 import com.alexeykadilnikov.entity.Book;
 import com.alexeykadilnikov.mapper.BookMapper;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

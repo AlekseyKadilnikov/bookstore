@@ -46,6 +46,15 @@ public class Order extends BaseEntity implements Serializable {
         executionDate = null;
     }
 
+    public Order(int totalPrice, OrderStatus status, LocalDateTime initDate, User user) {
+        this.totalPrice = totalPrice;
+        this.status = status;
+        this.initDate = initDate;
+        this.user = user;
+    }
+
+
+
     @Override
     public String toString() {
         return "Order{" +
@@ -64,12 +73,16 @@ public class Order extends BaseEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
         return totalPrice == order.totalPrice && status == order.status &&
-                executionDate.equals(order.executionDate) && initDate.equals(order.initDate)
-                && user.equals(order.user);
+                initDate.equals(order.initDate) && user.equals(order.user);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(totalPrice, status, executionDate, initDate, user);
+    }
+
+    @PreRemove
+    public void removeThisOrderFromUser() {
+        user.getOrders().remove(this);
     }
 }

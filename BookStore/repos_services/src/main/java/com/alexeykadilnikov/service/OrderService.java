@@ -9,12 +9,13 @@ import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IOrderRepository;
 import com.alexeykadilnikov.repository.IRequestRepository;
 import com.alexeykadilnikov.repository.IUserRepository;
-import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -23,9 +24,9 @@ public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final IOrderRepository orderRepository;
-    private final IBookRepository bookRepository;
-    private final IRequestRepository requestRepository;
-    private final IUserRepository userRepository;
+    private IBookRepository bookRepository;
+    private IRequestRepository requestRepository;
+    private IUserRepository userRepository;
     private final OrderMapper orderMapper;
 
     @Autowired
@@ -38,6 +39,11 @@ public class OrderService implements IOrderService {
         this.bookRepository = bookRepository;
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
+        this.orderMapper = orderMapper;
+    }
+
+    public OrderService(IOrderRepository orderRepository, OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
     }
 
@@ -199,11 +205,11 @@ public class OrderService implements IOrderService {
     }
 
     public OrderDto getById(long id) {
-        Order order = orderRepository.getById(id);
-        if(order == null) {
+        Optional<Order> order = orderRepository.findById(id);
+        if(order.isEmpty()) {
             throw new NullPointerException("Order with id = " + id + " not found");
         }
-        return orderMapper.toDto(order);
+        return orderMapper.toDto(order.get());
     }
 
     public int calculatePrice(Order order) {
@@ -220,24 +226,27 @@ public class OrderService implements IOrderService {
         return orders;
     }
 
-    public List<Order> sendSqlQuery(String hql) {
-        return orderRepository.findAll();
-    }
-
-    public List<OrderDto> sortBy(String sortBy, int mode) {
-        String hql = "";
+    public List<OrderDto> sortBy(String sortBy, String direction) {
+        List<Order> orders;
         switch (sortBy) {
             case "price":
-                hql = QueryBuilder.sortOrdersByPrice(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    orders = orderRepository.findAll(Sort.by(Sort.Direction.ASC, "totalPrice"));
+                } else {
+                    orders = orderRepository.findAll(Sort.by(Sort.Direction.DESC, "totalPrice"));
+                }
                 break;
             case "execDate":
-                hql = QueryBuilder.sortOrdersByExecDate(mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    orders = orderRepository.findAll(Sort.by(Sort.Direction.ASC, "executionDate"));
+                } else {
+                    orders = orderRepository.findAll(Sort.by(Sort.Direction.DESC, "executionDate"));
+                }
                 break;
             default:
                 return new ArrayList<>();
         }
 
-        List<Order> orders = sendSqlQuery(hql);
         List<OrderDto> ordersDto = new ArrayList<>();
         for(Order order : orders) {
             OrderDto orderDto = orderMapper.toDto(order);
@@ -247,7 +256,7 @@ public class OrderService implements IOrderService {
     }
 
     public List<OrderDto> sortByStatus(int statusCode) {
-        List<Order> orders = sendSqlQuery(QueryBuilder.sortByStatus(OrderStatus.values()[statusCode]));
+        List<Order> orders = orderRepository.sortByStatus(statusCode);
         List<OrderDto> ordersDto = new ArrayList<>();
         for(Order order : orders) {
             OrderDto orderDto = orderMapper.toDto(order);
@@ -256,19 +265,27 @@ public class OrderService implements IOrderService {
         return ordersDto;
     }
 
-    public List<OrderDto> sortForPeriod(String sortBy, int mode, String startDate, String endDate) {
-        String hql = "";
+    public List<OrderDto> sortForPeriod(String sortBy, String direction, String startDate, String endDate) {
+        List<Order> orders;
         switch (sortBy) {
             case "execDate":
-                hql = QueryBuilder.sortOrdersByExecDateForPeriodByDate(startDate, endDate, mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    orders = orderRepository.sortByExecDateForPeriodByDateAsc(LocalDate.parse(startDate), LocalDate.parse(endDate));
+                } else {
+                    orders = orderRepository.sortByExecDateForPeriodByDateDesc(LocalDate.parse(startDate), LocalDate.parse(endDate));
+                }
                 break;
             case "price":
-                hql = QueryBuilder.sortOrdersByExecDateForPeriodByPrice(startDate, endDate, mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    orders = orderRepository.sortByExecDateForPeriodByPriceAsc(LocalDate.parse(startDate), LocalDate.parse(endDate));
+                } else {
+                    orders = orderRepository.sortByExecDateForPeriodByPriceDesc(LocalDate.parse(startDate), LocalDate.parse(endDate));
+                }
                 break;
             default:
                 return new ArrayList<>();
         }
-        List<Order> orders = sendSqlQuery(hql);
+
         List<OrderDto> ordersDto = new ArrayList<>();
         for(Order order : orders) {
             OrderDto orderDto = orderMapper.toDto(order);
@@ -278,9 +295,7 @@ public class OrderService implements IOrderService {
     }
 
     public int getEarnedMoneyForPeriod(String startDate, String endDate) {
-        String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
-
-        List<Order> orders = sendSqlQuery(hql);
+        List<Order> orders = orderRepository.getCompleteOrdersForPeriod(LocalDate.parse(startDate), LocalDate.parse(endDate));
 
         int sum = 0;
         for(Order order : orders) {
@@ -291,7 +306,8 @@ public class OrderService implements IOrderService {
     }
 
     public int getCountOfCompleteOrdersForPeriod(String startDate, String endDate) {
-        String hql = QueryBuilder.getCompleteOrdersForPeriod(startDate, endDate);
-        return sendSqlQuery(hql).size();
+        return orderRepository
+                .getCompleteOrdersForPeriod(LocalDate.parse(startDate), LocalDate.parse(endDate))
+                .size();
     }
 }

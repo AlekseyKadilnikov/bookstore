@@ -24,6 +24,7 @@ public class UserController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('users:write')")
     public UserDto save(@RequestBody UserDto userDto) {
         UserDto newUserDto = userService.save(userDto);
         jmsTemplate.convertAndSend("user", "saved: id = " + newUserDto.getId());
@@ -31,6 +32,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('users:read')")
     public UserDto getById(@PathVariable("id") Long id) {
         return userService.getById(id);
     }

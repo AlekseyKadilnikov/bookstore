@@ -41,6 +41,12 @@ public class Request extends BaseEntity implements Serializable {
         this.books = books;
     }
 
+    public Request(String name, int count, RequestStatus status) {
+        this.name = name;
+        this.count = count;
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Request{" +
