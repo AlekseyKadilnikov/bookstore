@@ -1,7 +1,6 @@
 package com.alexeykadilnikov.controller;
 
 import com.alexeykadilnikov.Response;
-import com.alexeykadilnikov.security.JwtAuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,22 +22,6 @@ public class GlobalExceptionHandler {
 
         HttpStatus internalError = HttpStatus.BAD_REQUEST;
 
-        Response response = new Response(
-                e.getMessage(),
-                internalError.name(),
-                ZonedDateTime.now(ZoneId.of("Europe/Moscow")).toString()
-        );
-
-        logger.error("error", e);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Response> jwtAuthenticationException(JwtAuthenticationException e) {
-
-        HttpStatus internalError = HttpStatus.BAD_REQUEST;
         Response response = new Response(
                 e.getMessage(),
                 internalError.name(),

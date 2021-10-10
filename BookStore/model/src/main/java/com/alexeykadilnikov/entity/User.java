@@ -35,12 +35,20 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "status")
     private Status status;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private Set<Order> orders;
 
-    public User(String username) {
+    public User(String email,
+                String username,
+                String password,
+                Role role,
+                Status status) {
+        this.email = email;
         this.username = username;
+        this.password = password;
+        this.role = role;
+        this.status = status;
     }
 
     @Override

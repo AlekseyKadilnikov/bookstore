@@ -17,10 +17,9 @@ public interface IOrderService {
     OrderDto getById(long id);
     int calculatePrice(Order order);
     List<Order> sort(List<Order> orders, Comparator<Order> comparator);
-    List<Order> sendSqlQuery(String hql);
-    List<OrderDto> sortBy(String sortBy, int mode);
+    List<OrderDto> sortBy(String sortBy, String direction);
     List<OrderDto> sortByStatus(int statusCode);
-    List<OrderDto> sortForPeriod(String sortBy, int mode, String startDate, String endDate);
+    List<OrderDto> sortForPeriod(String sortBy, String direction, String startDate, String endDate);
     int getEarnedMoneyForPeriod(String startDate, String endDate);
     int getCountOfCompleteOrdersForPeriod(String startDate, String endDate);
 }

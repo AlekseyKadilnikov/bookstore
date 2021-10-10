@@ -27,14 +27,14 @@ public class BookController {
     @GetMapping(value = "/sort/{sortBy}")
     @PreAuthorize("hasAuthority('books:read')")
     public List<BookDto> sortBy(@PathVariable("sortBy") String sortBy,
-                                    @RequestParam("direction") String direction) {
+                                @RequestParam("direction") String direction) {
         return bookService.sortBy(sortBy, direction);
     }
 
     @GetMapping(value = "/stale/{sortBy}")
     @PreAuthorize("hasAuthority('books:read')")
     public List<BookDto> getStaleBooks(@PathVariable("sortBy") String sortBy,
-                                    @RequestParam("direction") String direction) {
+                                       @RequestParam("direction") String direction) {
         return bookService.getStaleBooks(sortBy, direction);
     }
 
@@ -59,7 +59,7 @@ public class BookController {
     @PatchMapping("add/{id}")
     @PreAuthorize("hasAuthority('books:write')")
     public BookDto addBook(@PathVariable("id") long bookId,
-                        @RequestParam("count") int count) {
+                           @RequestParam("count") int count) {
         return bookService.addBook(bookId, count);
     }
 }

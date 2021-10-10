@@ -58,27 +58,27 @@ public class OrderController {
     @GetMapping("sort/{sortBy}")
     @PreAuthorize("hasAuthority('orders:read')")
     public List<OrderDto> sortBy(@PathVariable("sortBy") String sortBy,
-                                 @RequestParam("mode") int mode,
+                                 @RequestParam("mode") String direction,
                                  @RequestParam(value = "startDate", required = false) String startDate,
                                  @RequestParam(value = "endDate", required = false) String endDate) {
         if(startDate == null || endDate == null)
-            return orderService.sortBy(sortBy, mode);
+            return orderService.sortBy(sortBy, direction);
         else {
-            return orderService.sortForPeriod(sortBy, mode, startDate, endDate);
+            return orderService.sortForPeriod(sortBy, direction, startDate, endDate);
         }
     }
 
     @GetMapping("countComplete")
     @PreAuthorize("hasAuthority('orders:read')")
     public int getCountOfCompleteOrdersForPeriod(@RequestParam(value = "startDate") String startDate,
-                                                  @RequestParam(value = "endDate") String endDate) {
+                                                 @RequestParam(value = "endDate") String endDate) {
         return orderService.getCountOfCompleteOrdersForPeriod(startDate, endDate);
     }
 
     @GetMapping("earnedMoney")
     @PreAuthorize("hasAuthority('orders:read')")
     public int getEarnedMoneyForPeriod(@RequestParam(value = "startDate") String startDate,
-                                        @RequestParam(value = "endDate") String endDate) {
+                                       @RequestParam(value = "endDate") String endDate) {
         return orderService.getEarnedMoneyForPeriod(startDate, endDate);
     }
 }

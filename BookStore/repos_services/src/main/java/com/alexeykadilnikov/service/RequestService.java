@@ -4,12 +4,10 @@ import com.alexeykadilnikov.RequestStatus;
 import com.alexeykadilnikov.dto.RequestDto;
 import com.alexeykadilnikov.entity.Author;
 import com.alexeykadilnikov.entity.Book;
-import com.alexeykadilnikov.entity.Order;
 import com.alexeykadilnikov.entity.Request;
 import com.alexeykadilnikov.mapper.RequestMapper;
 import com.alexeykadilnikov.repository.IBookRepository;
 import com.alexeykadilnikov.repository.IRequestRepository;
-import com.alexeykadilnikov.utils.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +15,18 @@ import java.util.*;
 
 @Service
 public class RequestService implements IRequestService {
-    private final IBookRepository bookRepository;
+    private IBookRepository bookRepository;
     private final IRequestRepository requestRepository;
     private final RequestMapper requestMapper;
 
     @Autowired
     public RequestService(IBookRepository bookRepository, IRequestRepository requestRepository, RequestMapper requestMapper) {
         this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
+        this.requestMapper = requestMapper;
+    }
+
+    public RequestService(IRequestRepository requestRepository, RequestMapper requestMapper) {
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
     }
@@ -83,31 +86,38 @@ public class RequestService implements IRequestService {
     }
 
     public RequestDto getById(long id) {
-        Request request = requestRepository.getById(id);
-        if(request == null) {
+        Optional<Request> request = requestRepository.findById(id);
+        if(request.isEmpty()) {
             throw new NullPointerException("Request with id = " + id + " not found");
         }
-        return requestMapper.toDto(request);
+        return requestMapper.toDto(request.get());
     }
 
     public List<Request> sendSqlQuery(String hql) {
         return requestRepository.findAll();
     }
 
-    public List<RequestDto> getRequestsForBook(long bookId, String sortBy, int mode) {
-        String hql = "";
+    public List<RequestDto> getRequestsForBook(long bookId, String sortBy, String direction) {
+        List<Request> requests;
         switch (sortBy) {
             case "count":
-                hql = QueryBuilder.getRequestsForBookSortedByCount(bookId, mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    requests = requestRepository.getRequestsForBookSortedByCountAsc(bookId);
+                } else {
+                    requests = requestRepository.getRequestsForBookSortedByCountDesc(bookId);
+                }
                 break;
             case "name":
-                hql = QueryBuilder.getRequestsForBookSortedByName(bookId, mode);
+                if(direction.equalsIgnoreCase("asc")) {
+                    requests = requestRepository.getRequestsForBookSortedByNameAsc(bookId);
+                } else {
+                    requests = requestRepository.getRequestsForBookSortedByNameDesc(bookId);
+                }
                 break;
             default:
                 return new ArrayList<>();
         }
 
-        List<Request> requests = sendSqlQuery(hql);
         List<RequestDto> requestsDto = new ArrayList<>();
         for(Request request : requests) {
             RequestDto requestDto = requestMapper.toDto(request);

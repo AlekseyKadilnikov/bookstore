@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public interface IBookRepository extends JpaRepository<Book, Long> {
+
     @Query("from Book where dateOfReceipt < :date order by name asc")
     List<Book> getStateBooksOrderByNameAsc(@Param("date") LocalDate date);
 

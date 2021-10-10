@@ -48,4 +48,10 @@ public class OrderBook implements Serializable {
     public int hashCode() {
         return Objects.hash(id, order, book, bookCount);
     }
+
+    @PreRemove
+    public void removeThisOrderBookFromOrderAndBook() {
+        order.getOrderBooks().remove(this);
+        book.getOrderBooks().remove(this);
+    }
 }

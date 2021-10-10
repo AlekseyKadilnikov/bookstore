@@ -27,9 +27,9 @@ public class RequestController {
     @GetMapping("requestsForBook/{id}/{sortBy}")
     @PreAuthorize("hasAuthority('requests:read')")
     public List<RequestDto> getRequestsForBookSortedByCount(@PathVariable("id") long bookId,
-                                                @PathVariable("sortBy") String sortBy,
-                                                @RequestParam("mode") int mode) {
-        return requestService.getRequestsForBook(bookId, sortBy, mode);
+                                                            @PathVariable("sortBy") String sortBy,
+                                                            @RequestParam("mode") String direction) {
+        return requestService.getRequestsForBook(bookId, sortBy, direction);
     }
 
     @GetMapping()

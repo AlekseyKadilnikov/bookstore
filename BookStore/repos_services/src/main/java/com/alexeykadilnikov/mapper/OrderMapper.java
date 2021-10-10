@@ -19,12 +19,16 @@ import java.util.*;
 public class OrderMapper implements IMapper<Order, OrderDto> {
 
     private final ModelMapper mapper;
-    private final IBookRepository bookRepository;
+    private IBookRepository bookRepository;
 
     @Autowired
     public OrderMapper(ModelMapper mapper, IBookRepository bookRepository) {
         this.mapper = mapper;
         this.bookRepository = bookRepository;
+    }
+
+    public OrderMapper(ModelMapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override

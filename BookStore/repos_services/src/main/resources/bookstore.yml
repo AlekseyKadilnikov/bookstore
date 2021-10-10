@@ -1,6 +1,0 @@
-BookService.months: 6
-BookService.doSuccess: true
-
-jwt.header: Authorization
-jwt.secret: proselyte
-jwt.expiration: 604800

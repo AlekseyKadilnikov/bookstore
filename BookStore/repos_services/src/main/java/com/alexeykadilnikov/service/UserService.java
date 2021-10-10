@@ -20,7 +20,7 @@ public class UserService implements IUserService {
 
     private final IUserRepository userRepository;
     private final UserMapper userMapper;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserService(IUserRepository userRepository,
@@ -29,6 +29,11 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    public UserService(IUserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     public List<UserDto> getAll() {
@@ -49,13 +54,6 @@ public class UserService implements IUserService {
     }
 
     public UserDto save(UserDto userDto) {
-//        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-//        User user = userMapper.toEntity(userDto);
-//        Set<Role> roles = new HashSet<>();
-//        roles.add(roleRepository.getById(1L));
-//        user.setRoles(roles);
-//        user = userRepository.save(user);
-//        userDto = userMapper.toDto(user);
-        return userDto;
+        return userMapper.toDto(userRepository.save(userMapper.toEntity(userDto)));
     }
 }
