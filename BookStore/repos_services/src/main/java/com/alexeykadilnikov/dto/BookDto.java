@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,4 +20,13 @@ public class BookDto extends BaseEntityDto {
     private int price;
     private String description;
     private int count;
+    private LocalDate dateOfReceipt;
+
+    public BookDto(String name, int publicationYear, int price, int count, String description) {
+        this.name = name;
+        this.publicationYear = publicationYear;
+        this.price = price;
+        this.count = count;
+        this.description = description;
+    }
 }

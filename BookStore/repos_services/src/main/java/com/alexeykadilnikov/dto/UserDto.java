@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDto extends BaseEntityDto {
     private String username;
+    private String password;
+    private String email;
+    private String status;
+    private String role;
 }

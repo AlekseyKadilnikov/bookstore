@@ -2,19 +2,18 @@ package com.alexeykadilnikov.service;
 
 import com.alexeykadilnikov.OrderStatus;
 import com.alexeykadilnikov.RequestStatus;
-import com.alexeykadilnikov.dao.IUserDAO;
 import com.alexeykadilnikov.dto.OrderDto;
 import com.alexeykadilnikov.entity.*;
-import com.alexeykadilnikov.dao.IBookDAO;
-import com.alexeykadilnikov.dao.IOrderDAO;
-import com.alexeykadilnikov.dao.IRequestDAO;
 import com.alexeykadilnikov.mapper.OrderMapper;
+import com.alexeykadilnikov.repository.IBookRepository;
+import com.alexeykadilnikov.repository.IOrderRepository;
+import com.alexeykadilnikov.repository.IRequestRepository;
+import com.alexeykadilnikov.repository.IUserRepository;
 import com.alexeykadilnikov.utils.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,18 +22,22 @@ import java.util.*;
 public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
-    private final IOrderDAO orderDAO;
-    private final IBookDAO bookDAO;
-    private final IRequestDAO requestDAO;
-    private final IUserDAO userDAO;
+    private final IOrderRepository orderRepository;
+    private final IBookRepository bookRepository;
+    private final IRequestRepository requestRepository;
+    private final IUserRepository userRepository;
     private final OrderMapper orderMapper;
 
     @Autowired
-    public OrderService(IOrderDAO orderDAO, IBookDAO bookDAO, IRequestDAO requestDAO, IUserDAO userDAO, OrderMapper orderMapper) {
-        this.orderDAO = orderDAO;
-        this.bookDAO = bookDAO;
-        this.requestDAO = requestDAO;
-        this.userDAO = userDAO;
+    public OrderService(IOrderRepository orderRepository,
+                        IBookRepository bookRepository,
+                        IRequestRepository requestRepository,
+                        IUserRepository userRepository,
+                        OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
+        this.bookRepository = bookRepository;
+        this.requestRepository = requestRepository;
+        this.userRepository = userRepository;
         this.orderMapper = orderMapper;
     }
 
@@ -53,7 +56,7 @@ public class OrderService implements IOrderService {
         for(Map.Entry<Long, Integer> entry : books.entrySet()) {
             OrderBook orderBook = new OrderBook();
             orderBook.setOrder(order);
-            orderBook.setBook(bookDAO.getById(entry.getKey()));
+            orderBook.setBook(bookRepository.getById(entry.getKey()));
             orderBook.setBookCount(entry.getValue());
             orderBooks.add(orderBook);
         }
@@ -61,13 +64,13 @@ public class OrderService implements IOrderService {
         order.setUser(user);
         order.setTotalPrice(calculatePrice(order));
         order.setStatus(OrderStatus.NEW);
-        orderDAO.save(order);
+        orderRepository.save(order);
         checkBookAvailable(orderBooks);
         return orderMapper.toDto(order);
     }
 
     private OrderDto cancel(long id) {
-        Order order = orderDAO.getById(id);
+        Order order = orderRepository.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Request newRequest = orderBook.getBook().getRequests()
                     .stream()
@@ -76,17 +79,17 @@ public class OrderService implements IOrderService {
                     .orElse(null);
             if(newRequest != null) {
                 if(newRequest.getCount() <= orderBook.getBookCount()) {
-                    requestDAO.delete(newRequest);
+                    requestRepository.delete(newRequest);
                 } else {
                     newRequest.setCount(newRequest.getCount() - orderBook.getBookCount());
                 }
             }
             Book book = orderBook.getBook();
             book.setCount(book.getCount() + orderBook.getBookCount());
-            bookDAO.update(book);
+            bookRepository.save(book);
         }
         order.setStatus(OrderStatus.CANCELED);
-        orderDAO.update(order);
+        orderRepository.save(order);
         logger.info("Order id = {} canceled", order.getId());
         return orderMapper.toDto(order);
     }
@@ -97,14 +100,14 @@ public class OrderService implements IOrderService {
         } else if(statusCode == 2) {
             return cancel(id);
         } else {
-            Order order = orderDAO.getById(id);
+            Order order = orderRepository.getById(id);
             order.setStatus(OrderStatus.NEW);
-            return orderMapper.toDto(orderDAO.update(order));
+            return orderMapper.toDto(orderRepository.save(order));
         }
     }
 
     private OrderDto complete(long id) {
-        Order order = orderDAO.getById(id);
+        Order order = orderRepository.getById(id);
         for(OrderBook orderBook : order.getOrderBooks()) {
             Book book = orderBook.getBook();
             Request newRequest = book.getRequests()
@@ -126,7 +129,7 @@ public class OrderService implements IOrderService {
     }
 
     public List<OrderDto> getAll() {
-        List<Order> orders = orderDAO.findAll();
+        List<Order> orders = orderRepository.findAll();
         List<OrderDto> ordersDto = new ArrayList<>();
         for(Order order : orders) {
             OrderDto orderDto = orderMapper.toDto(order);
@@ -141,7 +144,7 @@ public class OrderService implements IOrderService {
             checkBookAvailable(order.getOrderBooks());
         }
         order.setTotalPrice(calculatePrice(order));
-        order = orderDAO.save(order);
+        order = orderRepository.save(order);
         return orderMapper.toDto(order);
     }
 
@@ -162,13 +165,12 @@ public class OrderService implements IOrderService {
                     newRequest.setStatus(RequestStatus.NEW);
                     newRequest.setBooks(Collections.singleton(book));
                     newRequest.setCount(newRequest.getCount() + diff);
-                    requestDAO.save(newRequest);
                 }
                 else {
                     newRequest.setCount(newRequest.getCount() + diff);
                     newRequest.getBooks().add(book);
-                    requestDAO.update(newRequest);
                 }
+                requestRepository.save(newRequest);
                 Request commonRequest = book.getRequests()
                         .stream()
                         .filter(request -> request.getStatus() == RequestStatus.COMMON)
@@ -181,23 +183,23 @@ public class OrderService implements IOrderService {
                     commonRequest.setStatus(RequestStatus.COMMON);
                     commonRequest.setBooks(Collections.singleton(book));
                     commonRequest.setCount(commonRequest.getCount() + diff);
-                    requestDAO.save(commonRequest);
+                    requestRepository.save(commonRequest);
                 } else {
                     newRequest.setCount(newRequest.getCount() + diff);
                     newRequest.getBooks().add(book);
-                    requestDAO.update(commonRequest);
                 }
+                requestRepository.save(commonRequest);
                 book.setCount(0);
             }
             else {
                 book.setCount(book.getCount() - orderBook.getBookCount());
             }
-            bookDAO.update(book);
+            bookRepository.save(book);
         }
     }
 
     public OrderDto getById(long id) {
-        Order order = orderDAO.getById(id);
+        Order order = orderRepository.getById(id);
         if(order == null) {
             throw new NullPointerException("Order with id = " + id + " not found");
         }
@@ -219,7 +221,7 @@ public class OrderService implements IOrderService {
     }
 
     public List<Order> sendSqlQuery(String hql) {
-        return orderDAO.findAll(hql);
+        return orderRepository.findAll();
     }
 
     public List<OrderDto> sortBy(String sortBy, int mode) {

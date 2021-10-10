@@ -48,6 +48,15 @@ public class Book extends BaseEntity implements Serializable {
         this.count = count;
     }
 
+    public Book(String name, int publicationYear, int price, int count, String description, Set<Request> requests) {
+        this.name = name;
+        this.publicationYear = publicationYear;
+        this.price = price;
+        this.count = count;
+        this.description = description;
+        this.requests = requests;
+    }
+
     @Override
     public String toString() {
         return "Book{" +

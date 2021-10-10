@@ -12,6 +12,4 @@ public interface IUserService {
     UserDto getById(long id);
 
     UserDto save(UserDto user);
-
-    UserDto update(UserDto user);
 }

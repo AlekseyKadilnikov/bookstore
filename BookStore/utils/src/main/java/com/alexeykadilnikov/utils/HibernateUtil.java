@@ -10,11 +10,9 @@ import org.hibernate.service.ServiceRegistry;
 public class HibernateUtil {
 
     public static SessionFactory factory;
-//to disallow creating objects by other classes.
 
     private HibernateUtil() {
     }
-//maling the Hibernate SessionFactory object as singleton
 
     public static synchronized SessionFactory getSessionFactory() {
 

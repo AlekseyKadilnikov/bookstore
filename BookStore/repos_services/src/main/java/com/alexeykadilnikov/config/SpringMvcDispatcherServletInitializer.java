@@ -1,12 +1,11 @@
-package com.alexeykadilnikov;
+package com.alexeykadilnikov.config;
 
-import com.alexeykadilnikov.config.SpringConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class SpringMvcDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[0];
+        return new Class[] { SecurityConfig.class };
     }
 
     @Override
