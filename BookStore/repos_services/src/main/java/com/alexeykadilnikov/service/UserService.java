@@ -54,13 +54,6 @@ public class UserService implements IUserService {
     }
 
     public UserDto save(UserDto userDto) {
-//        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-//        User user = userMapper.toEntity(userDto);
-//        Set<Role> roles = new HashSet<>();
-//        roles.add(roleRepository.getById(1L));
-//        user.setRoles(roles);
-//        user = userRepository.save(user);
-//        userDto = userMapper.toDto(user);
-        return userDto;
+        return userMapper.toDto(userRepository.save(userMapper.toEntity(userDto)));
     }
 }
